@@ -1,0 +1,9 @@
+{
+  "name": "Dumpling",
+  "short_name": "Dumpling",
+  "start_url": "./?v=3",
+  "display": "standalone",
+  "background_color": "#ff9ec8",
+  "theme_color": "#c58cff",
+  "icons": [{"src":"friend.png","sizes":"512x512","type":"image/png"}]
+}

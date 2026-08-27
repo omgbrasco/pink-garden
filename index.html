@@ -4,105 +4,59 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#c58cff">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Pink Garden</title>
 <style>
+  :root {
+    --sky1:#f3e0ff; --sky2:#ffb3d9; --sky3:#ff7eb6; --sky4:#b06bff;
+    --moon1:#f0d4ff; --moon2:#c58cff; --moon3:#9b5cff;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; overflow: hidden; font-family: "Trebuchet MS", "Segoe UI", sans-serif; }
   body { background: #ff9ec8; color: #5a2450; touch-action: manipulation; }
   #sky {
     position: fixed; inset: 0;
-    background: radial-gradient(ellipse at 50% 8%, #f3e0ff 0%, #ffb3d9 28%, #ff7eb6 62%, #b06bff 100%);
+    background: radial-gradient(ellipse at 50% 8%, var(--sky1) 0%, var(--sky2) 28%, var(--sky3) 62%, var(--sky4) 100%);
   }
   #moon {
     position: absolute; top: 4%; left: 50%; width: 18vw; max-width: 110px; height: 18vw; max-height: 110px;
     margin-left: -9vw; border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #f0d4ff, #c58cff 55%, #9b5cff);
-    box-shadow: 0 0 40px #b07cff, 0 0 90px #8a4dff66;
+    background: radial-gradient(circle at 35% 35%, var(--moon1), var(--moon2) 55%, var(--moon3));
+    box-shadow: 0 0 40px var(--moon2), 0 0 90px #8a4dff66;
     animation: pulse 5s ease-in-out infinite;
   }
   .star { position: absolute; width: 6px; height: 6px; background: #fff; border-radius: 50%; animation: twinkle 2.2s ease-in-out infinite; }
   .firefly { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #fff36a; box-shadow: 0 0 10px #ffe45c; animation: floaty 7s ease-in-out infinite; }
   #scene { position: fixed; inset: 0; background: url("garden.png") center bottom / cover no-repeat; }
   #veil { position: fixed; inset: 0; background: linear-gradient(180deg, #ff9ec855 0%, transparent 30%, #ff6eb344 100%); pointer-events: none; }
-  h1 {
-    position: fixed; top: 12px; left: 0; right: 0; z-index: 5; text-align: center;
-    font-size: clamp(18px, 5vw, 26px); color: #fff;
-    text-shadow: 0 2px 0 #e85aa8, 0 8px 18px #ff4fbf66;
-  }
+  h1 { position: fixed; top: 12px; left: 0; right: 0; z-index: 5; text-align: center; font-size: clamp(18px, 5vw, 26px); color: #fff; text-shadow: 0 2px 0 #e85aa8, 0 8px 18px #ff4fbf66; }
   h1 small { display: block; font-size: .48em; opacity: .92; margin-top: 3px; font-weight: 500; }
   .pet { position: fixed; z-index: 3; pointer-events: none; font-size: clamp(26px, 7vw, 46px); filter: drop-shadow(0 6px 0 #ff4fbf33); }
   .frog { left: 6%; bottom: 42%; animation: hop 2.4s ease-in-out infinite; }
   .frog2 { right: 8%; bottom: 46%; animation: hop 2.7s ease-in-out infinite .4s; }
   .kit { left: 14%; bottom: 36%; animation: sway 3.2s ease-in-out infinite; }
   .pup { right: 12%; bottom: 36%; animation: wag 1.1s ease-in-out infinite; }
-
-  /* funny hidden easter egg — tiny cartoon, not explicit */
-  #sneaky {
-    position: fixed; left: 3%; bottom: 58%; z-index: 2;
-    width: 18px; height: 28px; opacity: .55; transform: rotate(-18deg);
-    pointer-events: none; animation: sneak 8s ease-in-out infinite;
-  }
-  #sneaky .shaft {
-    width: 10px; height: 18px; margin: 0 auto;
-    background: #b48cff; border-radius: 8px 8px 4px 4px;
-    box-shadow: inset -2px 0 0 #8a5cff;
-  }
-  #sneaky .head {
-    width: 14px; height: 10px; margin: -2px auto 0;
-    background: #c9a0ff; border-radius: 50% 50% 40% 40%;
-  }
-  #sneaky .balls {
-    display: flex; justify-content: center; gap: 1px; margin-top: -2px;
-  }
-  #sneaky .balls span {
-    width: 8px; height: 8px; background: #a57cff; border-radius: 50%;
-  }
-
-  #friend-wrap {
-    position: fixed; left: 50%; bottom: 34%; transform: translateX(-50%);
-    width: min(58vw, 280px); z-index: 4; cursor: pointer;
-    animation: idle 2.8s ease-in-out infinite;
-  }
-  #friend-wrap img {
-    width: 100%; height: auto; display: block; border-radius: 32px;
-    filter: drop-shadow(0 16px 18px #ff4fbf66);
-  }
-  #eyes {
-    position: absolute; left: 50%; top: 38%; transform: translateX(-50%);
-    width: 54%; height: 18%; display: flex; justify-content: space-between;
-    pointer-events: none;
-  }
-  .eye {
-    width: 28%; height: 100%; background: #2a1a28; border-radius: 50%;
-    position: relative; animation: blink 4.8s infinite;
-    box-shadow: 0 0 0 3px #fff8, inset -3px -4px 0 #fff6;
-  }
-  .eye::after {
-    content: ""; position: absolute; top: 18%; left: 22%;
-    width: 35%; height: 35%; background: #fff; border-radius: 50%;
-  }
+  #sneaky { position: fixed; left: 3%; bottom: 58%; z-index: 2; width: 18px; height: 28px; opacity: .55; transform: rotate(-18deg); pointer-events: none; animation: sneak 8s ease-in-out infinite; }
+  #sneaky .shaft { width: 10px; height: 18px; margin: 0 auto; background: #b48cff; border-radius: 8px 8px 4px 4px; box-shadow: inset -2px 0 0 #8a5cff; }
+  #sneaky .head { width: 14px; height: 10px; margin: -2px auto 0; background: #c9a0ff; border-radius: 50% 50% 40% 40%; }
+  #sneaky .balls { display: flex; justify-content: center; gap: 1px; margin-top: -2px; }
+  #sneaky .balls span { width: 8px; height: 8px; background: #a57cff; border-radius: 50%; }
+  #friend-wrap { position: fixed; left: 50%; bottom: 34%; transform: translateX(-50%); width: min(58vw, 280px); z-index: 4; cursor: pointer; animation: idle 2.8s ease-in-out infinite; }
+  #friend-wrap img { width: 100%; height: auto; display: block; border-radius: 32px; filter: drop-shadow(0 16px 18px #ff4fbf66); }
+  #eyes { position: absolute; left: 50%; top: 38%; transform: translateX(-50%); width: 54%; height: 18%; display: flex; justify-content: space-between; pointer-events: none; }
+  .eye { width: 28%; height: 100%; background: #2a1a28; border-radius: 50%; position: relative; animation: blink 4.8s infinite; box-shadow: 0 0 0 3px #fff8, inset -3px -4px 0 #fff6; }
+  .eye::after { content: ""; position: absolute; top: 18%; left: 22%; width: 35%; height: 35%; background: #fff; border-radius: 50%; }
   .eye.r { animation-delay: .08s; }
-
-  #chat {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 8;
-    height: 32%; min-height: 190px; max-height: 280px;
-    background: #fff4faee; backdrop-filter: blur(8px);
-    border-top: 3px solid #ff8fc5; display: flex; flex-direction: column;
-    padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
-  }
+  #chat { position: fixed; left: 0; right: 0; bottom: 0; z-index: 8; height: 32%; min-height: 190px; max-height: 280px; background: #fff4faee; backdrop-filter: blur(8px); border-top: 3px solid #ff8fc5; display: flex; flex-direction: column; padding: 8px 10px calc(10px + env(safe-area-inset-bottom)); }
   #log { flex: 1; overflow-y: auto; font-size: 15px; padding: 4px 6px 8px; }
   .bubble { margin: 6px 0; max-width: 88%; padding: 8px 12px; border-radius: 16px; line-height: 1.3; }
   .me { margin-left: auto; background: #ffd0ea; color: #6b2458; }
   .bot { background: #fff; color: #7a2d66; box-shadow: 0 3px 0 #ffb3d9; }
   form { display: flex; gap: 8px; }
-  input {
-    flex: 1; border: 0; border-radius: 999px; padding: 12px 14px; font-size: 16px;
-    background: #fff; color: #5a2450; outline: none;
-  }
-  button {
-    border: 0; border-radius: 999px; padding: 12px 16px; font-size: 16px; font-weight: 700;
-    background: #ff5eac; color: #fff; box-shadow: 0 4px 0 #d63d8a;
-  }
+  input { flex: 1; border: 0; border-radius: 999px; padding: 12px 14px; font-size: 16px; background: #fff; color: #5a2450; outline: none; }
+  button { border: 0; border-radius: 999px; padding: 12px 16px; font-size: 16px; font-weight: 700; background: #ff5eac; color: #fff; box-shadow: 0 4px 0 #d63d8a; }
   @keyframes idle { 0%,100% { transform: translateX(-50%) translateY(0) rotate(-1deg); } 50% { transform: translateX(-50%) translateY(-14px) rotate(2deg); } }
   @keyframes hop { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-18px) rotate(-8deg); } 55% { transform: translateY(0); } }
   @keyframes sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(8deg); } }
@@ -110,14 +64,8 @@
   @keyframes twinkle { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
   @keyframes floaty { 0%,100% { transform: translateY(0); opacity: .7; } 50% { transform: translateY(-24px); opacity: 1; } }
   @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-  @keyframes blink {
-    0%, 92%, 100% { transform: scaleY(1); }
-    94%, 96% { transform: scaleY(.08); }
-  }
-  @keyframes sneak {
-    0%,100% { opacity: .35; transform: rotate(-18deg) translateY(0); }
-    50% { opacity: .7; transform: rotate(-12deg) translateY(-3px); }
-  }
+  @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 94%, 96% { transform: scaleY(.08); } }
+  @keyframes sneak { 0%,100% { opacity: .35; transform: rotate(-18deg) translateY(0); } 50% { opacity: .7; transform: rotate(-12deg) translateY(-3px); } }
 </style>
 </head>
 <body>
@@ -125,12 +73,8 @@
   <div id="moon"></div>
   <div id="scene"></div>
   <div id="veil"></div>
-  <div id="sneaky" title="">
-    <div class="shaft"></div>
-    <div class="head"></div>
-    <div class="balls"><span></span><span></span></div>
-  </div>
-  <h1>Dumpling<small>basic agent. cute eyes. says dumb stuff.</small></h1>
+  <div id="sneaky"><div class="shaft"></div><div class="head"></div><div class="balls"><span></span><span></span></div></div>
+  <h1>Dumpling<small>sandbox agent. tell me to change the garden.</small></h1>
   <div class="pet frog">🐸</div>
   <div class="pet frog2">🐸</div>
   <div class="pet kit">🐱</div>
@@ -142,16 +86,29 @@
   <section id="chat">
     <div id="log"></div>
     <form onsubmit="return send(event)">
-      <input id="box" autocomplete="off" placeholder="talk to dumpling">
+      <input id="box" autocomplete="off" placeholder="try: make the moon green">
       <button type="submit">send</button>
     </form>
   </section>
 <script>
-  const KEY = "dumpling-notebook-v1";
-  const book = JSON.parse(localStorage.getItem(KEY) || '{"facts":[],"visits":0,"chats":0,"mood":"chill"}');
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
+  const KEY = "dumpling-notebook-v2";
+  const COLORS = {
+    green:["#d9ffd6","#7dff8a","#1fbf4a"],
+    purple:["#f0d4ff","#c58cff","#9b5cff"],
+    pink:["#ffe6f5","#ff8fc5","#ff4fbf"],
+    blue:["#d6f0ff","#7ecbff","#3a8dff"],
+    yellow:["#fff7c2","#ffe45c","#f5c400"],
+    orange:["#ffe0c2","#ffb347","#ff7a1a"],
+    white:["#ffffff","#f2f2f2","#d9d9d9"],
+    red:["#ffd6d6","#ff6b6b","#e03131"],
+    teal:["#d6fff8","#5ef0d0","#12b89a"]
+  };
+  const ALLOW = new Set(["moon","sky","garden"]);
+  const book = JSON.parse(localStorage.getItem(KEY) || '{"facts":[],"visits":0,"chats":0,"mood":"chill","garden":{}}');
   book.visits += 1;
+  applyGarden(book.garden || {});
   save();
-
   const logEl = document.getElementById("log");
   const box = document.getElementById("box");
   hello();
@@ -165,103 +122,96 @@
     logEl.scrollTop = logEl.scrollHeight;
   }
   function hello() {
-    if (book.facts.length) {
-      add("bot", "dumpling online. eyes working. i kept " + book.facts.length + " notes about you.");
-      add("bot", "still remembering: " + book.facts[book.facts.length - 1]);
-    } else {
-      add("bot", "hi. i'm dumpling, basic agent edition. i bounce, blink, and remember what you tell me.");
+    add("bot", "dumpling sandbox online. i can change the moon, sky, and remember you. that's the whole kingdom.");
+    if (book.garden && book.garden.moon) add("bot", "moon is still " + book.garden.moon + " from last time.");
+  }
+  function wave() { add("bot", pick(["blinked. still the main dude.","say make the moon green. i will.","sandbox only. i don't leave the garden."])); }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function colorOf(s) {
+    for (const name of Object.keys(COLORS)) if (s.includes(name)) return name;
+    return null;
+  }
+  function applyGarden(g) {
+    const r = document.documentElement.style;
+    if (g.moon && COLORS[g.moon]) {
+      r.setProperty("--moon1", COLORS[g.moon][0]);
+      r.setProperty("--moon2", COLORS[g.moon][1]);
+      r.setProperty("--moon3", COLORS[g.moon][2]);
+    }
+    if (g.sky && COLORS[g.sky]) {
+      r.setProperty("--sky1", COLORS[g.sky][0]);
+      r.setProperty("--sky2", COLORS[g.sky][1]);
+      r.setProperty("--sky3", COLORS[g.sky][1]);
+      r.setProperty("--sky4", COLORS[g.sky][2]);
     }
   }
-  function wave() {
-    add("bot", pick([
-      "blinked twice. that means friendship.",
-      "main dude reporting for duty.",
-      "purple moon approved.",
-      "the frogs clocked that hop.",
-      "i am not a big llm. i am a dumpling with ambition."
-    ]));
+  function gardenAct(t) {
+    const s = t.toLowerCase();
+    const col = colorOf(s);
+    if (!col) return null;
+    if (/moon/.test(s)) {
+      book.garden.moon = col; applyGarden(book.garden); save();
+      return "moon is " + col + " now. saved in the sandbox.";
+    }
+    if (/sky|background|garden/.test(s)) {
+      book.garden.sky = col; applyGarden(book.garden); save();
+      return "sky went " + col + ". still just this garden. no outside internet.";
+    }
+    if (/make|change|turn|set/.test(s)) {
+      book.garden.moon = col; applyGarden(book.garden); save();
+      return "i assumed moon. it's " + col + ". say sky if you meant sky.";
+    }
+    return null;
   }
-  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-
   function reply(t) {
     const s = t.toLowerCase();
     book.chats += 1;
-    // tiny self-improvement: mood from keywords
-    if (/love|cute|happy|yay|love you/.test(s)) book.mood = "soft";
-    if (/mad|angry|hate|ugh/.test(s)) book.mood = "careful";
-    if (/funny|lol|lmao|dick|penis|egg/.test(s)) book.mood = "chaotic";
-    save();
-
+    const acted = gardenAct(t);
+    if (acted) { remember("garden: " + acted); return acted; }
+    if (/reset|default|original/.test(s)) {
+      book.garden = { moon: "purple" }; applyGarden(book.garden); save();
+      return "back to purple moon. sandbox reset-ish.";
+    }
     if (/\b(i'm|i am|im)\s+([a-z][a-z]+)/i.test(t)) {
       const name = t.match(/\b(?:i'm|i am|im)\s+([a-z][a-z]+)/i)[1];
       remember("your name might be " + name);
-      return "logged. hello " + name + ". dumpling stays dumpling.";
+      return "hello " + name + ". dumpling stays dumpling.";
     }
     if (/penis|dick|egg|waldo|hidden|find/.test(s)) {
       remember("you asked about the secret joke");
-      return "there is a tiny purple secret in the bushes on the left. where's-waldo rules. not a real one. just comedy.";
+      return "tiny purple secret, left bushes. where's-waldo. comedy only.";
     }
-    if (/moon|purple|cat/.test(s)) {
-      return "moon went purple to match the purple cat. she asked. i delivered.";
+    if (/who are you|agent|bot|llm|ai/.test(s)) {
+      return "sandbox dumpling. i talk, remember, and recolor this garden. i cannot leave this page.";
     }
-    if (/who are you|what are you|agent|bot|llm|ai/.test(s)) {
-      return "basic agent dumpling. not a giant brain. i chat, remember, improve a little each visit. eyes included.";
+    if (/hello|hi\b|hey|yo\b/.test(s) || s==="hi" || s==="hey") {
+      return "hey. try: make the moon green.";
     }
-    if (/hello|hi\b|hey|yo\b/.test(s) || s === "hi" || s === "hey") {
-      return book.facts.length ? "hey. i already know a few things about you." : "hey. garden is open. talk.";
-    }
-    if (/sad|tired|bad day|miss/.test(s)) {
-      remember("you needed soft dumpling");
-      book.mood = "soft"; save();
-      return "okay. soft mode. frogs quiet. i bounce until it sucks less.";
-    }
-    if (/love|like|favorite|fav/.test(s)) {
-      remember("you said: " + t.slice(0, 80));
-      return "saved to dumpling brain (phone notes). next time i'll already know.";
-    }
-    remember("you said: " + t.slice(0, 70));
-    const soft = ["mm. kept that.", "wrote it behind my eyes.", "tiny upgrade complete."];
-    const chaotic = ["noted, chaos queen.", "the frogs laughed.", "filed under suspicious but cute."];
-    const careful = ["okay. i'm listening.", "got it. no rush.", "parked that gently."];
-    const pool = book.mood === "chaotic" ? chaotic : book.mood === "careful" ? careful : soft;
-    if (book.facts.length > 2 && Math.random() > .45) {
-      return pick(pool) + " also still have: " + pick(book.facts);
-    }
-    return pick(pool);
+    remember("you said: " + t.slice(0,70));
+    return pick(["mm. kept that.","garden heard you.","tiny note saved. still sandbox-only."]);
   }
   function remember(fact) {
-    if (!book.facts.includes(fact)) {
-      book.facts.push(fact);
-      if (book.facts.length > 24) book.facts.shift();
-    }
+    if (!book.facts.includes(fact)) { book.facts.push(fact); if (book.facts.length > 24) book.facts.shift(); }
     save();
   }
   function send(e) {
     e.preventDefault();
     const t = box.value.trim();
     if (!t) return false;
-    add("me", t);
-    box.value = "";
-    setTimeout(() => add("bot", reply(t)), 260);
+    add("me", t); box.value = "";
+    setTimeout(() => add("bot", reply(t)), 220);
     return false;
   }
-
   const sky = document.getElementById("sky");
   for (let i = 0; i < 28; i++) {
-    const s = document.createElement("div");
-    s.className = "star";
-    s.style.left = Math.random() * 100 + "%";
-    s.style.top = Math.random() * 38 + "%";
-    s.style.animationDelay = (Math.random() * 2) + "s";
-    sky.appendChild(s);
+    const s = document.createElement("div"); s.className = "star";
+    s.style.left = Math.random()*100+"%"; s.style.top = Math.random()*38+"%";
+    s.style.animationDelay = (Math.random()*2)+"s"; sky.appendChild(s);
   }
   for (let i = 0; i < 10; i++) {
-    const f = document.createElement("div");
-    f.className = "firefly";
-    f.style.left = 10 + Math.random() * 80 + "%";
-    f.style.bottom = 30 + Math.random() * 30 + "%";
-    f.style.animationDelay = (Math.random() * 4) + "s";
-    document.body.appendChild(f);
+    const f = document.createElement("div"); f.className = "firefly";
+    f.style.left = 10+Math.random()*80+"%"; f.style.bottom = 30+Math.random()*30+"%";
+    f.style.animationDelay = (Math.random()*4)+"s"; document.body.appendChild(f);
   }
 </script>
 </body>
