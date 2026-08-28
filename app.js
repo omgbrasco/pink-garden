@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 14;
+  const BUILD = 15;
   const PLAY_KEY = "dumpling-play-v1";
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -31,7 +31,10 @@
     hudDone: document.getElementById("hud-done"),
     stage: document.getElementById("stage"),
     sky: document.getElementById("sky"),
-    garden: document.getElementById("garden-art")
+    garden: document.getElementById("garden-art"),
+    mic: document.getElementById("mic"),
+    tabbar: document.getElementById("tabbar"),
+    starsFar: document.getElementById("stars-far")
   };
 
   if (!els.log || !els.box || !els.form || !els.buddy || !els.stage || !els.sky) return;
@@ -57,6 +60,8 @@
   els.stage.addEventListener("click", onStage);
   els.hudDone.addEventListener("click", function () { if (playing) endGame("Okay, pausing. The glows will wait."); });
   els.chips.addEventListener("click", onChip);
+  if (els.tabbar) els.tabbar.addEventListener("click", onTab);
+  if (els.mic) els.mic.addEventListener("click", onMic);
   els.box.addEventListener("focus", function () { document.body.classList.add("chatting"); });
   els.box.addEventListener("blur", function () {
     setTimeout(function () {
@@ -342,12 +347,24 @@
   }
   function spawnStars() {
     els.sky.querySelectorAll(".star").forEach(function (n) { n.remove(); });
-    for (let i = 0; i < 22; i++) {
+    if (els.starsFar) els.starsFar.innerHTML = "";
+    for (let i = 0; i < 18; i++) {
+      const s = document.createElement("div");
+      s.className = "star far";
+      s.style.left = Math.random() * 100 + "%";
+      s.style.top = Math.random() * 58 + "%";
+      s.style.animationDelay = Math.random() * 6 + "s";
+      if (els.starsFar) els.starsFar.appendChild(s);
+    }
+    for (let i = 0; i < 28; i++) {
       const s = document.createElement("div");
       s.className = "star";
       s.style.left = Math.random() * 100 + "%";
-      s.style.top = Math.random() * 36 + "%";
-      s.style.animationDelay = Math.random() * 2 + "s";
+      s.style.top = Math.random() * 48 + "%";
+      s.style.width = (2 + Math.random() * 4) + "px";
+      s.style.height = s.style.width;
+      s.style.animationDelay = Math.random() * 5 + "s";
+      s.style.animationDuration = (4.5 + Math.random() * 5) + "s";
       els.sky.appendChild(s);
     }
   }
@@ -360,7 +377,7 @@
       f.className = "firefly" + (playMode ? " play" : "");
       f.setAttribute("aria-label", "firefly");
       f.style.left = 8 + Math.random() * 84 + "%";
-      f.style.bottom = (playMode ? 38 : 32) + Math.random() * (playMode ? 28 : 34) + "%";
+      f.style.bottom = (playMode ? 28 : 24) + Math.random() * (playMode ? 36 : 40) + "%";
       f.style.animationDelay = Math.random() * 4 + "s";
       if (playMode) f.addEventListener("click", onCatch);
       els.stage.appendChild(f);
@@ -398,16 +415,65 @@
     if (msg) add("bot", msg);
   }
 
+  function onTab(e) {
+    const btn = e.target.closest("button[data-tab]");
+    if (!btn) return;
+    const tab = btn.getAttribute("data-tab");
+    document.body.setAttribute("data-tab", tab);
+    els.tabbar.querySelectorAll("button").forEach(function (b) {
+      b.classList.toggle("on", b === btn);
+    });
+    if (tab === "play") {
+      if (!playing) startGame();
+    } else if (playing) {
+      endGame("");
+    }
+  }
+  function onMic() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      els.box.focus();
+      showThought("mic is on the keyboard", false);
+      return;
+    }
+    try {
+      const rec = new SR();
+      rec.lang = "en-US";
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
+      els.mic.classList.add("live");
+      rec.onresult = function (ev) {
+        const said = (ev.results[0] && ev.results[0][0] && ev.results[0][0].transcript) || "";
+        els.mic.classList.remove("live");
+        if (said.trim()) sendText(said.trim());
+      };
+      rec.onerror = rec.onend = function () { els.mic.classList.remove("live"); };
+      rec.start();
+    } catch (err) {
+      els.mic.classList.remove("live");
+      els.box.focus();
+    }
+  }
+
   function fitViewport() {
+
     const vv = window.visualViewport;
-    const vis = vv ? vv.height : window.innerHeight;
+    const inner = window.innerHeight;
+    const vis = vv ? vv.height : inner;
     const offset = vv ? (vv.offsetTop || 0) : 0;
-    const full = (window.screen && screen.height) ? screen.height : window.innerHeight;
-    const kb = Math.max(0, Math.round(full - vis - offset));
+    const focused = document.activeElement === els.box;
+    const kb = focused ? Math.max(0, Math.round(inner - vis - offset)) : 0;
+    let h = inner;
+    const standalone = window.navigator.standalone === true ||
+      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+    if (standalone && window.screen && screen.height && kb < 48) {
+      const gap = screen.height - h;
+      if (gap > 8 && gap < 120) h = screen.height;
+    }
     try { window.scrollTo(0, 0); } catch (e) {}
-    document.documentElement.style.setProperty("--app-h", full + "px");
+    document.documentElement.style.setProperty("--app-h", h + "px");
     document.documentElement.style.setProperty("--kb", kb + "px");
-    document.body.classList.toggle("kb", kb > 48);
+    document.body.classList.toggle("kb", focused && kb > 80);
   }
 
   function registerWorker() {
