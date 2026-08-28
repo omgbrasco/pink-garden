@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 7;
+  const BUILD = 8;
   const PLAY_KEY = "dumpling-play-v1";
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -20,7 +20,7 @@
     log: document.getElementById("log"),
     box: document.getElementById("box"),
     form: document.getElementById("form"),
-    moon: document.getElementById("moon"),
+    moon: document.getElementById("moon-art"),
     buddy: document.getElementById("buddy"),
     thought: document.getElementById("thought"),
     thoughtText: document.getElementById("thought-text"),
@@ -78,11 +78,18 @@
   }
   function applyPlay() {
     const r = document.documentElement.style;
-    const moon = COLORS[play.moon] || COLORS.pink;
-    r.setProperty("--moon1", moon[0]);
-    r.setProperty("--moon2", moon[1]);
-    r.setProperty("--moon3", moon[2]);
-    if (els.moon) els.moon.classList.toggle("tinted", play.moon !== "pink");
+    const MOON_FILTER = {
+      pink: "none",
+      green: "hue-rotate(100deg) saturate(1.4)",
+      blue: "hue-rotate(185deg) saturate(1.25)",
+      purple: "hue-rotate(-25deg) saturate(1.3)",
+      yellow: "hue-rotate(38deg) saturate(1.35) brightness(1.05)",
+      orange: "hue-rotate(18deg) saturate(1.4)",
+      white: "saturate(0) brightness(1.28)",
+      red: "hue-rotate(-12deg) saturate(1.55)",
+      teal: "hue-rotate(145deg) saturate(1.3)"
+    };
+    if (els.moon) els.moon.style.filter = MOON_FILTER[play.moon] || "none";
     if (play.sky && COLORS[play.sky]) {
       const sky = COLORS[play.sky];
       r.setProperty("--sky1", sky[0]);

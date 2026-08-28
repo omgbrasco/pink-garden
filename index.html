@@ -10,19 +10,22 @@
 <meta name="theme-color" content="#ff8fc5">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
-<link rel="apple-touch-icon" href="dumpling-icon.png?v=7">
-<link rel="manifest" href="manifest.webmanifest?v=7">
-<link rel="preload" as="image" href="garden.webp?v=7">
-<link rel="preload" as="image" href="dumpling-avatar.webp?v=7">
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="apple-touch-icon" href="dumpling-icon.png?v=8">
+<link rel="manifest" href="manifest.webmanifest?v=8">
+<link rel="preload" as="image" href="garden.webp?v=8">
+<link rel="preload" as="image" href="moon.webp?v=8">
+<link rel="preload" as="image" href="dumpling-avatar.webp?v=8">
+<link rel="stylesheet" href="styles.css?v=8">
 <title>Dumpling</title>
 </head>
 <body>
   <div id="app">
     <div id="stage">
       <div id="sky"></div>
-      <div id="garden"></div>
-      <div id="moon"></div>
+      <div id="garden">
+        <img class="scene" id="garden-art" src="garden.webp?v=8" alt="">
+        <img class="scene" id="moon-art" src="moon.webp?v=8" alt="">
+      </div>
       <div id="veil"></div>
       <div id="sneaky" aria-hidden="true"><div class="shaft"></div><div class="head"></div><div class="balls"><span></span><span></span></div></div>
       <header id="title"><h1>Dumpling</h1></header>
@@ -36,7 +39,7 @@
           <span class="dots" id="thought-dots" hidden><i></i><i></i><i></i></span>
         </div>
         <button type="button" id="buddy" aria-label="Dumpling">
-          <img src="dumpling-avatar.webp?v=7" alt="">
+          <img src="dumpling-avatar.webp?v=8" alt="">
         </button>
       </div>
     </div>
@@ -49,6 +52,6 @@
       </form>
     </section>
   </div>
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>
