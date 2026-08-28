@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 15;
+  const BUILD = 16;
   const PLAY_KEY = "dumpling-play-v1";
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -34,12 +34,17 @@
     garden: document.getElementById("garden-art"),
     mic: document.getElementById("mic"),
     tabbar: document.getElementById("tabbar"),
-    starsFar: document.getElementById("stars-far")
+    starsFar: document.getElementById("stars-far"),
+    said: document.getElementById("said"),
+    speech: document.getElementById("speech"),
+    speechText: document.getElementById("speech-text"),
+    speechDots: document.getElementById("speech-dots")
   };
 
   if (!els.log || !els.box || !els.form || !els.buddy || !els.stage || !els.sky) return;
 
   const play = loadPlay();
+  savePlay();
   let busy = false;
   let playing = false;
   let caught = 0;
@@ -82,10 +87,11 @@
         moon: COLORS[raw.moon] ? raw.moon : "pink",
         sky: COLORS[raw.sky] ? raw.sky : "",
         night: !!raw.night,
-        skin: raw.skin === "blue" ? "blue" : "pink"
+        skin: (!raw.homeBlue || raw.skin !== "pink") ? "blue" : "pink",
+        homeBlue: true
       };
     } catch (e) {
-      return { moon: "pink", sky: "", night: false, skin: "pink" };
+      return { moon: "pink", sky: "", night: false, skin: "blue", homeBlue: true };
     }
   }
   function savePlay() {
@@ -131,6 +137,15 @@
   }
 
   function add(who, text, extra) {
+    if (play.skin === "blue") {
+      if (extra === "typing") {
+        showSpeech("", true);
+        return { remove: function () { hideSpeech(); } };
+      }
+      if (who === "me") showSaid(text);
+      else showSpeech(text, false, 4200);
+      return { remove: function () {} };
+    }
     const d = document.createElement("div");
     d.className = "bubble " + who + (extra ? " " + extra : "");
     if (extra === "typing") {
@@ -147,7 +162,8 @@
     while (els.log.children.length > 5) els.log.removeChild(els.log.firstChild);
   }
   function hello() {
-    showThought("hi, i'm dumpling", false, 4500);
+    if (play.skin === "blue") showSpeech("hi, i'm dumpling", false, 4500);
+    else showThought("hi, i'm dumpling", false, 4500);
   }
   function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
 
@@ -168,11 +184,38 @@
     els.thoughtDots.hidden = true;
     els.thoughtText.textContent = "";
   }
+  function showSpeech(text, dots, ms) {
+    if (!els.speech) return;
+    clearTimeout(thoughtTimer);
+    els.speech.hidden = false;
+    if (dots) {
+      els.speechText.textContent = "";
+      els.speechDots.hidden = false;
+    } else {
+      els.speechDots.hidden = true;
+      els.speechText.textContent = text || "";
+    }
+    thoughtTimer = setTimeout(hideSpeech, ms || (dots ? 8000 : 2800));
+  }
+  function hideSpeech() {
+    if (!els.speech) return;
+    els.speech.hidden = true;
+    els.speechDots.hidden = true;
+    els.speechText.textContent = "";
+  }
+  function showSaid(text) {
+    if (!els.said) return;
+    els.said.hidden = false;
+    els.said.textContent = text;
+    clearTimeout(els.said._t);
+    els.said._t = setTimeout(function () { els.said.hidden = true; }, 3200);
+  }
   function armIdle() {
     clearTimeout(idleTimer);
     idleTimer = setTimeout(function () {
       if (!busy && !playing && document.activeElement !== els.box) {
-        showThought(pick(IDLE_THOUGHTS), false);
+        if (play.skin === "blue") showSpeech(pick(IDLE_THOUGHTS), false);
+        else showThought(pick(IDLE_THOUGHTS), false);
       }
       armIdle();
     }, 9000 + Math.random() * 4000);
@@ -182,7 +225,10 @@
     els.buddy.classList.remove("boop");
     void els.buddy.offsetWidth;
     els.buddy.classList.add("boop");
-    if (!playing) showThought("boop", false);
+    if (!playing) {
+      if (play.skin === "blue") showSpeech("boop", false);
+      else showThought("boop", false);
+    }
     try { navigator.vibrate && navigator.vibrate(8); } catch (e) {}
   }
 
@@ -332,6 +378,7 @@
     if (e.target.closest("#buddy") || e.target.closest("#hud")) return;
     if (e.target.classList && e.target.classList.contains("firefly")) return;
     if (document.activeElement === els.box) els.box.blur();
+    if (play.skin === "blue" && !playing) showSpeech("boop", false);
     sparkleAt(e.clientX, e.clientY);
   }
   function sparkleAt(x, y) {
@@ -390,7 +437,8 @@
     els.hudScore.textContent = "0/" + NEED;
     spawnFireflies(true);
     renderChips();
-    showThought("tap the glows", false);
+    if (play.skin === "blue") showSpeech("tap the glows", false);
+    else showThought("tap the glows", false);
   }
   function onCatch(e) {
     if (!playing) return;
