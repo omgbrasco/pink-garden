@@ -1,4 +1,4 @@
-const VER = "dumpling-v16";
+const VER = "dumpling-v17";
 self.addEventListener("install", e => { self.skipWaiting(); });
 self.addEventListener("activate", e => {
   e.waitUntil(

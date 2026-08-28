@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 16;
+  const BUILD = 17;
   const PLAY_KEY = "dumpling-play-v1";
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -38,7 +38,8 @@
     said: document.getElementById("said"),
     speech: document.getElementById("speech"),
     speechText: document.getElementById("speech-text"),
-    speechDots: document.getElementById("speech-dots")
+    speechDots: document.getElementById("speech-dots"),
+    wave: document.getElementById("wave")
   };
 
   if (!els.log || !els.box || !els.form || !els.buddy || !els.stage || !els.sky) return;
@@ -477,28 +478,62 @@
       endGame("");
     }
   }
-  function onMic() {
+  let rec = null;
+  let listening = false;
+  let heard = "";
+  function setListen(on) {
+    listening = on;
+    els.form.classList.toggle("listening", on);
+    els.mic.classList.toggle("live", on);
+    if (els.wave) els.wave.hidden = !on;
+    if (!on) heard = "";
+  }
+  function stopListen() {
+    setListen(false);
+    try { if (rec) rec.stop(); } catch (e) {}
+    rec = null;
+  }
+  function finishVoice() {
+    const t = (heard || "").trim();
+    stopListen();
+    if (t) sendText(t);
+  }
+  function onMic(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    if (listening) { finishVoice(); return; }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    heard = "";
+    setListen(true);
     if (!SR) {
-      els.box.focus();
-      showThought("mic is on the keyboard", false);
+      setTimeout(function () {
+        stopListen();
+        if (play.skin === "blue") showSpeech("keyboard mic, then send", false);
+        else showThought("keyboard mic, then send", false);
+        els.box.focus();
+      }, 900);
       return;
     }
     try {
-      const rec = new SR();
+      rec = new SR();
       rec.lang = "en-US";
-      rec.interimResults = false;
+      rec.interimResults = true;
+      rec.continuous = false;
       rec.maxAlternatives = 1;
-      els.mic.classList.add("live");
       rec.onresult = function (ev) {
-        const said = (ev.results[0] && ev.results[0][0] && ev.results[0][0].transcript) || "";
-        els.mic.classList.remove("live");
-        if (said.trim()) sendText(said.trim());
+        let said = "";
+        for (let i = 0; i < ev.results.length; i++) {
+          said += ev.results[i][0].transcript || "";
+        }
+        heard = said;
+        if (ev.results[ev.results.length - 1].isFinal) finishVoice();
       };
-      rec.onerror = rec.onend = function () { els.mic.classList.remove("live"); };
+      rec.onerror = function () { stopListen(); };
+      rec.onend = function () {
+        if (listening) finishVoice();
+      };
       rec.start();
     } catch (err) {
-      els.mic.classList.remove("live");
+      stopListen();
       els.box.focus();
     }
   }
