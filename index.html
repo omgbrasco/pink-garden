@@ -4,324 +4,49 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Dumpling">
 <meta name="theme-color" content="#ff8fc5">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="apple-touch-icon" href="dumpling-avatar.png?v=5">
-<link rel="manifest" href="manifest.webmanifest?v=5">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="apple-touch-icon" href="dumpling-avatar.png?v=6">
+<link rel="manifest" href="manifest.webmanifest?v=6">
+<link rel="stylesheet" href="styles.css?v=6">
 <title>Dumpling</title>
-<style>
-  :root {
-    /* Default moon tint matches the painted pink moon in garden.png */
-    --sky1:#f3e0ff; --sky2:#ffb3d9; --sky3:#ff7eb6; --sky4:#b06bff;
-    --moon1:#ffe6f5; --moon2:#ff8fc5; --moon3:#ff4fbf;
-    --moon-opacity: 0.35;
-    --chat-h: min(34vh, 280px);
-    --safe-b: env(safe-area-inset-bottom, 0px);
-    --safe-t: env(safe-area-inset-top, 0px);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; height: 100dvh; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; }
-  body { background: #1a0a22; color: #5a2450; touch-action: manipulation; user-select: none; }
-  #app { position: fixed; inset: 0; display: flex; flex-direction: column; }
-  #stage {
-    flex: 1; position: relative; overflow: hidden;
-    min-height: 0;
-  }
-  #sky {
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 50% 12%, var(--sky1) 0%, var(--sky2) 30%, var(--sky3) 62%, var(--sky4) 100%);
-    transition: background .5s ease;
-  }
-  /* Sized + placed over the painted moon in garden.png; hue blend keeps asset lighting */
-  #moon {
-    position: absolute;
-    top: calc(var(--safe-t) + 3%);
-    left: 50%;
-    width: min(56vw, 240px);
-    height: min(56vw, 240px);
-    margin-left: calc(min(56vw, 240px) / -2);
-    border-radius: 50%;
-    background: radial-gradient(circle at 38% 32%, var(--moon1) 0%, var(--moon2) 48%, var(--moon3) 72%, transparent 76%);
-    mix-blend-mode: soft-light;
-    opacity: var(--moon-opacity);
-    box-shadow: 0 0 48px color-mix(in srgb, var(--moon2) 55%, transparent);
-    animation: moonPulse 5s ease-in-out infinite;
-    z-index: 1;
-    pointer-events: none;
-    transition: opacity .45s ease, background .45s ease, box-shadow .45s ease;
-  }
-  #moon.tinted {
-    mix-blend-mode: hue;
-    opacity: 0.92;
-    box-shadow: 0 0 56px color-mix(in srgb, var(--moon2) 70%, transparent);
-  }
-  .star { position: absolute; width: 5px; height: 5px; background: #fff; border-radius: 50%; animation: twinkle 2.2s ease-in-out infinite; z-index: 1; }
-  .firefly { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #fff36a; box-shadow: 0 0 10px #ffe45c; animation: floaty 7s ease-in-out infinite; z-index: 2; }
-  #garden {
-    position: absolute; inset: 0;
-    background: url("garden.png?v=5") center bottom / cover no-repeat;
-    z-index: 0;
-  }
-  #veil {
-    position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    background: linear-gradient(180deg, #ff9ec830 0%, transparent 28%, #1a0a2244 100%);
-  }
-  #title {
-    position: absolute; top: calc(var(--safe-t) + 10px); left: 0; right: 0; z-index: 5;
-    text-align: center; pointer-events: none;
-  }
-  #title h1 {
-    font-size: 22px; font-weight: 800; letter-spacing: .02em;
-    color: #fff; text-shadow: 0 2px 0 #e85aa8, 0 8px 18px #ff4fbf66;
-  }
-  #title p { margin-top: 2px; font-size: 12px; color: #fff9; font-weight: 500; }
-  .pet {
-    position: absolute; z-index: 3; pointer-events: none;
-    font-size: clamp(22px, 6vw, 36px);
-    filter: drop-shadow(0 4px 0 #ff4fbf33);
-  }
-  .frog { left: 5%; bottom: 38%; animation: hop 2.4s ease-in-out infinite; }
-  .frog2 { right: 6%; bottom: 42%; animation: hop 2.7s ease-in-out infinite .4s; }
-  .kit { left: 12%; bottom: 30%; animation: sway 3.2s ease-in-out infinite; }
-  .pup { right: 10%; bottom: 30%; animation: wag 1.1s ease-in-out infinite; }
-  #buddy {
-    position: absolute; left: 50%; bottom: 8%;
-    transform: translateX(-50%);
-    width: min(46vw, 200px); z-index: 4;
-    cursor: pointer;
-    animation: idle 2.8s ease-in-out infinite;
-  }
-  #buddy.boop {
-    animation: boop .45s ease;
-  }
-  #buddy .ring {
-    border-radius: 50%;
-    padding: 6px;
-    background: linear-gradient(145deg, #ffe6f5, #ff8fc5);
-    box-shadow: 0 14px 28px #ff4fbf55, 0 0 0 3px #fff6;
-  }
-  #buddy img {
-    display: block; width: 100%; aspect-ratio: 1; object-fit: cover;
-    border-radius: 50%; background: #ffd6ea;
-  }
-  #chat {
-    position: relative; z-index: 8;
-    height: var(--chat-h);
-    flex-shrink: 0;
-    background: rgba(255, 244, 250, .94);
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid #ffb3d9;
-    border-radius: 22px 22px 0 0;
-    display: flex; flex-direction: column;
-    padding: 10px 12px calc(10px + var(--safe-b));
-    box-shadow: 0 -8px 28px #ff4fbf22;
-  }
-  #log { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; font-size: 15px; padding: 2px 4px 8px; }
-  .bubble { margin: 6px 0; max-width: 86%; padding: 10px 13px; border-radius: 18px; line-height: 1.35; word-wrap: break-word; }
-  .me { margin-left: auto; background: #ffd0ea; color: #6b2458; border-bottom-right-radius: 6px; }
-  .bot { background: #fff; color: #7a2d66; box-shadow: 0 2px 0 #ffb3d9; border-bottom-left-radius: 6px; }
-  form { display: flex; gap: 8px; align-items: center; }
-  input {
-    flex: 1; border: 0; border-radius: 999px; padding: 13px 16px;
-    font-size: 16px; background: #fff; color: #5a2450; outline: none;
-    box-shadow: inset 0 0 0 1px #ffd0ea;
-  }
-  button {
-    border: 0; border-radius: 999px; padding: 13px 18px; font-size: 16px; font-weight: 700;
-    background: #ff5eac; color: #fff; box-shadow: 0 3px 0 #d63d8a;
-  }
-  button:active { transform: translateY(2px); box-shadow: 0 1px 0 #d63d8a; }
-  @keyframes idle { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-12px); } }
-  @keyframes boop {
-    0% { transform: translateX(-50%) scale(1); }
-    40% { transform: translateX(-50%) scale(1.08) translateY(-6px); }
-    100% { transform: translateX(-50%) scale(1); }
-  }
-  @keyframes hop { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-16px) rotate(-8deg); } 55% { transform: translateY(0); } }
-  @keyframes sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(8deg); } }
-  @keyframes wag { 0%,100% { transform: rotate(-12deg); } 50% { transform: rotate(14deg); } }
-  @keyframes twinkle { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
-  @keyframes floaty { 0%,100% { transform: translateY(0); opacity: .65; } 50% { transform: translateY(-22px); opacity: 1; } }
-  @keyframes moonPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
-</style>
 </head>
 <body>
   <div id="app">
     <div id="stage">
       <div id="sky"></div>
-      <div id="moon"></div>
       <div id="garden"></div>
+      <div id="moon"></div>
       <div id="veil"></div>
-      <div id="title"><h1>Dumpling</h1><p>your cozy little garden</p></div>
-      <div class="pet frog">🐸</div>
-      <div class="pet frog2">🐸</div>
-      <div class="pet kit">🐱</div>
-      <div class="pet pup">🐶</div>
-      <div id="buddy" role="button" aria-label="Dumpling" onclick="boop()"><div class="ring"><img src="dumpling-avatar.png?v=5" alt="Dumpling"></div></div>
+      <div id="sneaky" aria-hidden="true"><div class="shaft"></div><div class="head"></div><div class="balls"><span></span><span></span></div></div>
+      <header id="title"><h1>Dumpling</h1></header>
+      <div id="hud" hidden>
+        <span id="hud-score">0/8</span>
+        <button type="button" id="hud-done">Done</button>
+      </div>
+      <div id="buddy-wrap">
+        <div id="thought" hidden>
+          <span id="thought-text"></span>
+          <span class="dots" id="thought-dots" hidden><i></i><i></i><i></i></span>
+        </div>
+        <button type="button" id="buddy" aria-label="Dumpling">
+          <img src="dumpling-avatar.png?v=6" alt="">
+        </button>
+      </div>
     </div>
     <section id="chat">
       <div id="log"></div>
-      <form onsubmit="return send(event)">
-        <input id="box" autocomplete="off" enterkeyhint="send" placeholder='Try “make the moon green”'>
+      <div id="chips"></div>
+      <form id="form" autocomplete="off">
+        <input id="box" enterkeyhint="send" placeholder="Say hi, or make the moon green" maxlength="140">
         <button type="submit">Send</button>
       </form>
     </section>
   </div>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js?v=5").then(reg => {
-      reg.update();
-    }).catch(() => {});
-  }
-  const KEY = "dumpling-notebook-v4";
-  const COLORS = {
-    green:["#d9ffd6","#7dff8a","#1fbf4a"],
-    purple:["#f0d4ff","#c58cff","#9b5cff"],
-    pink:["#ffe6f5","#ff8fc5","#ff4fbf"],
-    blue:["#d6f0ff","#7ecbff","#3a8dff"],
-    yellow:["#fff7c2","#ffe45c","#f5c400"],
-    orange:["#ffe0c2","#ffb347","#ff7a1a"],
-    white:["#ffffff","#f2f2f2","#d9d9d9"],
-    red:["#ffd6d6","#ff6b6b","#e03131"],
-    teal:["#d6fff8","#5ef0d0","#12b89a"]
-  };
-  const book = JSON.parse(localStorage.getItem(KEY) || '{"facts":[],"visits":0,"chats":0,"garden":{}}');
-  book.visits += 1;
-  if (!book.garden) book.garden = {};
-  applyGarden(book.garden);
-  save();
-  const logEl = document.getElementById("log");
-  const box = document.getElementById("box");
-  const moonEl = document.getElementById("moon");
-  const buddy = document.getElementById("buddy");
-  hello();
-
-  function save() { localStorage.setItem(KEY, JSON.stringify(book)); }
-  function add(who, text) {
-    const d = document.createElement("div");
-    d.className = "bubble " + who;
-    d.textContent = text;
-    logEl.appendChild(d);
-    logEl.scrollTop = logEl.scrollHeight;
-  }
-  function hello() {
-    add("bot", "Hey! I'm Dumpling. Welcome to your pink garden. I can recolor the moon or sky, and I'll remember what you like.");
-    if (book.garden.moon && book.garden.moon !== "pink") {
-      add("bot", "Your moon is still " + book.garden.moon + " from last time. Looking good.");
-    }
-  }
-  function boop() {
-    // Soft bounce only - no chat spam from taps
-    buddy.classList.remove("boop");
-    void buddy.offsetWidth;
-    buddy.classList.add("boop");
-  }
-  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-  function colorOf(s) {
-    for (const name of Object.keys(COLORS)) if (s.includes(name)) return name;
-    return null;
-  }
-  function applyGarden(g) {
-    const r = document.documentElement.style;
-    const customMoon = g.moon && g.moon !== "pink";
-    if (g.moon && COLORS[g.moon]) {
-      r.setProperty("--moon1", COLORS[g.moon][0]);
-      r.setProperty("--moon2", COLORS[g.moon][1]);
-      r.setProperty("--moon3", COLORS[g.moon][2]);
-    } else {
-      r.setProperty("--moon1", COLORS.pink[0]);
-      r.setProperty("--moon2", COLORS.pink[1]);
-      r.setProperty("--moon3", COLORS.pink[2]);
-    }
-    if (moonEl) moonEl.classList.toggle("tinted", !!customMoon);
-    if (g.sky && COLORS[g.sky]) {
-      r.setProperty("--sky1", COLORS[g.sky][0]);
-      r.setProperty("--sky2", COLORS[g.sky][1]);
-      r.setProperty("--sky3", COLORS[g.sky][1]);
-      r.setProperty("--sky4", COLORS[g.sky][2]);
-    }
-  }
-  function gardenAct(t) {
-    const s = t.toLowerCase();
-    const col = colorOf(s);
-    if (!col) return null;
-    if (/moon/.test(s)) {
-      book.garden.moon = col; applyGarden(book.garden); save();
-      return "Moon's " + col + " now. I'll keep it that way for next time.";
-    }
-    if (/sky|background|garden/.test(s)) {
-      book.garden.sky = col; applyGarden(book.garden); save();
-      return "Sky shifted to " + col + ". Soft and dreamy.";
-    }
-    if (/make|change|turn|set/.test(s)) {
-      book.garden.moon = col; applyGarden(book.garden); save();
-      return "Moon's " + col + ". If you meant the sky, just say make the sky " + col + ".";
-    }
-    return null;
-  }
-  function reply(t) {
-    const s = t.toLowerCase();
-    book.chats += 1;
-    const acted = gardenAct(t);
-    if (acted) { remember("garden: " + acted); return acted; }
-    if (/reset|default|original/.test(s)) {
-      book.garden = { moon: "pink" }; applyGarden(book.garden); save();
-      return "Back to the soft pink moon, just like the garden painting.";
-    }
-    if (/\b(i'm|i am|im)\s+([a-z][a-z]+)/i.test(t)) {
-      const name = t.match(/\b(?:i'm|i am|im)\s+([a-z][a-z]+)/i)[1];
-      remember("your name might be " + name);
-      return "Nice to meet you, " + name + ". I'm Dumpling, always here in the garden.";
-    }
-    if (/who are you|what are you|agent|bot|llm|ai/.test(s)) {
-      return "Just Dumpling on this phone. I keep your garden cozy, recolor the sky, and remember little things you tell me.";
-    }
-    if (/hello|hi\b|hey|yo\b/.test(s)) {
-      return "Hey you. Want to try “make the moon green”? Or just say whatever's on your mind.";
-    }
-    if (/thank|thanks|ty\b|love you|cute|adorable/.test(s)) {
-      return pick([
-        "Aww, you're sweet. The garden likes you too.",
-        "Anytime. I'm happiest when you're here.",
-        "Right back at you. Soft glow, soft vibes."
-      ]);
-    }
-    if (/help|what can|how do|commands?/.test(s)) {
-      return "Try things like “make the moon teal”, “make the sky blue”, or “reset”. I save your colors for next time.";
-    }
-    remember("you said: " + t.slice(0,70));
-    return pick([
-      "Got it. Tucked that away.",
-      "Mmm, noted. The garden heard you.",
-      "Keeping that close. Tell me more anytime."
-    ]);
-  }
-  function remember(fact) {
-    if (!book.facts.includes(fact)) { book.facts.push(fact); if (book.facts.length > 24) book.facts.shift(); }
-    save();
-  }
-  function send(e) {
-    e.preventDefault();
-    const t = box.value.trim();
-    if (!t) return false;
-    add("me", t); box.value = "";
-    setTimeout(() => add("bot", reply(t)), 220);
-    return false;
-  }
-  const sky = document.getElementById("sky");
-  for (let i = 0; i < 24; i++) {
-    const s = document.createElement("div"); s.className = "star";
-    s.style.left = Math.random()*100+"%"; s.style.top = Math.random()*36+"%";
-    s.style.animationDelay = (Math.random()*2)+"s"; sky.appendChild(s);
-  }
-  for (let i = 0; i < 8; i++) {
-    const f = document.createElement("div"); f.className = "firefly";
-    f.style.left = 10+Math.random()*80+"%"; f.style.bottom = 28+Math.random()*28+"%";
-    f.style.animationDelay = (Math.random()*4)+"s";
-    document.getElementById("stage").appendChild(f);
-  }
-</script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

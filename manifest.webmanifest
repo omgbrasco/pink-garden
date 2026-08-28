@@ -1,9 +1,19 @@
 {
   "name": "Dumpling",
   "short_name": "Dumpling",
-  "start_url": "./?v=4",
+  "description": "A tiny pink garden.",
+  "start_url": "./?v=6",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ff9ec8",
-  "theme_color": "#c58cff",
-  "icons": [{"src":"dumpling-avatar.png?v=4","sizes":"512x512","type":"image/png","purpose":"any maskable"}]
+  "theme_color": "#ff8fc5",
+  "icons": [
+    {
+      "src": "dumpling-avatar.png?v=6",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
