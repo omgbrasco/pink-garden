@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 12;
+  const BUILD = 13;
   const PLAY_KEY = "dumpling-play-v1";
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -57,6 +57,12 @@
   els.stage.addEventListener("click", onStage);
   els.hudDone.addEventListener("click", function () { if (playing) endGame("Okay, pausing. The glows will wait."); });
   els.chips.addEventListener("click", onChip);
+  els.box.addEventListener("focus", function () { document.body.classList.add("chatting"); });
+  els.box.addEventListener("blur", function () {
+    setTimeout(function () {
+      if (document.activeElement !== els.box) document.body.classList.remove("chatting");
+    }, 180);
+  });
   window.addEventListener("resize", fitViewport);
   window.addEventListener("orientationchange", fitViewport);
   if (window.visualViewport) {
@@ -128,15 +134,19 @@
       d.textContent = text;
     }
     els.log.appendChild(d);
+    trimLog();
     els.log.scrollTop = els.log.scrollHeight;
     return d;
   }
+  function trimLog() {
+    while (els.log.children.length > 5) els.log.removeChild(els.log.firstChild);
+  }
   function hello() {
-    add("bot", "Hey. I'm Dumpling. This is your garden. Poke me, catch fireflies, or tell me to change the moon.");
+    showThought("hi, i'm dumpling", false, 4500);
   }
   function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
 
-  function showThought(text, dots) {
+  function showThought(text, dots, ms) {
     clearTimeout(thoughtTimer);
     els.thought.hidden = false;
     if (dots) {
@@ -146,7 +156,7 @@
       els.thoughtDots.hidden = true;
       els.thoughtText.textContent = text || "";
     }
-    thoughtTimer = setTimeout(hideThought, dots ? 8000 : 2200);
+    thoughtTimer = setTimeout(hideThought, ms || (dots ? 8000 : 2200));
   }
   function hideThought() {
     els.thought.hidden = true;
@@ -315,6 +325,7 @@
   function onStage(e) {
     if (e.target.closest("#buddy") || e.target.closest("#hud")) return;
     if (e.target.classList && e.target.classList.contains("firefly")) return;
+    if (document.activeElement === els.box) els.box.blur();
     sparkleAt(e.clientX, e.clientY);
   }
   function sparkleAt(x, y) {
@@ -348,7 +359,7 @@
       f.className = "firefly" + (playMode ? " play" : "");
       f.setAttribute("aria-label", "firefly");
       f.style.left = 8 + Math.random() * 84 + "%";
-      f.style.bottom = (playMode ? 34 : 26) + Math.random() * (playMode ? 26 : 32) + "%";
+      f.style.bottom = (playMode ? 38 : 32) + Math.random() * (playMode ? 28 : 34) + "%";
       f.style.animationDelay = Math.random() * 4 + "s";
       if (playMode) f.addEventListener("click", onCatch);
       els.stage.appendChild(f);
