@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 11;
+  const BUILD = 12;
   const PLAY_KEY = "dumpling-play-v1";
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -50,17 +50,18 @@
   renderChips();
   armIdle();
   registerWorker();
-  fitKeyboard();
+  fitViewport();
 
   els.form.addEventListener("submit", onSubmit);
   els.buddy.addEventListener("click", boop);
   els.stage.addEventListener("click", onStage);
   els.hudDone.addEventListener("click", function () { if (playing) endGame("Okay, pausing. The glows will wait."); });
   els.chips.addEventListener("click", onChip);
-  window.addEventListener("resize", fitKeyboard);
+  window.addEventListener("resize", fitViewport);
+  window.addEventListener("orientationchange", fitViewport);
   if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", fitKeyboard);
-    window.visualViewport.addEventListener("scroll", fitKeyboard);
+    window.visualViewport.addEventListener("resize", fitViewport);
+    window.visualViewport.addEventListener("scroll", fitViewport);
   }
 
   function loadPlay() {
@@ -385,10 +386,20 @@
     if (msg) add("bot", msg);
   }
 
-  function fitKeyboard() {
+  function fitViewport() {
     const vv = window.visualViewport;
-    if (!vv) return;
-    const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    const inner = window.innerHeight;
+    const vis = vv ? vv.height : inner;
+    const offset = vv ? (vv.offsetTop || 0) : 0;
+    const kb = Math.max(0, inner - vis - offset);
+    let h = Math.max(inner, Math.round(vis + offset));
+    const standalone = window.navigator.standalone === true ||
+      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+    if (!kb && window.screen && screen.height) {
+      const gap = screen.height - h;
+      if (gap > 8 && (gap < 120 || standalone)) h = screen.height;
+    }
+    document.documentElement.style.setProperty("--app-h", h + "px");
     document.documentElement.style.setProperty("--kb", kb + "px");
   }
 

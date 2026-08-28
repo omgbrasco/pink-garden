@@ -9,6 +9,7 @@
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
   --kb: 0px;
+  --app-h: 100lvh;
 }
 /* iPhone 13 ~390x844. 16 Pro ~402x874. Pro Max ~440x956. Safe-area env() covers notch vs island. */
 @media (min-height: 860px) {
@@ -33,17 +34,28 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body {
   height: 100%;
-  height: 100dvh;
+  height: -webkit-fill-available;
+  height: 100lvh;
+  height: var(--app-h, 100lvh);
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
 }
 body {
-  background: #1a0a22;
+  background: #ff9ec8;
   color: #5a2450;
   touch-action: manipulation;
   user-select: none;
 }
-#app { position: fixed; inset: 0; display: flex; flex-direction: column; }
+#app {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%;
+  height: var(--app-h, 100lvh);
+  min-height: 100%;
+  min-height: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+}
 #stage { flex: 1; position: relative; overflow: hidden; min-height: 0; }
 #sky {
   position: absolute; inset: 0;
@@ -174,6 +186,7 @@ body.night #veil {
   border-radius: 20px 20px 0 0;
   display: flex; flex-direction: column;
   padding: 4px 12px calc(10px + var(--safe-b) + var(--kb));
+  background-clip: padding-box;
   box-shadow: 0 -12px 40px rgba(90, 36, 80, .12);
 }
 #grabber {
