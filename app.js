@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 8;
+  const BUILD = 9;
   const PLAY_KEY = "dumpling-play-v1";
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
