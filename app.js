@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 13;
+  const BUILD = 14;
   const PLAY_KEY = "dumpling-play-v1";
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -317,6 +317,7 @@
       b.type = "button";
       b.textContent = items[i][0];
       b.setAttribute("data-say", items[i][1]);
+      b.tabIndex = -1;
       els.chips.appendChild(b);
     }
   }
@@ -399,19 +400,14 @@
 
   function fitViewport() {
     const vv = window.visualViewport;
-    const inner = window.innerHeight;
-    const vis = vv ? vv.height : inner;
+    const vis = vv ? vv.height : window.innerHeight;
     const offset = vv ? (vv.offsetTop || 0) : 0;
-    const kb = Math.max(0, inner - vis - offset);
-    let h = Math.max(inner, Math.round(vis + offset));
-    const standalone = window.navigator.standalone === true ||
-      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
-    if (!kb && window.screen && screen.height) {
-      const gap = screen.height - h;
-      if (gap > 8 && (gap < 120 || standalone)) h = screen.height;
-    }
-    document.documentElement.style.setProperty("--app-h", h + "px");
+    const full = (window.screen && screen.height) ? screen.height : window.innerHeight;
+    const kb = Math.max(0, Math.round(full - vis - offset));
+    try { window.scrollTo(0, 0); } catch (e) {}
+    document.documentElement.style.setProperty("--app-h", full + "px");
     document.documentElement.style.setProperty("--kb", kb + "px");
+    document.body.classList.toggle("kb", kb > 48);
   }
 
   function registerWorker() {
