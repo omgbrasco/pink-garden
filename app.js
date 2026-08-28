@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 9;
+  const BUILD = 10;
   const PLAY_KEY = "dumpling-play-v1";
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -53,6 +53,7 @@
 
   els.form.addEventListener("submit", onSubmit);
   els.buddy.addEventListener("click", boop);
+  els.stage.addEventListener("click", onStage);
   els.hudDone.addEventListener("click", function () { if (playing) endGame("Okay, pausing. The glows will wait."); });
   els.chips.addEventListener("click", onChip);
   window.addEventListener("resize", fitKeyboard);
@@ -259,10 +260,18 @@
   }
 
   function renderChips() {
+    const moonColors = ["green", "teal", "blue", "yellow", "purple"];
+    let next = "green";
+    for (let i = 0; i < moonColors.length; i++) {
+      if (moonColors[i] === play.moon) {
+        next = moonColors[(i + 1) % moonColors.length];
+        break;
+      }
+    }
     const items = playing
       ? [["I'm done", "done"]]
       : [
-          ["Make the moon green", "make the moon green"],
+          ["Moon " + next, "make the moon " + next],
           ["Catch fireflies", "catch fireflies"],
           [play.night ? "Make it morning" : "Make it night", play.night ? "make it morning" : "make it night"]
         ];
@@ -276,6 +285,23 @@
     }
   }
 
+
+  function onStage(e) {
+    if (e.target.closest("#buddy") || e.target.closest("#hud")) return;
+    if (e.target.classList && e.target.classList.contains("firefly")) return;
+    sparkleAt(e.clientX, e.clientY);
+  }
+  function sparkleAt(x, y) {
+    for (let i = 0; i < 5; i++) {
+      const s = document.createElement("div");
+      s.className = "sparkle";
+      s.style.left = (x + (Math.random() * 28 - 14)) + "px";
+      s.style.top = (y + (Math.random() * 20 - 10)) + "px";
+      s.style.animationDelay = (i * 0.04) + "s";
+      document.body.appendChild(s);
+      setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 700);
+    }
+  }
   function spawnStars() {
     els.sky.querySelectorAll(".star").forEach(function (n) { n.remove(); });
     for (let i = 0; i < 22; i++) {
