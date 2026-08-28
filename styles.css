@@ -63,7 +63,7 @@ body.night #sky { filter: brightness(.55) saturate(.85); }
 .firefly.pop { animation: pop .28s ease forwards; }
 #garden {
   position: absolute; inset: 0;
-  background: url("garden.png?v=6") center bottom / cover no-repeat;
+  background: url("garden.webp?v=7") center bottom / cover no-repeat;
   z-index: 0;
 }
 #veil {
