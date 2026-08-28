@@ -3,10 +3,32 @@
   --moon1:#ffe6f5; --moon2:#ff8fc5; --moon3:#ff4fbf;
   --moon-size: min(32vw, 128px);
   --wash: #ff9ec830;
-  --chat-h: min(36vh, 300px);
+  --chat-h: min(36vh, 280px);
+  --buddy-w: min(52vw, 200px);
+  --title-size: 20px;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
   --kb: 0px;
+}
+/* iPhone 13 ~390x844. 16 Pro ~402x874. Pro Max ~440x956. Safe-area env() covers notch vs island. */
+@media (min-height: 860px) {
+  :root {
+    --chat-h: min(33vh, 318px);
+    --buddy-w: min(48vw, 220px);
+    --title-size: 22px;
+  }
+}
+@media (min-width: 428px) {
+  :root {
+    --buddy-w: min(44vw, 236px);
+    --chat-h: min(32vh, 340px);
+  }
+}
+@media (max-height: 720px) {
+  :root {
+    --chat-h: min(38vh, 240px);
+    --buddy-w: min(42vw, 168px);
+  }
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body {
@@ -105,7 +127,7 @@ body.night #veil {
 #buddy-wrap {
   position: absolute; left: 50%; bottom: 3%;
   transform: translateX(-50%);
-  width: min(52vw, 210px); z-index: 4;
+  width: var(--buddy-w); z-index: 4;
 }
 #thought {
   position: absolute; left: 50%; bottom: 96%;
@@ -218,3 +240,7 @@ form > button:active { opacity: .7; }
   0% { transform: scale(.3); opacity: 1; }
   100% { transform: scale(1.8) translateY(-22px); opacity: 0; }
 }
+
+body.skin-blue { --wash: #1a2a5844; }
+body.skin-blue #title h1 { text-shadow: 0 1px 2px #0a1028, 0 8px 18px #1a3a8a66; }
+#title h1 { font-size: var(--title-size); }

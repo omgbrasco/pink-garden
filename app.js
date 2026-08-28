@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 10;
+  const BUILD = 11;
   const PLAY_KEY = "dumpling-play-v1";
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -30,7 +30,8 @@
     hudScore: document.getElementById("hud-score"),
     hudDone: document.getElementById("hud-done"),
     stage: document.getElementById("stage"),
-    sky: document.getElementById("sky")
+    sky: document.getElementById("sky"),
+    garden: document.getElementById("garden-art")
   };
 
   if (!els.log || !els.box || !els.form || !els.buddy || !els.stage || !els.sky) return;
@@ -68,10 +69,11 @@
       return {
         moon: COLORS[raw.moon] ? raw.moon : "pink",
         sky: COLORS[raw.sky] ? raw.sky : "",
-        night: !!raw.night
+        night: !!raw.night,
+        skin: raw.skin === "blue" ? "blue" : "pink"
       };
     } catch (e) {
-      return { moon: "pink", sky: "", night: false };
+      return { moon: "pink", sky: "", night: false, skin: "pink" };
     }
   }
   function savePlay() {
@@ -90,7 +92,15 @@
       red: "hue-rotate(-12deg) saturate(1.55)",
       teal: "hue-rotate(145deg) saturate(1.3)"
     };
-    if (els.moon) els.moon.style.filter = MOON_FILTER[play.moon] || "none";
+    const blue = play.skin === "blue";
+    if (els.garden) {
+      els.garden.src = blue ? ("assets/skin-blue.webp?v=" + BUILD) : ("assets/garden.webp?v=" + BUILD);
+    }
+    if (els.moon) {
+      els.moon.style.display = blue ? "none" : "";
+      els.moon.style.filter = blue ? "none" : (MOON_FILTER[play.moon] || "none");
+    }
+    document.body.classList.toggle("skin-blue", blue);
     if (play.sky && COLORS[play.sky]) {
       const sky = COLORS[play.sky];
       r.setProperty("--sky1", sky[0]);
@@ -177,6 +187,14 @@
       endGame("Okay, pausing. The glows will wait.");
       return null;
     }
+    if (/blue garden|night garden|starry|blue skin/.test(s)) {
+      play.skin = "blue"; savePlay(); applyPlay();
+      return "Blue night garden. Tap around. Say pink garden anytime.";
+    }
+    if (/pink garden|default garden|regular garden/.test(s)) {
+      play.skin = "pink"; savePlay(); applyPlay();
+      return "Pink garden's back. I can paint the moon here.";
+    }
     if (/catch|firefl|play|game/.test(s)) {
       startGame();
       return "Tap the little glows. I'll cheer.";
@@ -190,7 +208,7 @@
       return "Good morning, garden.";
     }
     if (/reset|default|original|undo/.test(s)) {
-      play.moon = "pink"; play.sky = ""; play.night = false;
+      play.moon = "pink"; play.sky = ""; play.night = false; play.skin = "pink";
       savePlay(); applyPlay();
       return "Pink moon, fresh garden.";
     }
@@ -270,11 +288,18 @@
     }
     const items = playing
       ? [["I'm done", "done"]]
-      : [
-          ["Moon " + next, "make the moon " + next],
-          ["Catch fireflies", "catch fireflies"],
-          [play.night ? "Make it morning" : "Make it night", play.night ? "make it morning" : "make it night"]
-        ];
+      : (play.skin === "blue"
+        ? [
+            ["Pink garden", "pink garden"],
+            ["Catch fireflies", "catch fireflies"],
+            [play.night ? "Make it morning" : "Make it night", play.night ? "make it morning" : "make it night"]
+          ]
+        : [
+            ["Moon " + next, "make the moon " + next],
+            ["Catch fireflies", "catch fireflies"],
+            [play.night ? "Make it morning" : "Make it night", play.night ? "make it morning" : "make it night"],
+            ["Blue garden", "blue garden"]
+          ]);
     els.chips.innerHTML = "";
     for (let i = 0; i < items.length; i++) {
       const b = document.createElement("button");
