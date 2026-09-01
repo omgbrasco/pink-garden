@@ -6,8 +6,8 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=20** (`BUILD = 20`, SW `dumpling-v20`)
-- Last ship: PWA hardening. `sw.js` now precaches the core art + html/css/js on install instead of only caching images opportunistically, so the app survives a flaky network and can open fully offline. Manifest `background_color` now matches the blue garden (was pink, caused a wrong-color flash on launch).
+- Cache: **v=21** (`BUILD = 21`, SW `dumpling-v21`)
+- Last ship: locked the app down so it feels like a fixed native screen on exactly the two phones that use it. No pinch-zoom, no double-tap-zoom, no page bounce/rubber-band. `#log` and `#panel` still scroll internally but `overscroll-behavior: contain` stops that scroll from dragging the outer layout.
 
 ## What she sees (default = blue garden)
 

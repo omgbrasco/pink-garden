@@ -38,6 +38,7 @@ html, body {
   height: 100lvh;
   height: var(--app-h, 100lvh);
   overflow: hidden;
+  overscroll-behavior: none;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
 }
 body {
@@ -128,6 +129,7 @@ body.skin-blue #info-btn { background: rgba(255,255,255,.16); }
   -webkit-backdrop-filter: blur(14px);
   padding: calc(var(--safe-t) + 16px) 18px calc(var(--safe-b) + 16px);
   overflow-y: auto; -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 #panel[hidden] { display: none; }
 #panel-inner { max-width: 480px; margin: 0 auto; color: #fff; }
@@ -216,6 +218,7 @@ body.kb #chat { bottom: var(--kb, 0px); }
 #log, #chips, form { pointer-events: auto; }
 #log {
   max-height: 18vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   font-size: 15px; padding: 8px 2px 8px;
   display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;
   mask-image: linear-gradient(to bottom, transparent 0%, #000 22%);

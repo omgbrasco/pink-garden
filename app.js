@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 20;
+  const BUILD = 21;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -86,6 +86,9 @@
       if (document.activeElement !== els.box) document.body.classList.remove("chatting");
     }, 180);
   });
+  document.addEventListener("gesturestart", function (e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener("gesturechange", function (e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener("touchmove", function (e) { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
   window.addEventListener("resize", fitViewport);
   window.addEventListener("orientationchange", fitViewport);
   if (window.visualViewport) {

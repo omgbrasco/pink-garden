@@ -18,6 +18,7 @@ Read `docs/HANDOFF.md` before you touch code. Read `docs/REVERSING.md` before an
 - Keep it cute, simple, safe, playful.
 - The joke egg was removed (v18, Braedon's call). Do not add it or any other NSFW back.
 - iPhone 13 first, then iPhone 16 Pro. Safe areas, `viewport-fit=cover`, home-screen capable.
+- Pinch-zoom, double-tap-zoom, and page rubber-band/bounce are deliberately killed (viewport meta + CSS `overscroll-behavior` + JS `gesturestart`/multi-touch guards in `app.js`). Do not remove these; she and Braedon are the only two users and it should feel like a fixed native screen, not a webpage.
 - Do not use Cursor Cloud Agents for this repo. Edit files here and push `master`.
 
 ## Art
@@ -47,7 +48,7 @@ docs/        # handoff for humans and coding agents
 3. `git push origin master` (never `--force`).
 4. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=20**.
+Current cache as of this handoff: **v=21**.
 
 ## Product rules that already bit us
 

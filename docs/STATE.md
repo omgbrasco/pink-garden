@@ -6,7 +6,7 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
-Cache **v20** (`BUILD = 20`, SW `dumpling-v20`). Last ship: PWA hardening. Core art is precached on install (no more broken-image icon if a fetch is slow/flaky), the app can now open fully offline (html/css/js get cached too, not just images), and the launch splash color matches the blue garden instead of flashing pink. No git tags yet.
+Cache **v21** (`BUILD = 21`, SW `dumpling-v21`). Last ship: locked down to feel native on the two phones that use it (Braedon's 16 Pro, her 13). Pinch-zoom and double-tap-zoom killed, page rubber-band/bounce killed, inner scroll areas contained so they can't drag the whole layout. No git tags yet.
 
 Default skin is the blue garden. Pink garden is opt-in via Glow.
 
