@@ -6,7 +6,7 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
-Cache **v18** (`BUILD = 18`, SW `dumpling-v18`). Last ship: joke egg (`#sneaky`) removed. No git tags yet.
+Cache **v19** (`BUILD = 19`, SW `dumpling-v19`). Last ship: info panel ("How I work" + full chat history), bubbles no longer auto-vanish before she can read them. No git tags yet.
 
 Default skin is the blue garden. Pink garden is opt-in via Glow.
 

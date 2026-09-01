@@ -1,7 +1,9 @@
 (function () {
   "use strict";
-  const BUILD = 18;
+  const BUILD = 19;
   const PLAY_KEY = "dumpling-play-v1";
+  const HIST_KEY = "dumpling-chat-v1";
+  const HIST_MAX = 300;
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
     purple: ["#f0d4ff", "#c58cff", "#9b5cff"],
@@ -39,13 +41,18 @@
     speech: document.getElementById("speech"),
     speechText: document.getElementById("speech-text"),
     speechDots: document.getElementById("speech-dots"),
-    wave: document.getElementById("wave")
+    wave: document.getElementById("wave"),
+    infoBtn: document.getElementById("info-btn"),
+    panel: document.getElementById("panel"),
+    panelClose: document.getElementById("panel-close"),
+    panelHistory: document.getElementById("panel-history")
   };
 
   if (!els.log || !els.box || !els.form || !els.buddy || !els.stage || !els.sky) return;
 
   const play = loadPlay();
   savePlay();
+  const history = loadHistory();
   let busy = false;
   let playing = false;
   let caught = 0;
@@ -68,6 +75,11 @@
   els.chips.addEventListener("click", onChip);
   if (els.tabbar) els.tabbar.addEventListener("click", onTab);
   if (els.mic) els.mic.addEventListener("click", onMic);
+  if (els.infoBtn) els.infoBtn.addEventListener("click", openPanel);
+  if (els.panelClose) els.panelClose.addEventListener("click", closePanel);
+  if (els.speech) els.speech.addEventListener("click", function (e) { e.stopPropagation(); hideSpeech(); });
+  if (els.said) els.said.addEventListener("click", function (e) { e.stopPropagation(); els.said.hidden = true; clearTimeout(els.said._t); });
+  if (els.thought) els.thought.addEventListener("click", function (e) { e.stopPropagation(); hideThought(); });
   els.box.addEventListener("focus", function () { document.body.classList.add("chatting"); });
   els.box.addEventListener("blur", function () {
     setTimeout(function () {
@@ -97,6 +109,47 @@
   }
   function savePlay() {
     try { localStorage.setItem(PLAY_KEY, JSON.stringify(play)); } catch (e) {}
+  }
+  function loadHistory() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(HIST_KEY) || "[]");
+      return Array.isArray(raw) ? raw : [];
+    } catch (e) { return []; }
+  }
+  function saveHistory() {
+    try { localStorage.setItem(HIST_KEY, JSON.stringify(history)); } catch (e) {}
+  }
+  function pushHistory(who, text) {
+    history.push({ who: who, text: text, t: Date.now() });
+    if (history.length > HIST_MAX) history.splice(0, history.length - HIST_MAX);
+    saveHistory();
+  }
+  function renderPanelHistory() {
+    if (!els.panelHistory) return;
+    els.panelHistory.innerHTML = "";
+    if (!history.length) {
+      const p = document.createElement("div");
+      p.className = "empty";
+      p.textContent = "Nothing yet. Say hi.";
+      els.panelHistory.appendChild(p);
+      return;
+    }
+    for (let i = 0; i < history.length; i++) {
+      const h = history[i];
+      const d = document.createElement("div");
+      d.className = "bubble " + (h.who === "me" ? "me" : "bot");
+      d.textContent = h.text;
+      els.panelHistory.appendChild(d);
+    }
+    els.panelHistory.scrollTop = els.panelHistory.scrollHeight;
+  }
+  function openPanel() {
+    if (!els.panel) return;
+    renderPanelHistory();
+    els.panel.hidden = false;
+  }
+  function closePanel() {
+    if (els.panel) els.panel.hidden = true;
   }
   function applyPlay() {
     const r = document.documentElement.style;
@@ -138,13 +191,14 @@
   }
 
   function add(who, text, extra) {
+    if (extra !== "typing" && text) pushHistory(who, text);
     if (play.skin === "blue") {
       if (extra === "typing") {
         showSpeech("", true);
         return { remove: function () { hideSpeech(); } };
       }
       if (who === "me") showSaid(text);
-      else showSpeech(text, false, 4200);
+      else showSpeech(text, false, 9000);
       return { remove: function () {} };
     }
     const d = document.createElement("div");
@@ -160,7 +214,7 @@
     return d;
   }
   function trimLog() {
-    while (els.log.children.length > 5) els.log.removeChild(els.log.firstChild);
+    while (els.log.children.length > 80) els.log.removeChild(els.log.firstChild);
   }
   function hello() {
     if (play.skin === "blue") showSpeech("hi, i'm dumpling", false, 4500);
@@ -178,7 +232,7 @@
       els.thoughtDots.hidden = true;
       els.thoughtText.textContent = text || "";
     }
-    thoughtTimer = setTimeout(hideThought, ms || (dots ? 8000 : 2200));
+    thoughtTimer = setTimeout(hideThought, ms || (dots ? 8000 : 9000));
   }
   function hideThought() {
     els.thought.hidden = true;
@@ -196,7 +250,7 @@
       els.speechDots.hidden = true;
       els.speechText.textContent = text || "";
     }
-    thoughtTimer = setTimeout(hideSpeech, ms || (dots ? 8000 : 2800));
+    thoughtTimer = setTimeout(hideSpeech, ms || (dots ? 8000 : 9000));
   }
   function hideSpeech() {
     if (!els.speech) return;
@@ -209,7 +263,7 @@
     els.said.hidden = false;
     els.said.textContent = text;
     clearTimeout(els.said._t);
-    els.said._t = setTimeout(function () { els.said.hidden = true; }, 3200);
+    els.said._t = setTimeout(function () { els.said.hidden = true; }, 8000);
   }
   function armIdle() {
     clearTimeout(idleTimer);

@@ -2,6 +2,8 @@
 
 Newest first. Hashes are on `master`.
 
+- v19 — Info panel: tap `i` for a plain-English "how I work" note plus the full chat history. Bubbles stay up ~9s and dismiss on tap instead of vanishing.
+- v18 — Joke egg (`#sneaky`) removed.
 - **7dc4f12** v17 — Mic inside the typing pill. Waveform. Auto-send. Glass composer.
 - **d713091** v16 — Blue garden is home. Painted dumpling talks from a face bubble. User line at top. Floating dumpling pink-only.
 - **59e6af6** v15 — Dumpling un-hidden (Safari chrome was a fake keyboard). Garden zoomed out. Tabs Garden/Catch/Glow. Mic button (later moved inside the pill).

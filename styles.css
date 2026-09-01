@@ -113,6 +113,35 @@ body.night #veil {
   position: absolute; top: calc(var(--safe-t) + 10px); left: 0; right: 0; z-index: 5;
   text-align: center; pointer-events: none;
 }
+#info-btn {
+  position: absolute; right: 14px; top: -2px;
+  width: 26px; height: 26px; border-radius: 50%; border: 0;
+  background: rgba(255,255,255,.28); color: #fff;
+  font: 700 13px/26px Georgia, serif; text-align: center; padding: 0;
+  pointer-events: auto;
+}
+body.skin-blue #info-btn { background: rgba(255,255,255,.16); }
+#panel {
+  position: fixed; inset: 0; z-index: 20;
+  background: rgba(20, 10, 30, .82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: calc(var(--safe-t) + 16px) 18px calc(var(--safe-b) + 16px);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#panel[hidden] { display: none; }
+#panel-inner { max-width: 480px; margin: 0 auto; color: #fff; }
+#panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+#panel-head h2 { font-size: 18px; margin: 0; }
+#panel-close {
+  border: 0; border-radius: 999px; padding: 7px 14px;
+  background: rgba(255,255,255,.18); color: #fff; font-size: 13px; font-weight: 600;
+}
+#panel-about p { font-size: 14px; line-height: 1.5; opacity: .92; margin: 0 0 10px; }
+#panel-hist-title { font-size: 15px; margin: 22px 0 8px; opacity: .85; }
+#panel-history { display: flex; flex-direction: column; gap: 6px; padding-bottom: 20px; }
+#panel-history .bubble { max-width: 90%; }
+#panel-history .empty { font-size: 13px; opacity: .6; }
 #title h1 {
   font-size: 20px; font-weight: 800; letter-spacing: .02em;
   color: #fff; text-shadow: 0 1px 2px #4a1840, 0 2px 0 #e85aa8, 0 8px 18px #ff4fbf66;

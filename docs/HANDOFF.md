@@ -6,8 +6,8 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=18** (`BUILD = 18`, SW `dumpling-v18`)
-- Last ship: joke egg (`#sneaky`) removed from the pink garden
+- Cache: **v=19** (`BUILD = 19`, SW `dumpling-v19`)
+- Last ship: tap the `i` button by the title for a plain-English "How I work" panel plus the full chat history. Speech/thought/said bubbles now stay up ~9s (was 2-4s) and dismiss on tap instead of vanishing on their own.
 
 ## What she sees (default = blue garden)
 
@@ -47,6 +47,8 @@ Glow → "Pink garden". Then:
 ## localStorage
 
 `dumpling-play-v1`: `{ moon, sky, night, skin, homeBlue }`. First load after `homeBlue` shipped forces blue once; after that her last skin sticks.
+
+`dumpling-chat-v1`: array of every message either side has said (`{ who, text, t }`), capped at 300. Powers the history list inside the `i` panel. Never wiped on ship.
 
 ## iPhone notes
 
