@@ -2,6 +2,7 @@
 
 Newest first. Hashes are on `master`.
 
+- v20 — PWA hardening: core art + html/css/js precached on install (fixes the broken-image icon on a flaky load), app opens fully offline, launch splash color matches blue garden.
 - v19 — Info panel: tap `i` for a plain-English "how I work" note plus the full chat history. Bubbles stay up ~9s and dismiss on tap instead of vanishing.
 - v18 — Joke egg (`#sneaky`) removed.
 - **7dc4f12** v17 — Mic inside the typing pill. Waveform. Auto-send. Glass composer.

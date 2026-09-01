@@ -1,5 +1,26 @@
-const VER = "dumpling-v19";
-self.addEventListener("install", e => { self.skipWaiting(); });
+const VER = "dumpling-v20";
+const V = VER.replace("dumpling-v", "");
+const PRECACHE = [
+  "./",
+  "./?v=" + V,
+  "styles.css?v=" + V,
+  "app.js?v=" + V,
+  "manifest.webmanifest?v=" + V,
+  "assets/skin-blue.webp?v=" + V,
+  "assets/garden.webp?v=" + V,
+  "assets/moon.webp?v=" + V,
+  "assets/dumpling-avatar.webp?v=" + V,
+  "assets/dumpling-icon.png?v=" + V
+];
+self.addEventListener("install", e => {
+  e.waitUntil(
+    caches.open(VER).then(cache =>
+      Promise.all(PRECACHE.map(url =>
+        fetch(url).then(res => { if (res && res.ok) return cache.put(url, res); }).catch(() => {})
+      ))
+    ).then(() => self.skipWaiting())
+  );
+});
 self.addEventListener("activate", e => {
   e.waitUntil(
     caches.keys().then(keys => Promise.all(keys.filter(k => k !== VER).map(k => caches.delete(k))))
@@ -23,5 +44,14 @@ self.addEventListener("fetch", e => {
     );
     return;
   }
-  e.respondWith(fetch(e.request, { cache: "no-store" }).catch(() => caches.match(e.request)));
+  e.respondWith(
+    fetch(e.request, { cache: "no-store" })
+      .then(res => {
+        if (res && res.ok && e.request.method === "GET") {
+          caches.open(VER).then(cache => cache.put(e.request, res.clone()));
+        }
+        return res;
+      })
+      .catch(() => caches.match(e.request))
+  );
 });

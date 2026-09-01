@@ -6,8 +6,8 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=19** (`BUILD = 19`, SW `dumpling-v19`)
-- Last ship: tap the `i` button by the title for a plain-English "How I work" panel plus the full chat history. Speech/thought/said bubbles now stay up ~9s (was 2-4s) and dismiss on tap instead of vanishing on their own.
+- Cache: **v=20** (`BUILD = 20`, SW `dumpling-v20`)
+- Last ship: PWA hardening. `sw.js` now precaches the core art + html/css/js on install instead of only caching images opportunistically, so the app survives a flaky network and can open fully offline. Manifest `background_color` now matches the blue garden (was pink, caused a wrong-color flash on launch).
 
 ## What she sees (default = blue garden)
 
