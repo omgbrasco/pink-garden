@@ -2,7 +2,7 @@
   "name": "Dumpling",
   "short_name": "Dumpling",
   "description": "A tiny pink garden.",
-  "start_url": "./?v=21",
+  "start_url": "./?v=22",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -10,7 +10,7 @@
   "theme_color": "#ff8fc5",
   "icons": [
     {
-      "src": "assets/dumpling-icon.png?v=21",
+      "src": "assets/dumpling-icon.png?v=22",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

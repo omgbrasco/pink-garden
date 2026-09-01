@@ -48,7 +48,7 @@ docs/        # handoff for humans and coding agents
 3. `git push origin master` (never `--force`).
 4. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=21**.
+Current cache as of this handoff: **v=22**.
 
 ## Product rules that already bit us
 

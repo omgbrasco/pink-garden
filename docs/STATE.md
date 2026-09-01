@@ -6,9 +6,9 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
-Cache **v21** (`BUILD = 21`, SW `dumpling-v21`). Last ship: locked down to feel native on the two phones that use it (Braedon's 16 Pro, her 13). Pinch-zoom and double-tap-zoom killed, page rubber-band/bounce killed, inner scroll areas contained so they can't drag the whole layout. No git tags yet.
+Cache **v22** (`BUILD = 22`, SW `dumpling-v22`). Last ship: real nav bar (Home / Chats / Settings, was Garden / Catch / Glow). Info button removed; its content moved into Settings (how-I-work note + real controls) and Chats (permanent transcript). No git tags yet.
 
-Default skin is the blue garden. Pink garden is opt-in via Glow.
+Default skin is the blue garden. Pink garden is opt-in via Settings.
 
 Grok Bot **Dumpling** is retired. Hired hands (Claude Code or Codex) open this folder. No replacement Grok bot.
 

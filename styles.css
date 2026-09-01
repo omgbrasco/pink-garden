@@ -114,36 +114,51 @@ body.night #veil {
   position: absolute; top: calc(var(--safe-t) + 10px); left: 0; right: 0; z-index: 5;
   text-align: center; pointer-events: none;
 }
-#info-btn {
-  position: absolute; right: 14px; top: -2px;
-  width: 26px; height: 26px; border-radius: 50%; border: 0;
-  background: rgba(255,255,255,.28); color: #fff;
-  font: 700 13px/26px Georgia, serif; text-align: center; padding: 0;
-  pointer-events: auto;
+#chats-screen, #settings-screen {
+  display: none;
+  position: absolute; inset: 0;
+  bottom: calc(var(--tab-h) + var(--safe-b));
+  z-index: 15;
+  overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+  padding: calc(var(--safe-t) + 20px) 18px 18px;
+  background: #fff0f7; color: #5a2450;
 }
-body.skin-blue #info-btn { background: rgba(255,255,255,.16); }
-#panel {
-  position: fixed; inset: 0; z-index: 20;
-  background: rgba(20, 10, 30, .82);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  padding: calc(var(--safe-t) + 16px) 18px calc(var(--safe-b) + 16px);
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
+body.skin-blue #chats-screen, body.skin-blue #settings-screen {
+  background: #0c1830; color: #fff;
 }
-#panel[hidden] { display: none; }
-#panel-inner { max-width: 480px; margin: 0 auto; color: #fff; }
-#panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-#panel-head h2 { font-size: 18px; margin: 0; }
-#panel-close {
-  border: 0; border-radius: 999px; padding: 7px 14px;
-  background: rgba(255,255,255,.18); color: #fff; font-size: 13px; font-weight: 600;
+body[data-tab="chats"] #chats-screen,
+body[data-tab="settings"] #settings-screen { display: block; }
+body[data-tab="chats"] #stage, body[data-tab="settings"] #stage,
+body[data-tab="chats"] #chat, body[data-tab="settings"] #chat,
+body[data-tab="chats"] #title, body[data-tab="settings"] #title,
+body[data-tab="chats"] #hud, body[data-tab="settings"] #hud { display: none !important; }
+#chats-inner, #settings-inner { max-width: 480px; margin: 0 auto; }
+#chats-inner h2, #settings-inner h2 { font-size: 20px; margin-bottom: 14px; }
+#chats-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 20px; }
+#chats-list .bubble { max-width: 90%; }
+#chats-list .empty { font-size: 13px; opacity: .6; }
+.s-group { margin-bottom: 22px; }
+.s-group h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; opacity: .6; margin-bottom: 8px; }
+.s-group p { font-size: 14px; line-height: 1.5; opacity: .92; margin: 0 0 10px; }
+.s-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; gap: 12px; }
+.s-row > span { font-size: 14px; font-weight: 600; flex: 0 0 auto; }
+.s-seg { display: flex; gap: 4px; background: rgba(122,45,102,.08); border-radius: 999px; padding: 3px; }
+body.skin-blue .s-seg { background: rgba(255,255,255,.08); }
+.s-seg button {
+  border: 0; border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 700;
+  background: none; color: inherit; opacity: .6;
 }
-#panel-about p { font-size: 14px; line-height: 1.5; opacity: .92; margin: 0 0 10px; }
-#panel-hist-title { font-size: 15px; margin: 22px 0 8px; opacity: .85; }
-#panel-history { display: flex; flex-direction: column; gap: 6px; padding-bottom: 20px; }
-#panel-history .bubble { max-width: 90%; }
-#panel-history .empty { font-size: 13px; opacity: .6; }
+.s-seg button.on { opacity: 1; background: rgba(255,94,172,.85); color: #fff; }
+#moon-row[hidden] { display: none; }
+.s-swatches { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; max-width: 60%; }
+.swatch {
+  width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; padding: 0;
+}
+.swatch.sel { border-color: currentColor; }
+.s-btn {
+  border: 0; border-radius: 999px; padding: 10px 16px; font-size: 13px; font-weight: 700;
+  background: rgba(255,94,172,.85); color: #fff;
+}
 #title h1 {
   font-size: 20px; font-weight: 800; letter-spacing: .02em;
   color: #fff; text-shadow: 0 1px 2px #4a1840, 0 2px 0 #e85aa8, 0 8px 18px #ff4fbf66;
@@ -246,9 +261,7 @@ body.kb #chat { bottom: var(--kb, 0px); }
   display: none; gap: 8px; overflow-x: auto; padding: 0 2px 8px;
   -webkit-overflow-scrolling: touch;
 }
-body.chatting #chips,
-body[data-tab="glow"] #chips { display: flex; }
-body[data-tab="play"] #chips { display: none !important; }
+body.chatting #chips { display: flex; }
 #chips button {
   flex: 0 0 auto; border: 0; border-radius: 999px;
   padding: 8px 12px; font-size: 13px; font-weight: 600;

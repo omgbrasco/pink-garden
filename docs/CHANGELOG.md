@@ -2,6 +2,7 @@
 
 Newest first. Hashes are on `master`.
 
+- v22 — Real nav bar: Home / Chats / Settings (was Garden / Catch / Glow). Info button removed; how-I-work note and real controls (skin, light, moon color) moved into Settings, full transcript moved into Chats.
 - v21 — Killed pinch-zoom, double-tap-zoom, and page bounce/rubber-band. Locked for the two phones that actually use it (16 Pro, 13).
 - v20 — PWA hardening: core art + html/css/js precached on install (fixes the broken-image icon on a flaky load), app opens fully offline, launch splash color matches blue garden.
 - v19 — Info panel: tap `i` for a plain-English "how I work" note plus the full chat history. Bubbles stay up ~9s and dismiss on tap instead of vanishing.

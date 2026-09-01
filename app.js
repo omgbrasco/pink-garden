@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 21;
+  const BUILD = 22;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -42,10 +42,12 @@
     speechText: document.getElementById("speech-text"),
     speechDots: document.getElementById("speech-dots"),
     wave: document.getElementById("wave"),
-    infoBtn: document.getElementById("info-btn"),
-    panel: document.getElementById("panel"),
-    panelClose: document.getElementById("panel-close"),
-    panelHistory: document.getElementById("panel-history")
+    chatsList: document.getElementById("chats-list"),
+    segSkin: document.getElementById("seg-skin"),
+    segNight: document.getElementById("seg-night"),
+    moonRow: document.getElementById("moon-row"),
+    moonSwatches: document.getElementById("moon-swatches"),
+    settingsCatch: document.getElementById("settings-catch")
   };
 
   if (!els.log || !els.box || !els.form || !els.buddy || !els.stage || !els.sky) return;
@@ -64,6 +66,8 @@
   spawnFireflies(false);
   hello();
   renderChips();
+  buildMoonSwatches();
+  renderSettings();
   armIdle();
   registerWorker();
   fitViewport();
@@ -75,8 +79,25 @@
   els.chips.addEventListener("click", onChip);
   if (els.tabbar) els.tabbar.addEventListener("click", onTab);
   if (els.mic) els.mic.addEventListener("click", onMic);
-  if (els.infoBtn) els.infoBtn.addEventListener("click", openPanel);
-  if (els.panelClose) els.panelClose.addEventListener("click", closePanel);
+  if (els.segSkin) els.segSkin.addEventListener("click", function (e) {
+    const b = e.target.closest("button[data-skin]");
+    if (b) setSkin(b.getAttribute("data-skin"));
+  });
+  if (els.segNight) els.segNight.addEventListener("click", function (e) {
+    const b = e.target.closest("button[data-night]");
+    if (b) setNight(b.getAttribute("data-night") === "1");
+  });
+  if (els.moonSwatches) els.moonSwatches.addEventListener("click", function (e) {
+    const b = e.target.closest("button[data-moon]");
+    if (b) setMoon(b.getAttribute("data-moon"));
+  });
+  if (els.settingsCatch) els.settingsCatch.addEventListener("click", function () {
+    document.body.setAttribute("data-tab", "home");
+    els.tabbar.querySelectorAll("button").forEach(function (b) {
+      b.classList.toggle("on", b.getAttribute("data-tab") === "home");
+    });
+    startGame();
+  });
   if (els.speech) els.speech.addEventListener("click", function (e) { e.stopPropagation(); hideSpeech(); });
   if (els.said) els.said.addEventListener("click", function (e) { e.stopPropagation(); els.said.hidden = true; clearTimeout(els.said._t); });
   if (els.thought) els.thought.addEventListener("click", function (e) { e.stopPropagation(); hideThought(); });
@@ -127,14 +148,14 @@
     if (history.length > HIST_MAX) history.splice(0, history.length - HIST_MAX);
     saveHistory();
   }
-  function renderPanelHistory() {
-    if (!els.panelHistory) return;
-    els.panelHistory.innerHTML = "";
+  function renderChats() {
+    if (!els.chatsList) return;
+    els.chatsList.innerHTML = "";
     if (!history.length) {
       const p = document.createElement("div");
       p.className = "empty";
       p.textContent = "Nothing yet. Say hi.";
-      els.panelHistory.appendChild(p);
+      els.chatsList.appendChild(p);
       return;
     }
     for (let i = 0; i < history.length; i++) {
@@ -142,17 +163,51 @@
       const d = document.createElement("div");
       d.className = "bubble " + (h.who === "me" ? "me" : "bot");
       d.textContent = h.text;
-      els.panelHistory.appendChild(d);
+      els.chatsList.appendChild(d);
     }
-    els.panelHistory.scrollTop = els.panelHistory.scrollHeight;
+    els.chatsList.scrollTop = els.chatsList.scrollHeight;
   }
-  function openPanel() {
-    if (!els.panel) return;
-    renderPanelHistory();
-    els.panel.hidden = false;
+  function buildMoonSwatches() {
+    if (!els.moonSwatches) return;
+    const keys = Object.keys(COLORS);
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i];
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "swatch";
+      b.setAttribute("data-moon", k);
+      b.setAttribute("aria-label", k);
+      b.style.background = COLORS[k][1];
+      els.moonSwatches.appendChild(b);
+    }
   }
-  function closePanel() {
-    if (els.panel) els.panel.hidden = true;
+  function renderSettings() {
+    if (els.segSkin) {
+      els.segSkin.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("on", b.getAttribute("data-skin") === play.skin);
+      });
+    }
+    if (els.segNight) {
+      els.segNight.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("on", (b.getAttribute("data-night") === "1") === play.night);
+      });
+    }
+    if (els.moonRow) els.moonRow.hidden = play.skin !== "pink";
+    if (els.moonSwatches) {
+      els.moonSwatches.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("sel", b.getAttribute("data-moon") === play.moon);
+      });
+    }
+  }
+  function setSkin(skin) {
+    play.skin = skin; savePlay(); applyPlay(); renderChips(); renderSettings();
+  }
+  function setNight(on) {
+    play.night = on; savePlay(); applyPlay(); renderChips(); renderSettings();
+  }
+  function setMoon(color) {
+    if (!COLORS[color]) return;
+    play.moon = color; savePlay(); applyPlay(); renderSettings();
   }
   function applyPlay() {
     const r = document.documentElement.style;
@@ -308,11 +363,11 @@
       return null;
     }
     if (/blue garden|night garden|starry|blue skin/.test(s)) {
-      play.skin = "blue"; savePlay(); applyPlay();
+      setSkin("blue");
       return "Blue night garden. Tap around. Say pink garden anytime.";
     }
     if (/pink garden|default garden|regular garden/.test(s)) {
-      play.skin = "pink"; savePlay(); applyPlay();
+      setSkin("pink");
       return "Pink garden's back. I can paint the moon here.";
     }
     if (/catch|firefl|play|game/.test(s)) {
@@ -320,16 +375,16 @@
       return "Tap the little glows. I'll cheer.";
     }
     if (/night|goodnight|bedtime|dark|sleepy/.test(s)) {
-      play.night = true; savePlay(); applyPlay();
+      setNight(true);
       return "Lights down. Cozy.";
     }
     if (/morning|daytime|\bday\b|wake|sunrise/.test(s)) {
-      play.night = false; savePlay(); applyPlay();
+      setNight(false);
       return "Good morning, garden.";
     }
     if (/reset|default|original|undo/.test(s)) {
       play.moon = "pink"; play.sky = ""; play.night = false; play.skin = "pink";
-      savePlay(); applyPlay();
+      savePlay(); applyPlay(); renderSettings();
       return "Pink moon, fresh garden.";
     }
     if (col && /sky|background/.test(s)) {
@@ -337,7 +392,7 @@
       return "Sky's wearing " + col + " now.";
     }
     if (col) {
-      play.moon = col; savePlay(); applyPlay();
+      setMoon(col);
       return "Moon's " + col + " now. Cute.";
     }
     if (/hello|hi\b|hey|yo\b/.test(s)) {
@@ -529,11 +584,9 @@
     els.tabbar.querySelectorAll("button").forEach(function (b) {
       b.classList.toggle("on", b === btn);
     });
-    if (tab === "play") {
-      if (!playing) startGame();
-    } else if (playing) {
-      endGame("");
-    }
+    if (tab !== "home" && playing) endGame("");
+    if (tab === "chats") renderChats();
+    if (tab === "settings") renderSettings();
   }
   let rec = null;
   let listening = false;

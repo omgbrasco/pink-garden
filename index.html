@@ -10,23 +10,23 @@
 <meta name="theme-color" content="#ff8fc5">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
-<link rel="apple-touch-icon" href="assets/dumpling-icon.png?v=21">
-<link rel="manifest" href="manifest.webmanifest?v=21">
-<link rel="preload" as="image" href="assets/skin-blue.webp?v=21">
-<link rel="preload" as="image" href="assets/garden.webp?v=21">
-<link rel="preload" as="image" href="assets/moon.webp?v=21">
-<link rel="preload" as="image" href="assets/dumpling-avatar.webp?v=21">
-<link rel="stylesheet" href="styles.css?v=21">
+<link rel="apple-touch-icon" href="assets/dumpling-icon.png?v=22">
+<link rel="manifest" href="manifest.webmanifest?v=22">
+<link rel="preload" as="image" href="assets/skin-blue.webp?v=22">
+<link rel="preload" as="image" href="assets/garden.webp?v=22">
+<link rel="preload" as="image" href="assets/moon.webp?v=22">
+<link rel="preload" as="image" href="assets/dumpling-avatar.webp?v=22">
+<link rel="stylesheet" href="styles.css?v=22">
 <title>Dumpling</title>
 </head>
-<body data-tab="garden">
+<body data-tab="home">
   <div id="app">
     <div id="stage">
       <div id="sky"></div>
       <div id="stars-far" aria-hidden="true"></div>
       <div id="garden">
-        <img class="scene" id="garden-art" src="assets/skin-blue.webp?v=21" alt="">
-        <img class="scene" id="moon-art" src="assets/moon.webp?v=21" alt="">
+        <img class="scene" id="garden-art" src="assets/skin-blue.webp?v=22" alt="">
+        <img class="scene" id="moon-art" src="assets/moon.webp?v=22" alt="">
       </div>
       <div id="veil"></div>
       <div id="said" hidden></div>
@@ -34,10 +34,7 @@
         <span id="speech-text"></span>
         <span class="dots" id="speech-dots" hidden><i></i><i></i><i></i></span>
       </div>
-      <header id="title">
-        <h1>Dumpling</h1>
-        <button type="button" id="info-btn" aria-label="How Dumpling works">i</button>
-      </header>
+      <header id="title"><h1>Dumpling</h1></header>
       <div id="hud" hidden>
         <span id="hud-score">0/8</span>
         <button type="button" id="hud-done">Done</button>
@@ -48,7 +45,7 @@
           <span class="dots" id="thought-dots" hidden><i></i><i></i><i></i></span>
         </div>
         <button type="button" id="buddy" aria-label="Dumpling">
-          <img src="assets/dumpling-avatar.webp?v=21" alt="">
+          <img src="assets/dumpling-avatar.webp?v=22" alt="">
         </button>
       </div>
     </div>
@@ -68,27 +65,54 @@
         </div>
       </form>
     </section>
+    <div id="chats-screen">
+      <div id="chats-inner">
+        <h2>Chats</h2>
+        <div id="chats-list"></div>
+      </div>
+    </div>
+    <div id="settings-screen">
+      <div id="settings-inner">
+        <h2>Settings</h2>
+        <div class="s-group">
+          <h3>How I work</h3>
+          <p>I live only on your phone. I don't have internet access, and nothing you say to me ever leaves this app.</p>
+          <p>When you added me to your home screen, you installed a "web app" - a tiny website that acts like a real app, works without wifi, and remembers things using your phone's own storage instead of a company's server.</p>
+          <p>Nothing here is watched, saved online, or used to train anything. Just you, me, and this garden.</p>
+        </div>
+        <div class="s-group">
+          <h3>Garden</h3>
+          <div class="s-row">
+            <span>Skin</span>
+            <div class="s-seg" id="seg-skin">
+              <button type="button" data-skin="blue">Blue night</button>
+              <button type="button" data-skin="pink">Pink garden</button>
+            </div>
+          </div>
+          <div class="s-row">
+            <span>Light</span>
+            <div class="s-seg" id="seg-night">
+              <button type="button" data-night="0">Morning</button>
+              <button type="button" data-night="1">Night</button>
+            </div>
+          </div>
+          <div class="s-row" id="moon-row">
+            <span>Moon color</span>
+            <div class="s-swatches" id="moon-swatches"></div>
+          </div>
+        </div>
+        <div class="s-group">
+          <h3>Play</h3>
+          <button type="button" id="settings-catch" class="s-btn">Catch fireflies</button>
+        </div>
+      </div>
+    </div>
     <nav id="tabbar">
-      <button type="button" data-tab="garden" class="on">Garden</button>
-      <button type="button" data-tab="play">Catch</button>
-      <button type="button" data-tab="glow">Glow</button>
+      <button type="button" data-tab="home" class="on">Home</button>
+      <button type="button" data-tab="chats">Chats</button>
+      <button type="button" data-tab="settings">Settings</button>
     </nav>
   </div>
-  <div id="panel" hidden>
-    <div id="panel-inner">
-      <div id="panel-head">
-        <h2>How I work</h2>
-        <button type="button" id="panel-close">Close</button>
-      </div>
-      <div id="panel-about">
-        <p>I live only on your phone. I don't have internet access, and nothing you say to me ever leaves this app.</p>
-        <p>When you added me to your home screen, you installed a "web app" - a tiny website that acts like a real app, works without wifi, and remembers things using your phone's own storage instead of a company's server.</p>
-        <p>Nothing here is watched, saved online, or used to train anything. Just you, me, and this garden.</p>
-      </div>
-      <h2 id="panel-hist-title">What we've talked about</h2>
-      <div id="panel-history"></div>
-    </div>
-  </div>
-  <script src="app.js?v=21"></script>
+  <script src="app.js?v=22"></script>
 </body>
 </html>
