@@ -16,7 +16,7 @@ Read `docs/HANDOFF.md` before you touch code. Read `docs/REVERSING.md` before an
 - Sandbox: moon/sky/skins, localStorage play state, firefly mini-game, chat replies from `app.js` dictionaries.
 - She must never leave the garden (no external links).
 - Keep it cute, simple, safe, playful.
-- The joke egg (`#sneaky` in the pink bushes) stays. Do not add more NSFW.
+- The joke egg was removed (v18, Braedon's call). Do not add it or any other NSFW back.
 - iPhone 13 first, then iPhone 16 Pro. Safe areas, `viewport-fit=cover`, home-screen capable.
 - Do not use Cursor Cloud Agents for this repo. Edit files here and push `master`.
 
@@ -47,7 +47,7 @@ docs/        # handoff for humans and coding agents
 3. `git push origin master` (never `--force`).
 4. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=17**.
+Current cache as of this handoff: **v=18**.
 
 ## Product rules that already bit us
 

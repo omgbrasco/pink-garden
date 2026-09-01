@@ -6,8 +6,8 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=17** (`BUILD = 17`, SW `dumpling-v17`)
-- Last ship: `7dc4f12` — mic inside the typing pill, waveform, auto-send
+- Cache: **v=18** (`BUILD = 18`, SW `dumpling-v18`)
+- Last ship: joke egg (`#sneaky`) removed from the pink garden
 
 ## What she sees (default = blue garden)
 
@@ -27,7 +27,7 @@ Glow → "Pink garden". Then:
 - Layered scene: CSS sky + `garden.webp` (moon painted out) + `moon.webp` tint layer.
 - Floating Dumpling (`dumpling-avatar.webp`) with thought bubble and idle float.
 - Stacked glass chat bubbles in `#log`.
-- Joke egg `#sneaky` in the left bushes (where's-waldo). Hidden on blue.
+- Joke egg is gone (removed v18).
 
 ## Files that matter
 
