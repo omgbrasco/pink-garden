@@ -48,11 +48,12 @@ docs/        # handoff for humans and coding agents
 3. `git push origin master` (never `--force`).
 4. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=23**.
+Current cache as of this handoff: **v=24**.
 
 ## Product rules that already bit us
 
 - Home is the **blue** night garden (`assets/skin-blue.webp`). Floating Dumpling is **pink garden only**.
+- `#garden` is full-bleed (`inset:0`) for **both** skins as of v24. `garden.webp` is a complete painted scene with its own sky baked in, not a foreground cutout — a short bottom-band container leaves a jarring hard seam against the flat CSS `#sky` gradient above it. Do not reintroduce a partial-height `#garden`. `moon.webp` shares `garden.webp`'s exact canvas/crop, so they must keep identical container CSS or the moon glow will drift out of alignment.
 - On blue, she talks to the **painted** dumpling: face bubble (`#speech`), her line fades at the top (`#said`). No stacked chat bubbles on blue.
 - Do not hide Dumpling with a "keyboard is up" class driven by `screen.height` vs `visualViewport` — Safari chrome looks like a keyboard and he vanishes.
 - App icon must be **square** (512×512). A 3:2 PNG gets stretched by iOS.

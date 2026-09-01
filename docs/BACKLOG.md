@@ -2,7 +2,7 @@
 
 ## Now
 
-Nothing required. App is live at v23. Dumpling Grok Bot is retired.
+Nothing required. App is live at v24. Dumpling Grok Bot is retired.
 
 ## Assistant roadmap (Braedon's call, staying 100% offline, no backend/LLM)
 

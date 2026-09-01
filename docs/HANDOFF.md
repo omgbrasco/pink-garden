@@ -6,8 +6,8 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=23** (`BUILD = 23`, SW `dumpling-v23`)
-- Last ship: bug fix. `fitViewport()` had a heuristic that snapped `--app-h` to `screen.height` on standalone iOS to avoid a black bar. On her 13 it overshot and pushed the whole tab bar off the bottom edge (nothing visible below the composer). Removed the heuristic; `--app-h` now just tracks `window.innerHeight`.
+- Cache: **v=24** (`BUILD = 24`, SW `dumpling-v24`)
+- Last ship: pink garden's `#garden` is now full-bleed (`inset:0`), matching blue. It was previously capped to the bottom ~52% of the screen with a flat CSS gradient filling the rest above it — but `garden.webp` already contains a complete painted sky, so that produced a hard, ugly seam. `moon.webp` shares the same crop as `garden.webp`, so alignment carried over automatically with no separate retuning.
 
 ## What she sees (default = blue garden)
 

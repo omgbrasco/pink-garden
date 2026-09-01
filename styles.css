@@ -65,9 +65,7 @@ body.kb #chips { display: none !important; }
 body.night #sky { filter: brightness(.55) saturate(.85); }
 #stars-far { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 #garden {
-  position: absolute; left: 0; right: 0; z-index: 0;
-  bottom: calc(var(--tab-h) + var(--safe-b));
-  height: min(52%, calc(100vw * 0.78));
+  position: absolute; inset: 0; z-index: 0;
   overflow: hidden;
   animation: drift 28s ease-in-out infinite;
 }
@@ -382,12 +380,7 @@ body.skin-blue #tabbar {
 body.skin-blue #tabbar button { color: rgba(255,255,255,.5); }
 body.skin-blue #tabbar button.on { color: #fff; background: rgba(255,255,255,.14); }
 body.skin-blue #sky { opacity: .25; }
-body.skin-blue #garden {
-  inset: 0;
-  height: auto;
-  bottom: 0;
-  animation: none;
-}
+body.skin-blue #garden { animation: none; }
 body.skin-blue #garden .scene {
   object-fit: cover;
   object-position: center 38%;

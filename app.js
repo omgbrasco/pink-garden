@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 23;
+  const BUILD = 24;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;

@@ -2,6 +2,7 @@
 
 Newest first. Hashes are on `master`.
 
+- v24 — Pink garden is full-bleed now (was capped to bottom ~52%, leaving an ugly seam against the flat CSS sky above it). Moon alignment carried over automatically since it shares garden.webp's crop.
 - v23 — Bug fix: removed a `screen.height` viewport hack in `fitViewport()` that was pushing the entire tab bar off the bottom edge (invisible) on her iPhone 13.
 - v22 — Real nav bar: Home / Chats / Settings (was Garden / Catch / Glow). Info button removed; how-I-work note and real controls (skin, light, moon color) moved into Settings, full transcript moved into Chats.
 - v21 — Killed pinch-zoom, double-tap-zoom, and page bounce/rubber-band. Locked for the two phones that actually use it (16 Pro, 13).

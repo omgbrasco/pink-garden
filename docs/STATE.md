@@ -6,7 +6,7 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
-Cache **v23** (`BUILD = 23`, SW `dumpling-v23`). Last ship: fixed a real bug on Braedon's girlfriend's iPhone 13 where the whole tab bar was invisible (pushed off the bottom edge by a fragile `screen.height` viewport hack). That hack is removed. No git tags yet.
+Cache **v24** (`BUILD = 24`, SW `dumpling-v24`). Last ship: pink garden is now full-bleed like blue was, fixing an ugly hard seam between the flat CSS sky gradient and the painted garden.webp scene (which already has its own sky baked in). No git tags yet.
 
 Default skin is the blue garden. Pink garden is opt-in via Settings.
 
