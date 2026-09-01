@@ -6,7 +6,7 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
-Cache **v22** (`BUILD = 22`, SW `dumpling-v22`). Last ship: real nav bar (Home / Chats / Settings, was Garden / Catch / Glow). Info button removed; its content moved into Settings (how-I-work note + real controls) and Chats (permanent transcript). No git tags yet.
+Cache **v23** (`BUILD = 23`, SW `dumpling-v23`). Last ship: fixed a real bug on Braedon's girlfriend's iPhone 13 where the whole tab bar was invisible (pushed off the bottom edge by a fragile `screen.height` viewport hack). That hack is removed. No git tags yet.
 
 Default skin is the blue garden. Pink garden is opt-in via Settings.
 

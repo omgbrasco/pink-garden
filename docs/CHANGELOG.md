@@ -2,6 +2,7 @@
 
 Newest first. Hashes are on `master`.
 
+- v23 — Bug fix: removed a `screen.height` viewport hack in `fitViewport()` that was pushing the entire tab bar off the bottom edge (invisible) on her iPhone 13.
 - v22 — Real nav bar: Home / Chats / Settings (was Garden / Catch / Glow). Info button removed; how-I-work note and real controls (skin, light, moon color) moved into Settings, full transcript moved into Chats.
 - v21 — Killed pinch-zoom, double-tap-zoom, and page bounce/rubber-band. Locked for the two phones that actually use it (16 Pro, 13).
 - v20 — PWA hardening: core art + html/css/js precached on install (fixes the broken-image icon on a flaky load), app opens fully offline, launch splash color matches blue garden.

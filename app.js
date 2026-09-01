@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 22;
+  const BUILD = 23;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -656,13 +656,7 @@
     const offset = vv ? (vv.offsetTop || 0) : 0;
     const focused = document.activeElement === els.box;
     const kb = focused ? Math.max(0, Math.round(inner - vis - offset)) : 0;
-    let h = inner;
-    const standalone = window.navigator.standalone === true ||
-      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
-    if (standalone && window.screen && screen.height && kb < 48) {
-      const gap = screen.height - h;
-      if (gap > 8 && gap < 120) h = screen.height;
-    }
+    const h = inner;
     try { window.scrollTo(0, 0); } catch (e) {}
     document.documentElement.style.setProperty("--app-h", h + "px");
     document.documentElement.style.setProperty("--kb", kb + "px");

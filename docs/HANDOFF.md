@@ -6,8 +6,8 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=22** (`BUILD = 22`, SW `dumpling-v22`)
-- Last ship: real nav bar. Tabs are now Home / Chats / Settings (was Garden / Catch / Glow). The `i` info button is gone; its "how I work" text and the chat history moved into their own tab screens.
+- Cache: **v=23** (`BUILD = 23`, SW `dumpling-v23`)
+- Last ship: bug fix. `fitViewport()` had a heuristic that snapped `--app-h` to `screen.height` on standalone iOS to avoid a black bar. On her 13 it overshot and pushed the whole tab bar off the bottom edge (nothing visible below the composer). Removed the heuristic; `--app-h` now just tracks `window.innerHeight`.
 
 ## What she sees (default = blue garden)
 
