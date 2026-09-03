@@ -10,13 +10,13 @@
 <meta name="theme-color" content="#ff8fc5">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
-<link rel="apple-touch-icon" href="assets/dumpling-icon.png?v=24">
-<link rel="manifest" href="manifest.webmanifest?v=24">
-<link rel="preload" as="image" href="assets/skin-blue.webp?v=24">
-<link rel="preload" as="image" href="assets/garden.webp?v=24">
-<link rel="preload" as="image" href="assets/moon.webp?v=24">
-<link rel="preload" as="image" href="assets/dumpling-avatar.webp?v=24">
-<link rel="stylesheet" href="styles.css?v=24">
+<link rel="apple-touch-icon" href="assets/dumpling-icon.png?v=25">
+<link rel="manifest" href="manifest.webmanifest?v=25">
+<link rel="preload" as="image" href="assets/skin-blue.webp?v=25">
+<link rel="preload" as="image" href="assets/garden.webp?v=25">
+<link rel="preload" as="image" href="assets/moon.webp?v=25">
+<link rel="preload" as="image" href="assets/dumpling-avatar.webp?v=25">
+<link rel="stylesheet" href="styles.css?v=25">
 <title>Dumpling</title>
 </head>
 <body data-tab="home">
@@ -25,8 +25,8 @@
       <div id="sky"></div>
       <div id="stars-far" aria-hidden="true"></div>
       <div id="garden">
-        <img class="scene" id="garden-art" src="assets/skin-blue.webp?v=24" alt="">
-        <img class="scene" id="moon-art" src="assets/moon.webp?v=24" alt="">
+        <img class="scene" id="garden-art" src="assets/skin-blue.webp?v=25" alt="">
+        <img class="scene" id="moon-art" src="assets/moon.webp?v=25" alt="">
       </div>
       <div id="veil"></div>
       <div id="said" hidden></div>
@@ -35,6 +35,10 @@
         <span class="dots" id="speech-dots" hidden><i></i><i></i><i></i></span>
       </div>
       <header id="title"><h1>Dumpling</h1></header>
+      <button type="button" id="skin-switch" aria-label="Switch garden">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <div id="streak" hidden><span id="streak-n"></span></div>
       <div id="hud" hidden>
         <span id="hud-score">0/8</span>
         <button type="button" id="hud-done">Done</button>
@@ -45,7 +49,7 @@
           <span class="dots" id="thought-dots" hidden><i></i><i></i><i></i></span>
         </div>
         <button type="button" id="buddy" aria-label="Dumpling">
-          <img src="assets/dumpling-avatar.webp?v=24" alt="">
+          <img src="assets/dumpling-avatar.webp?v=25" alt="">
         </button>
       </div>
     </div>
@@ -71,6 +75,27 @@
         <div id="chats-list"></div>
       </div>
     </div>
+    <div id="feedback-screen">
+      <div id="feedback-inner">
+        <h2>Feedback</h2>
+        <p class="lede">Got an idea while you're in here? Drop it below - text, dictate with your keyboard's mic, or record a quick voice memo. It goes straight to Braedon so it's never lost.</p>
+        <textarea id="fb-text" placeholder="Type or dictate an idea…" maxlength="600" rows="4"></textarea>
+        <div id="fb-rec-row">
+          <button type="button" id="fb-rec" aria-label="Record a voice memo">
+            <svg class="mic-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v3"/></svg>
+            <span id="fb-rec-label">Record voice memo</span>
+          </button>
+          <span id="fb-rec-time" hidden>0:00</span>
+        </div>
+        <div id="fb-clip-row" hidden>
+          <span>Voice memo attached</span>
+          <button type="button" id="fb-clip-clear">Remove</button>
+        </div>
+        <button type="button" id="fb-send" class="s-btn">Send to Braedon</button>
+        <p id="fb-status" hidden></p>
+        <div id="fb-log"></div>
+      </div>
+    </div>
     <div id="settings-screen">
       <div id="settings-inner">
         <h2>Settings</h2>
@@ -78,7 +103,7 @@
           <h3>How I work</h3>
           <p>I live only on your phone. I don't have internet access, and nothing you say to me ever leaves this app.</p>
           <p>When you added me to your home screen, you installed a "web app" - a tiny website that acts like a real app, works without wifi, and remembers things using your phone's own storage instead of a company's server.</p>
-          <p>Nothing here is watched, saved online, or used to train anything. Just you, me, and this garden.</p>
+          <p>Nothing here is watched, saved online, or used to train anything. Just you, me, and this garden. The one exception is the Feedback tab - anything you send from there goes to Braedon, on purpose, so your idea doesn't get lost.</p>
         </div>
         <div class="s-group">
           <h3>Garden</h3>
@@ -105,14 +130,23 @@
           <h3>Play</h3>
           <button type="button" id="settings-catch" class="s-btn">Catch fireflies</button>
         </div>
+        <div class="s-group">
+          <h3>Feedback sync</h3>
+          <p>One-time setup so the Feedback tab can send to Braedon. He sets this, not you.</p>
+          <label class="s-field"><span>Gist ID</span><input id="s-fb-gist" placeholder="a1b2c3…"></label>
+          <label class="s-field"><span>GitHub token, gist scope only</span><input id="s-fb-token" type="password" placeholder="github_pat_… or ghp_…"></label>
+          <button type="button" id="s-fb-save" class="s-btn">Save</button>
+          <span id="s-fb-state"></span>
+        </div>
       </div>
     </div>
     <nav id="tabbar">
       <button type="button" data-tab="home" class="on">Home</button>
       <button type="button" data-tab="chats">Chats</button>
+      <button type="button" data-tab="feedback">Feedback</button>
       <button type="button" data-tab="settings">Settings</button>
     </nav>
   </div>
-  <script src="app.js?v=24"></script>
+  <script src="app.js?v=25"></script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 
 Newest first. Hashes are on `master`.
 
+- v25 — Day-streak badge (top-left, home screen). On-screen skin-switch bubble next to it - tap to flip blue/pink without opening Settings. New Feedback tab: type, dictate (free, iOS keyboard mic), or record a raw voice memo; queues locally then sends to a private gist once Braedon sets up a gist ID + token in Settings > Feedback sync. First network call this app has ever made - AGENTS.md's "no network calls" rule was relaxed for this one path, on purpose, everything else stays local. "How I work" panel copy updated to say so honestly.
 - v24 — Pink garden is full-bleed now (was capped to bottom ~52%, leaving an ugly seam against the flat CSS sky above it). Moon alignment carried over automatically since it shares garden.webp's crop.
 - v23 — Bug fix: removed a `screen.height` viewport hack in `fitViewport()` that was pushing the entire tab bar off the bottom edge (invisible) on her iPhone 13.
 - v22 — Real nav bar: Home / Chats / Settings (was Garden / Catch / Glow). Info button removed; how-I-work note and real controls (skin, light, moon color) moved into Settings, full transcript moved into Chats.

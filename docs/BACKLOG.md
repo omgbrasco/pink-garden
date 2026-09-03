@@ -2,13 +2,15 @@
 
 ## Now
 
-Nothing required. App is live at v24. Dumpling Grok Bot is retired.
+Braedon: create a private gist + gist-scoped GitHub token, enter both in Settings > Feedback sync on your phone and hers, so the new Feedback tab actually reaches you. Until then her entries queue locally, safe but unsent.
 
-## Assistant roadmap (Braedon's call, staying 100% offline, no backend/LLM)
+## Assistant roadmap (Braedon's call, mostly offline - one deliberate exception now, see AGENTS.md)
 
 Phase 1 (done, v19): chat bubbles stop auto-vanishing before she reads them, tap to dismiss, full chat history kept and viewable from the `i` panel, plain-English "how I work" note.
 
-Phase 2 (next): "leave me a note" she can save and Dumpling can recall later; simple to-do/checklist; local reminders (check iOS 16.4+/home-screen/notification-permission requirements first); a small daily ritual (affirmation, streak, or days-together counter).
+Phase 2 (done, v25): day-streak badge; on-screen skin-switch bubble on the home screen; Feedback tab (type/dictate/voice memo -> private gist, so an idea never gets lost).
+
+Phase 2 leftovers (not done): "leave me a note" she can save and Dumpling can recall later; simple to-do/checklist; local reminders (check iOS 16.4+/home-screen/notification-permission requirements first).
 
 Phase 3: variety in the firefly game so it doesn't get stale; expand the idle-thought pool past 5 lines; natural "go enjoy your day" closing lines instead of open-ended engagement.
 

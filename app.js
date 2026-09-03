@@ -1,9 +1,15 @@
 (function () {
   "use strict";
-  const BUILD = 24;
+  const BUILD = 25;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
+  const STREAK_KEY = "dumpling-streak-v1";
+  const FB_QUEUE_KEY = "dumpling-fb-queue-v1";
+  const FB_TOKEN_KEY = "dumpling-fb-token";
+  const FB_GIST_KEY = "dumpling-fb-gist";
+  const FB_FILE = "dumpling-feedback.json";
+  const FB_MAX_SEC = 90;
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
     purple: ["#f0d4ff", "#c58cff", "#9b5cff"],
@@ -47,7 +53,23 @@
     segNight: document.getElementById("seg-night"),
     moonRow: document.getElementById("moon-row"),
     moonSwatches: document.getElementById("moon-swatches"),
-    settingsCatch: document.getElementById("settings-catch")
+    settingsCatch: document.getElementById("settings-catch"),
+    skinSwitch: document.getElementById("skin-switch"),
+    streak: document.getElementById("streak"),
+    streakN: document.getElementById("streak-n"),
+    fbText: document.getElementById("fb-text"),
+    fbRec: document.getElementById("fb-rec"),
+    fbRecLabel: document.getElementById("fb-rec-label"),
+    fbRecTime: document.getElementById("fb-rec-time"),
+    fbClipRow: document.getElementById("fb-clip-row"),
+    fbClipClear: document.getElementById("fb-clip-clear"),
+    fbSend: document.getElementById("fb-send"),
+    fbStatus: document.getElementById("fb-status"),
+    fbLog: document.getElementById("fb-log"),
+    sFbGist: document.getElementById("s-fb-gist"),
+    sFbToken: document.getElementById("s-fb-token"),
+    sFbSave: document.getElementById("s-fb-save"),
+    sFbState: document.getElementById("s-fb-state")
   };
 
   if (!els.log || !els.box || !els.form || !els.buddy || !els.stage || !els.sky) return;
@@ -71,6 +93,9 @@
   armIdle();
   registerWorker();
   fitViewport();
+  bumpStreak();
+  renderFeedbackSettings();
+  flushFeedbackQueue();
 
   els.form.addEventListener("submit", onSubmit);
   els.buddy.addEventListener("click", boop);
@@ -91,6 +116,13 @@
     const b = e.target.closest("button[data-moon]");
     if (b) setMoon(b.getAttribute("data-moon"));
   });
+  if (els.skinSwitch) els.skinSwitch.addEventListener("click", function () {
+    setSkin(play.skin === "blue" ? "pink" : "blue");
+  });
+  if (els.fbRec) els.fbRec.addEventListener("click", onFbRec);
+  if (els.fbClipClear) els.fbClipClear.addEventListener("click", clearFbClip);
+  if (els.fbSend) els.fbSend.addEventListener("click", onFbSend);
+  if (els.sFbSave) els.sFbSave.addEventListener("click", onFbSyncSave);
   if (els.settingsCatch) els.settingsCatch.addEventListener("click", function () {
     document.body.setAttribute("data-tab", "home");
     els.tabbar.querySelectorAll("button").forEach(function (b) {
@@ -586,7 +618,8 @@
     });
     if (tab !== "home" && playing) endGame("");
     if (tab === "chats") renderChats();
-    if (tab === "settings") renderSettings();
+    if (tab === "settings") { renderSettings(); renderFeedbackSettings(); }
+    if (tab === "feedback") { renderFeedbackLog(); flushFeedbackQueue(); }
   }
   let rec = null;
   let listening = false;
@@ -661,6 +694,176 @@
     document.documentElement.style.setProperty("--app-h", h + "px");
     document.documentElement.style.setProperty("--kb", kb + "px");
     document.body.classList.toggle("kb", focused && kb > 80);
+  }
+
+  /* ============ streak ============ */
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function bumpStreak() {
+    let s;
+    try { s = JSON.parse(localStorage.getItem(STREAK_KEY) || "null"); } catch (e) { s = null; }
+    if (!s || typeof s.count !== "number") s = { count: 0, lastDate: "" };
+    const today = todayStr();
+    if (s.lastDate !== today) {
+      const y = new Date(); y.setDate(y.getDate() - 1);
+      const yStr = y.getFullYear() + "-" + String(y.getMonth() + 1).padStart(2, "0") + "-" + String(y.getDate()).padStart(2, "0");
+      s.count = (s.lastDate === yStr) ? s.count + 1 : 1;
+      s.lastDate = today;
+      try { localStorage.setItem(STREAK_KEY, JSON.stringify(s)); } catch (e) {}
+    }
+    renderStreak(s.count);
+  }
+  function renderStreak(count) {
+    if (!els.streak || !els.streakN) return;
+    if (count >= 1) {
+      els.streakN.textContent = "🔥 " + count + (count === 1 ? " day" : " days");
+      els.streak.hidden = false;
+    } else {
+      els.streak.hidden = true;
+    }
+  }
+
+  /* ============ feedback capture ============ */
+  let fbRecorder = null, fbChunks = [], fbRecording = false, fbRecTimer = null, fbRecStart = 0, fbClipDataUrl = null;
+  function loadFbQueue() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(FB_QUEUE_KEY) || "[]");
+      return Array.isArray(raw) ? raw : [];
+    } catch (e) { return []; }
+  }
+  function saveFbQueue(q) {
+    try { localStorage.setItem(FB_QUEUE_KEY, JSON.stringify(q)); } catch (e) {}
+  }
+  function fbStatus(msg) {
+    if (!els.fbStatus) return;
+    if (!msg) { els.fbStatus.hidden = true; return; }
+    els.fbStatus.textContent = msg;
+    els.fbStatus.hidden = false;
+  }
+  async function onFbRec() {
+    if (fbRecording) { try { fbRecorder.stop(); } catch (e) {} return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      fbStatus("Voice memo needs a browser mic permission this phone doesn't support here. Type or dictate instead.");
+      return;
+    }
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch (e) { fbStatus("Mic permission was blocked. Type or dictate instead."); return; }
+    fbChunks = [];
+    try { fbRecorder = new MediaRecorder(stream); } catch (e) { fbStatus("Recording isn't supported here. Type or dictate instead."); return; }
+    fbRecorder.ondataavailable = function (ev) { if (ev.data && ev.data.size) fbChunks.push(ev.data); };
+    fbRecorder.onstop = function () {
+      stream.getTracks().forEach(function (t) { t.stop(); });
+      fbRecording = false;
+      clearInterval(fbRecTimer);
+      if (els.fbRec) { els.fbRec.classList.remove("on"); }
+      if (els.fbRecLabel) els.fbRecLabel.textContent = "Record voice memo";
+      if (els.fbRecTime) els.fbRecTime.hidden = true;
+      if (!fbChunks.length) return;
+      const blob = new Blob(fbChunks, { type: fbRecorder.mimeType || "audio/webm" });
+      const reader = new FileReader();
+      reader.onload = function () {
+        fbClipDataUrl = reader.result;
+        if (els.fbClipRow) els.fbClipRow.hidden = false;
+      };
+      reader.readAsDataURL(blob);
+    };
+    fbRecorder.start();
+    fbRecording = true;
+    fbRecStart = Date.now();
+    if (els.fbRec) els.fbRec.classList.add("on");
+    if (els.fbRecLabel) els.fbRecLabel.textContent = "Stop";
+    if (els.fbRecTime) els.fbRecTime.hidden = false;
+    fbRecTimer = setInterval(function () {
+      const sec = Math.floor((Date.now() - fbRecStart) / 1000);
+      if (els.fbRecTime) els.fbRecTime.textContent = Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0");
+      if (sec >= FB_MAX_SEC) { try { fbRecorder.stop(); } catch (e) {} }
+    }, 500);
+  }
+  function clearFbClip() {
+    fbClipDataUrl = null;
+    if (els.fbClipRow) els.fbClipRow.hidden = true;
+  }
+  function onFbSend() {
+    const text = (els.fbText && els.fbText.value ? els.fbText.value : "").trim();
+    if (!text && !fbClipDataUrl) { fbStatus("Nothing to send yet."); return; }
+    const entry = { id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), ts: Date.now(), text: text, audio: fbClipDataUrl || null };
+    const q = loadFbQueue();
+    q.push(entry);
+    saveFbQueue(q);
+    if (els.fbText) els.fbText.value = "";
+    clearFbClip();
+    fbStatus("Saved. Sending to Braedon…");
+    renderFeedbackLog();
+    flushFeedbackQueue();
+  }
+  async function fbGistFetch(method, body) {
+    const token = localStorage.getItem(FB_TOKEN_KEY), id = localStorage.getItem(FB_GIST_KEY);
+    if (!token || !id) throw new Error("not configured");
+    const res = await fetch("https://api.github.com/gists/" + id, {
+      method: method,
+      headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    if (!res.ok) throw new Error("GitHub said " + res.status);
+    return res.json();
+  }
+  async function flushFeedbackQueue() {
+    const q = loadFbQueue();
+    if (!q.length) { renderFeedbackLog(); return; }
+    const token = localStorage.getItem(FB_TOKEN_KEY), gist = localStorage.getItem(FB_GIST_KEY);
+    if (!token || !gist) { renderFeedbackLog(); return; }
+    try {
+      const g = await fbGistFetch("GET");
+      const f = g.files && g.files[FB_FILE];
+      let existing = { entries: [] };
+      if (f) {
+        try {
+          const raw = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;
+          existing = JSON.parse(raw) || { entries: [] };
+        } catch (e) { existing = { entries: [] }; }
+      }
+      if (!Array.isArray(existing.entries)) existing.entries = [];
+      const haveIds = {};
+      existing.entries.forEach(function (e) { haveIds[e.id] = true; });
+      q.forEach(function (e) { if (!haveIds[e.id]) existing.entries.push(e); });
+      existing.updated = Date.now();
+      const patchFiles = {};
+      patchFiles[FB_FILE] = { content: JSON.stringify(existing, null, 1) };
+      await fbGistFetch("PATCH", { files: patchFiles });
+      saveFbQueue([]);
+      fbStatus("Sent to Braedon.");
+      renderFeedbackLog();
+    } catch (e) {
+      fbStatus("Saved on this phone. Will send once sync is set up in Settings.");
+      renderFeedbackLog();
+    }
+  }
+  function renderFeedbackLog() {
+    if (!els.fbLog) return;
+    const q = loadFbQueue();
+    els.fbLog.innerHTML = "";
+    if (!q.length) return;
+    const p = document.createElement("div");
+    p.className = "fb-item";
+    p.textContent = q.length + (q.length === 1 ? " idea waiting to send…" : " ideas waiting to send…");
+    els.fbLog.appendChild(p);
+  }
+  function renderFeedbackSettings() {
+    if (els.sFbGist) els.sFbGist.value = localStorage.getItem(FB_GIST_KEY) || "";
+    if (els.sFbToken) els.sFbToken.placeholder = localStorage.getItem(FB_TOKEN_KEY) ? "•••••••• saved on this device" : "github_pat_… or ghp_…";
+    if (els.sFbState) els.sFbState.textContent = (localStorage.getItem(FB_TOKEN_KEY) && localStorage.getItem(FB_GIST_KEY)) ? "Connected" : "";
+  }
+  function onFbSyncSave() {
+    const gist = (els.sFbGist && els.sFbGist.value ? els.sFbGist.value : "").trim();
+    const token = (els.sFbToken && els.sFbToken.value ? els.sFbToken.value : "").trim();
+    if (gist) localStorage.setItem(FB_GIST_KEY, gist);
+    if (token) localStorage.setItem(FB_TOKEN_KEY, token);
+    if (els.sFbToken) els.sFbToken.value = "";
+    renderFeedbackSettings();
+    flushFeedbackQueue();
   }
 
   function registerWorker() {

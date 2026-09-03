@@ -11,8 +11,10 @@ Read `docs/HANDOFF.md` before you touch code. Read `docs/REVERSING.md` before an
 ## Non-negotiables
 
 - Static HTML, CSS, JS only. No React, Vue, Vite, Next, Tailwind-as-a-build, no bundler.
-- No backend. No accounts. No posting. No X.
-- No outbound LLM. No public API keys. No network calls except loading this origin's files.
+- No backend. No accounts for her. No posting to social/X.
+- No outbound LLM, ever.
+- ONE exception to "no network calls" as of v25, Braedon's call: the Feedback tab sends whatever she types/records to a private GitHub gist, so an idea she has mid-use reaches Braedon instead of getting lost. Nothing else in the app calls out - chat, play state, and everything else stay 100% local. Do not widen this exception to any other tab or feature without Braedon saying so again.
+- No API key/token is ever committed to the repo or baked into a served file. The gist token is typed into Settings by Braedon and lives only in `localStorage` on his and her devices (see `dumpling-fb-token`). Never hardcode one.
 - Sandbox: moon/sky/skins, localStorage play state, firefly mini-game, chat replies from `app.js` dictionaries.
 - She must never leave the garden (no external links).
 - Keep it cute, simple, safe, playful.
