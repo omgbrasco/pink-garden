@@ -118,7 +118,7 @@ body.night #veil {
   bottom: calc(var(--tab-h) + var(--safe-b));
   z-index: 15;
   overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
-  padding: calc(var(--safe-t) + 20px) 18px 18px;
+  padding: calc(var(--safe-t) + 20px) 18px calc(var(--safe-b) + 28px);
   background: #fff0f7; color: #5a2450;
 }
 body.skin-blue #chats-screen, body.skin-blue #settings-screen, body.skin-blue #feedback-screen {
@@ -169,31 +169,43 @@ body.skin-blue .s-seg { background: rgba(255,255,255,.08); }
 }
 body.skin-blue .s-field input { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.08); }
 #s-fb-state { font-size: 12px; opacity: .7; margin-left: 8px; }
-#feedback-inner textarea {
-  width: 100%; padding: 12px 13px; border-radius: 16px; border: 1px solid rgba(122,45,102,.18);
-  background: rgba(122,45,102,.06); color: inherit; font-size: 15px; font-family: inherit;
-  resize: vertical; margin-bottom: 12px;
+.fb-box {
+  border-radius: 20px; border: 1px solid rgba(122,45,102,.18);
+  background: rgba(122,45,102,.06); margin-bottom: 14px; overflow: hidden;
 }
-body.skin-blue #feedback-inner textarea { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.08); }
-#fb-rec-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+body.skin-blue .fb-box { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.08); }
+#feedback-inner textarea {
+  display: block; width: 100%; padding: 13px 14px 6px; border: 0;
+  background: transparent; color: inherit; font-size: 15px; font-family: inherit;
+  resize: none; outline: none;
+}
+.fb-box-row { display: flex; align-items: center; gap: 4px; padding: 4px 8px 8px; }
 #fb-rec {
-  display: flex; align-items: center; gap: 8px; border: 0; border-radius: 999px;
-  padding: 9px 14px; font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 6px; border: 0; border-radius: 999px;
+  width: 34px; height: 34px; justify-content: center; flex: 0 0 auto;
   background: rgba(122,45,102,.08); color: inherit;
 }
-body.skin-blue #fb-rec { background: rgba(255,255,255,.1); }
-#fb-rec.on { background: #ff5e6a; color: #fff; }
-#fb-rec-time { font-size: 12px; opacity: .7; font-variant-numeric: tabular-nums; }
-#fb-clip-row {
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 13px; margin-bottom: 12px; padding: 8px 12px;
-  background: rgba(122,45,102,.06); border-radius: 12px;
+body.skin-blue #fb-rec { background: rgba(255,255,255,.12); }
+#fb-rec.on { background: #ff5e6a; color: #fff; width: auto; padding: 0 12px; }
+#fb-rec-time { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fb-box-spacer { flex: 1; }
+#fb-clip-chip {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+  padding: 6px 6px 6px 10px; border-radius: 999px; background: rgba(122,45,102,.08);
 }
-body.skin-blue #fb-clip-row { background: rgba(255,255,255,.08); }
-#fb-clip-clear { border: 0; background: none; color: inherit; text-decoration: underline; font-size: 13px; }
+body.skin-blue #fb-clip-chip { background: rgba(255,255,255,.12); }
+#fb-clip-clear {
+  border: 0; background: rgba(0,0,0,.12); color: inherit; border-radius: 50%;
+  width: 20px; height: 20px; line-height: 20px; font-size: 14px; padding: 0;
+}
+#fb-send {
+  border: 0; border-radius: 50%; width: 34px; height: 34px; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  background: #ff5eac; color: #fff;
+}
 #fb-status { font-size: 13px; opacity: .8; margin-top: 10px; }
 #fb-status[hidden] { display: none; }
-#fb-log { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; }
+#fb-log { margin-top: 18px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
 #fb-log .fb-item {
   font-size: 12px; opacity: .65; padding: 8px 10px;
   background: rgba(122,45,102,.05); border-radius: 10px;

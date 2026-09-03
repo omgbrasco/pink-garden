@@ -6,7 +6,9 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
-Cache **v25** (`BUILD = 25`, SW `dumpling-v25`). Last ship: a small on-screen skin-switch bubble (top-left, tap to flip blue/pink without going into Settings), a day-streak badge, and a new Feedback tab - she can type, dictate (iOS keyboard mic, free), or record a raw voice memo; it queues in `localStorage` and sends to a private gist once Braedon has entered a gist ID + token in Settings > Feedback sync. No git tags yet.
+Cache **v26** (`BUILD = 26`, SW `dumpling-v26`). v26 tidied the Feedback tab into one compact box per Braedon's own-phone review; see CHANGELOG.
+
+Open question from Braedon (not yet acted on): the translucent blur band at the very top of Chats/Feedback/Settings is iOS's own status-bar effect from `apple-mobile-web-app-status-bar-style: black-translucent` in index.html - not a CSS bug (checked: no stray backdrop-filter sits there). That setting is also what lets the Home garden's art blend under the status bar. Changing it globally would remove the blur everywhere but risks reintroducing the "black bar" class of regression already fought in v12/v20/v23 - don't flip it without Braedon confirming he's seen and accepts that trade-off. Last ship: a small on-screen skin-switch bubble (top-left, tap to flip blue/pink without going into Settings), a day-streak badge, and a new Feedback tab - she can type, dictate (iOS keyboard mic, free), or record a raw voice memo; it queues in `localStorage` and sends to a private gist once Braedon has entered a gist ID + token in Settings > Feedback sync. No git tags yet.
 
 Default skin is the blue garden. Pink garden is opt-in via Settings, or the new top-left bubble on the home screen.
 

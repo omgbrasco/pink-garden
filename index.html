@@ -10,13 +10,13 @@
 <meta name="theme-color" content="#ff8fc5">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
-<link rel="apple-touch-icon" href="assets/dumpling-icon.png?v=25">
-<link rel="manifest" href="manifest.webmanifest?v=25">
-<link rel="preload" as="image" href="assets/skin-blue.webp?v=25">
-<link rel="preload" as="image" href="assets/garden.webp?v=25">
-<link rel="preload" as="image" href="assets/moon.webp?v=25">
-<link rel="preload" as="image" href="assets/dumpling-avatar.webp?v=25">
-<link rel="stylesheet" href="styles.css?v=25">
+<link rel="apple-touch-icon" href="assets/dumpling-icon.png?v=26">
+<link rel="manifest" href="manifest.webmanifest?v=26">
+<link rel="preload" as="image" href="assets/skin-blue.webp?v=26">
+<link rel="preload" as="image" href="assets/garden.webp?v=26">
+<link rel="preload" as="image" href="assets/moon.webp?v=26">
+<link rel="preload" as="image" href="assets/dumpling-avatar.webp?v=26">
+<link rel="stylesheet" href="styles.css?v=26">
 <title>Dumpling</title>
 </head>
 <body data-tab="home">
@@ -25,8 +25,8 @@
       <div id="sky"></div>
       <div id="stars-far" aria-hidden="true"></div>
       <div id="garden">
-        <img class="scene" id="garden-art" src="assets/skin-blue.webp?v=25" alt="">
-        <img class="scene" id="moon-art" src="assets/moon.webp?v=25" alt="">
+        <img class="scene" id="garden-art" src="assets/skin-blue.webp?v=26" alt="">
+        <img class="scene" id="moon-art" src="assets/moon.webp?v=26" alt="">
       </div>
       <div id="veil"></div>
       <div id="said" hidden></div>
@@ -49,7 +49,7 @@
           <span class="dots" id="thought-dots" hidden><i></i><i></i><i></i></span>
         </div>
         <button type="button" id="buddy" aria-label="Dumpling">
-          <img src="assets/dumpling-avatar.webp?v=25" alt="">
+          <img src="assets/dumpling-avatar.webp?v=26" alt="">
         </button>
       </div>
     </div>
@@ -79,19 +79,20 @@
       <div id="feedback-inner">
         <h2>Feedback</h2>
         <p class="lede">Got an idea while you're in here? Drop it below - text, dictate with your keyboard's mic, or record a quick voice memo. It goes straight to Braedon so it's never lost.</p>
-        <textarea id="fb-text" placeholder="Type or dictate an idea…" maxlength="600" rows="4"></textarea>
-        <div id="fb-rec-row">
-          <button type="button" id="fb-rec" aria-label="Record a voice memo">
-            <svg class="mic-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v3"/></svg>
-            <span id="fb-rec-label">Record voice memo</span>
-          </button>
-          <span id="fb-rec-time" hidden>0:00</span>
+        <div class="fb-box">
+          <textarea id="fb-text" placeholder="Type or dictate an idea…" maxlength="600" rows="3"></textarea>
+          <div class="fb-box-row">
+            <button type="button" id="fb-rec" aria-label="Record a voice memo">
+              <svg class="mic-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v3"/></svg>
+              <span id="fb-rec-time" hidden>0:00</span>
+            </button>
+            <span id="fb-clip-chip" hidden>🎤 <span id="fb-clip-len"></span><button type="button" id="fb-clip-clear" aria-label="Remove voice memo">×</button></span>
+            <span class="fb-box-spacer"></span>
+            <button type="button" id="fb-send" aria-label="Send to Braedon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3.4 20.6 21 12 3.4 3.4 3 10l11 2-11 2z"/></svg>
+            </button>
+          </div>
         </div>
-        <div id="fb-clip-row" hidden>
-          <span>Voice memo attached</span>
-          <button type="button" id="fb-clip-clear">Remove</button>
-        </div>
-        <button type="button" id="fb-send" class="s-btn">Send to Braedon</button>
         <p id="fb-status" hidden></p>
         <div id="fb-log"></div>
       </div>
@@ -147,6 +148,6 @@
       <button type="button" data-tab="settings">Settings</button>
     </nav>
   </div>
-  <script src="app.js?v=25"></script>
+  <script src="app.js?v=26"></script>
 </body>
 </html>

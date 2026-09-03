@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 25;
+  const BUILD = 26;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -59,9 +59,9 @@
     streakN: document.getElementById("streak-n"),
     fbText: document.getElementById("fb-text"),
     fbRec: document.getElementById("fb-rec"),
-    fbRecLabel: document.getElementById("fb-rec-label"),
     fbRecTime: document.getElementById("fb-rec-time"),
-    fbClipRow: document.getElementById("fb-clip-row"),
+    fbClipChip: document.getElementById("fb-clip-chip"),
+    fbClipLen: document.getElementById("fb-clip-len"),
     fbClipClear: document.getElementById("fb-clip-clear"),
     fbSend: document.getElementById("fb-send"),
     fbStatus: document.getElementById("fb-status"),
@@ -758,15 +758,16 @@
       stream.getTracks().forEach(function (t) { t.stop(); });
       fbRecording = false;
       clearInterval(fbRecTimer);
-      if (els.fbRec) { els.fbRec.classList.remove("on"); }
-      if (els.fbRecLabel) els.fbRecLabel.textContent = "Record voice memo";
+      const finalLen = Math.floor((Date.now() - fbRecStart) / 1000);
+      if (els.fbRec) els.fbRec.classList.remove("on");
       if (els.fbRecTime) els.fbRecTime.hidden = true;
       if (!fbChunks.length) return;
       const blob = new Blob(fbChunks, { type: fbRecorder.mimeType || "audio/webm" });
       const reader = new FileReader();
       reader.onload = function () {
         fbClipDataUrl = reader.result;
-        if (els.fbClipRow) els.fbClipRow.hidden = false;
+        if (els.fbClipLen) els.fbClipLen.textContent = Math.floor(finalLen / 60) + ":" + String(finalLen % 60).padStart(2, "0");
+        if (els.fbClipChip) els.fbClipChip.hidden = false;
       };
       reader.readAsDataURL(blob);
     };
@@ -774,7 +775,6 @@
     fbRecording = true;
     fbRecStart = Date.now();
     if (els.fbRec) els.fbRec.classList.add("on");
-    if (els.fbRecLabel) els.fbRecLabel.textContent = "Stop";
     if (els.fbRecTime) els.fbRecTime.hidden = false;
     fbRecTimer = setInterval(function () {
       const sec = Math.floor((Date.now() - fbRecStart) / 1000);
@@ -784,7 +784,7 @@
   }
   function clearFbClip() {
     fbClipDataUrl = null;
-    if (els.fbClipRow) els.fbClipRow.hidden = true;
+    if (els.fbClipChip) els.fbClipChip.hidden = true;
   }
   function onFbSend() {
     const text = (els.fbText && els.fbText.value ? els.fbText.value : "").trim();
