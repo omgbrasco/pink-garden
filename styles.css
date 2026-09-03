@@ -161,14 +161,6 @@ body.skin-blue .s-seg { background: rgba(255,255,255,.08); }
   border: 0; border-radius: 999px; padding: 10px 16px; font-size: 13px; font-weight: 700;
   background: rgba(255,94,172,.85); color: #fff;
 }
-.s-field { display: block; margin-bottom: 10px; }
-.s-field span { display: block; font-size: 12px; opacity: .7; margin-bottom: 4px; font-weight: 600; }
-.s-field input {
-  width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(122,45,102,.18);
-  background: rgba(122,45,102,.06); color: inherit; font-size: 14px;
-}
-body.skin-blue .s-field input { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.08); }
-#s-fb-state { font-size: 12px; opacity: .7; margin-left: 8px; }
 .fb-box {
   border-radius: 20px; border: 1px solid rgba(122,45,102,.18);
   background: rgba(122,45,102,.06); margin-bottom: 14px; overflow: hidden;

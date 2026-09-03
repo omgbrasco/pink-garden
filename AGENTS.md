@@ -34,10 +34,13 @@ Read `docs/HANDOFF.md` before you touch code. Read `docs/REVERSING.md` before an
 
 ```
 index.html styles.css app.js sw.js manifest.webmanifest
+setup-feedback.html  # Braedon-only, deliberately NOT linked from the app - see docs/STATE.md
 assets/      # what her iPhone loads
 originals/   # PNG masters, not served
 docs/        # handoff for humans and coding agents
 ```
+
+`setup-feedback.html` is intentionally an orphan page - do not add a link/button to it from index.html or the tab bar. That was tried and explicitly rejected: the shipped app lives on her phone, and dev/setup tooling has no business being reachable from her normal navigation.
 
 ## Ship (every visible change)
 

@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 26;
+  const BUILD = 27;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -65,11 +65,7 @@
     fbClipClear: document.getElementById("fb-clip-clear"),
     fbSend: document.getElementById("fb-send"),
     fbStatus: document.getElementById("fb-status"),
-    fbLog: document.getElementById("fb-log"),
-    sFbGist: document.getElementById("s-fb-gist"),
-    sFbToken: document.getElementById("s-fb-token"),
-    sFbSave: document.getElementById("s-fb-save"),
-    sFbState: document.getElementById("s-fb-state")
+    fbLog: document.getElementById("fb-log")
   };
 
   if (!els.log || !els.box || !els.form || !els.buddy || !els.stage || !els.sky) return;
@@ -94,7 +90,6 @@
   registerWorker();
   fitViewport();
   bumpStreak();
-  renderFeedbackSettings();
   flushFeedbackQueue();
 
   els.form.addEventListener("submit", onSubmit);
@@ -122,7 +117,6 @@
   if (els.fbRec) els.fbRec.addEventListener("click", onFbRec);
   if (els.fbClipClear) els.fbClipClear.addEventListener("click", clearFbClip);
   if (els.fbSend) els.fbSend.addEventListener("click", onFbSend);
-  if (els.sFbSave) els.sFbSave.addEventListener("click", onFbSyncSave);
   if (els.settingsCatch) els.settingsCatch.addEventListener("click", function () {
     document.body.setAttribute("data-tab", "home");
     els.tabbar.querySelectorAll("button").forEach(function (b) {
@@ -142,11 +136,17 @@
   document.addEventListener("gesturestart", function (e) { e.preventDefault(); }, { passive: false });
   document.addEventListener("gesturechange", function (e) { e.preventDefault(); }, { passive: false });
   document.addEventListener("touchmove", function (e) { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-  window.addEventListener("resize", fitViewport);
-  window.addEventListener("orientationchange", fitViewport);
+  let fitQueued = false;
+  function fitViewportThrottled() {
+    if (fitQueued) return;
+    fitQueued = true;
+    requestAnimationFrame(function () { fitQueued = false; fitViewport(); });
+  }
+  window.addEventListener("resize", fitViewportThrottled);
+  window.addEventListener("orientationchange", fitViewportThrottled);
   if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", fitViewport);
-    window.visualViewport.addEventListener("scroll", fitViewport);
+    window.visualViewport.addEventListener("resize", fitViewportThrottled);
+    window.visualViewport.addEventListener("scroll", fitViewportThrottled);
   }
 
   function loadPlay() {
@@ -618,7 +618,7 @@
     });
     if (tab !== "home" && playing) endGame("");
     if (tab === "chats") renderChats();
-    if (tab === "settings") { renderSettings(); renderFeedbackSettings(); }
+    if (tab === "settings") renderSettings();
     if (tab === "feedback") { renderFeedbackLog(); flushFeedbackQueue(); }
   }
   let rec = null;
@@ -851,21 +851,6 @@
     p.textContent = q.length + (q.length === 1 ? " idea waiting to send…" : " ideas waiting to send…");
     els.fbLog.appendChild(p);
   }
-  function renderFeedbackSettings() {
-    if (els.sFbGist) els.sFbGist.value = localStorage.getItem(FB_GIST_KEY) || "";
-    if (els.sFbToken) els.sFbToken.placeholder = localStorage.getItem(FB_TOKEN_KEY) ? "•••••••• saved on this device" : "github_pat_… or ghp_…";
-    if (els.sFbState) els.sFbState.textContent = (localStorage.getItem(FB_TOKEN_KEY) && localStorage.getItem(FB_GIST_KEY)) ? "Connected" : "";
-  }
-  function onFbSyncSave() {
-    const gist = (els.sFbGist && els.sFbGist.value ? els.sFbGist.value : "").trim();
-    const token = (els.sFbToken && els.sFbToken.value ? els.sFbToken.value : "").trim();
-    if (gist) localStorage.setItem(FB_GIST_KEY, gist);
-    if (token) localStorage.setItem(FB_TOKEN_KEY, token);
-    if (els.sFbToken) els.sFbToken.value = "";
-    renderFeedbackSettings();
-    flushFeedbackQueue();
-  }
-
   function registerWorker() {
     if (!("serviceWorker" in navigator)) return;
     navigator.serviceWorker.register("./sw.js?v=" + BUILD).then(function (reg) {

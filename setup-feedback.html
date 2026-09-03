@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Feedback sync setup</title>
+<style>
+  body { margin:0; padding:24px 18px; background:#0c1830; color:#fff; font-family:-apple-system,system-ui,sans-serif; }
+  h1 { font-size:18px; margin:0 0 6px; }
+  p { font-size:14px; opacity:.75; line-height:1.5; margin:0 0 20px; }
+  label { display:block; margin-bottom:14px; }
+  label span { display:block; font-size:12px; opacity:.7; margin-bottom:5px; font-weight:600; }
+  input {
+    width:100%; box-sizing:border-box; padding:11px 12px; border-radius:12px;
+    border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.08);
+    color:#fff; font-size:14px;
+  }
+  button {
+    border:0; border-radius:999px; padding:11px 18px; font-size:14px; font-weight:700;
+    background:rgba(255,94,172,.85); color:#fff;
+  }
+  #state { font-size:13px; opacity:.75; margin-top:14px; }
+</style>
+</head>
+<body>
+  <h1>Dumpling - feedback sync</h1>
+  <p>Not part of the app, not linked from it. This page only sets the values the Feedback tab needs to reach you - nothing else. Run this once per phone (yours and hers), then never open it again.</p>
+  <label><span>Gist ID</span><input id="gist" placeholder="a1b2c3…"></label>
+  <label><span>GitHub token, gist scope only</span><input id="token" type="password" placeholder="github_pat_… or ghp_…"></label>
+  <button id="save" type="button">Save on this phone</button>
+  <p id="state"></p>
+<script>
+(function () {
+  "use strict";
+  var GIST_KEY = "dumpling-fb-gist", TOKEN_KEY = "dumpling-fb-token";
+  var gist = document.getElementById("gist"), token = document.getElementById("token"), state = document.getElementById("state");
+  function render() {
+    gist.value = localStorage.getItem(GIST_KEY) || "";
+    token.placeholder = localStorage.getItem(TOKEN_KEY) ? "•••••••• saved on this device" : "github_pat_… or ghp_…";
+    state.textContent = (localStorage.getItem(GIST_KEY) && localStorage.getItem(TOKEN_KEY)) ? "Connected on this phone." : "Not set up on this phone yet.";
+  }
+  document.getElementById("save").addEventListener("click", function () {
+    var g = gist.value.trim(), t = token.value.trim();
+    if (g) localStorage.setItem(GIST_KEY, g);
+    if (t) localStorage.setItem(TOKEN_KEY, t);
+    token.value = "";
+    render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>
