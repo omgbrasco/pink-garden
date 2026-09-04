@@ -1,10 +1,12 @@
 (function () {
   "use strict";
-  const BUILD = 27;
+  const BUILD = 28;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
   const STREAK_KEY = "dumpling-streak-v1";
+  const NOTES_KEY = "dumpling-notes-v1";
+  const NOTES_MAX = 40;
   const FB_QUEUE_KEY = "dumpling-fb-queue-v1";
   const FB_TOKEN_KEY = "dumpling-fb-token";
   const FB_GIST_KEY = "dumpling-fb-gist";
@@ -394,6 +396,17 @@
       endGame("Okay, pausing. The glows will wait.");
       return null;
     }
+    if (/what did i (tell|say)|remind me( what)?|any notes|what do you remember|remember anything|remember something|do you remember/.test(s)) {
+      return recallNote();
+    }
+    const noteMatch = t.match(/^(remember|note to self|don'?t forget|keep this|save this)[:,]?\s+(.+)/i);
+    if (noteMatch) {
+      saveNote(noteMatch[2].trim());
+      return pick(["Got it. Tucked away safe.", "Saved. I'll remember that.", "Kept, right in my little garden pocket."]);
+    }
+    if (/^(remember|note to self|don'?t forget)[.!?]?$/i.test(t.trim())) {
+      return "Remember what? Tell me and I'll keep it.";
+    }
     if (/blue garden|night garden|starry|blue skin/.test(s)) {
       setSkin("blue");
       return "Blue night garden. Tap around. Say pink garden anytime.";
@@ -499,13 +512,15 @@
         ? [
             ["Pink garden", "pink garden"],
             ["Catch fireflies", "catch fireflies"],
-            [play.night ? "Make it morning" : "Make it night", play.night ? "make it morning" : "make it night"]
+            [play.night ? "Make it morning" : "Make it night", play.night ? "make it morning" : "make it night"],
+            ["What did I tell you?", "what did i tell you"]
           ]
         : [
             ["Moon " + next, "make the moon " + next],
             ["Catch fireflies", "catch fireflies"],
             [play.night ? "Make it morning" : "Make it night", play.night ? "make it morning" : "make it night"],
-            ["Blue garden", "blue garden"]
+            ["Blue garden", "blue garden"],
+            ["What did I tell you?", "what did i tell you"]
           ]);
     els.chips.innerHTML = "";
     for (let i = 0; i < items.length; i++) {
@@ -723,6 +738,38 @@
     } else {
       els.streak.hidden = true;
     }
+  }
+
+  /* ============ notes she leaves for Dumpling to recall ============ */
+  function loadNotes() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(NOTES_KEY) || "[]");
+      return Array.isArray(raw) ? raw : [];
+    } catch (e) { return []; }
+  }
+  function saveNote(text) {
+    const notes = loadNotes();
+    notes.push({ text: text, ts: Date.now() });
+    if (notes.length > NOTES_MAX) notes.splice(0, notes.length - NOTES_MAX);
+    try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch (e) {}
+  }
+  function agoStr(ts) {
+    const s = Math.floor((Date.now() - ts) / 1000);
+    if (s < 90) return "just now";
+    const m = Math.floor(s / 60);
+    if (m < 60) return m + " min ago";
+    const h = Math.floor(m / 60);
+    if (h < 24) return h + (h === 1 ? " hour ago" : " hours ago");
+    const d = Math.floor(h / 24);
+    return d === 1 ? "yesterday" : d + " days ago";
+  }
+  let notesCursor = 0;
+  function recallNote() {
+    const notes = loadNotes();
+    if (!notes.length) return "You haven't told me anything to remember yet. Say \"remember...\" and I'll keep it.";
+    notesCursor = (notesCursor + 1) % notes.length;
+    const n = notes[notes.length - 1 - notesCursor];
+    return "You told me (" + agoStr(n.ts) + "): “" + n.text + "”";
   }
 
   /* ============ feedback capture ============ */

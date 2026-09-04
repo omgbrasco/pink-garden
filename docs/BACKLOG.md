@@ -10,7 +10,9 @@ Phase 1 (done, v19): chat bubbles stop auto-vanishing before she reads them, tap
 
 Phase 2 (done, v25): day-streak badge; on-screen skin-switch bubble on the home screen; Feedback tab (type/dictate/voice memo -> private gist, so an idea never gets lost).
 
-Phase 2 leftovers (not done): "leave me a note" she can save and Dumpling can recall later; simple to-do/checklist; local reminders (check iOS 16.4+/home-screen/notification-permission requirements first).
+Phase 2 (done, v28): "leave me a note" - say "remember..." in chat, ask "what did I tell you?" to recall.
+
+Phase 2 leftovers (not done): simple to-do/checklist. Local reminders/notifications explicitly on hold - Braedon: "only do real notifications if I could" - needs iOS 16.4+/permission/testing groundwork before it's worth building, don't start it speculatively.
 
 Phase 3: variety in the firefly game so it doesn't get stale; expand the idle-thought pool past 5 lines; natural "go enjoy your day" closing lines instead of open-ended engagement.
 

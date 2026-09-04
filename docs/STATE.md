@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v28** (`BUILD = 28`, SW `dumpling-v28`). v28: "leave me a note" - chat-driven, no new tab, no new UI surface. Say "remember ..." to save, "what did I tell you?" to recall (also a chip). Stored in `dumpling-notes-v1`, local only, capped at 40. See CHANGELOG.
+
 Cache **v27** (`BUILD = 27`, SW `dumpling-v27`). v27: moved feedback-sync setup out of the app into a standalone `setup-feedback.html` (see below), switched status bar to opaque `black` (Braedon's call, accepted the trade-off flagged in v26), throttled viewport refit via rAF.
 
 **Feedback sync setup lives OUTSIDE the shipped app now.** `setup-feedback.html`, same repo/origin, NOT linked from index.html, NOT in the tab bar, NOT in manifest.webmanifest, NOT in sw.js's PRECACHE list - on purpose, so it never surfaces in her normal use and isn't treated as an app screen. It writes the same `dumpling-fb-gist` / `dumpling-fb-token` localStorage keys `app.js` reads. Braedon opens that URL directly (typed or a link he sends himself) once per phone (his and hers), never through in-app navigation. Do not add a link to it from index.html or the nav - that was explicitly rejected in favor of this approach ("the app stays on her phone, dev tools shouldn't be in it").
