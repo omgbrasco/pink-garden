@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v29** (`BUILD = 29`, SW `dumpling-v29`). v29: chat reply matching fixed so everyday words stop triggering commands ("tired" no longer = red moon, "long day" no longer = morning, etc.), dead joke-egg reply removed. See CHANGELOG.
+
 Cache **v28** (`BUILD = 28`, SW `dumpling-v28`). v28: "leave me a note" - chat-driven, no new tab, no new UI surface. Say "remember ..." to save, "what did I tell you?" to recall (also a chip). Stored in `dumpling-notes-v1`, local only, capped at 40. See CHANGELOG.
 
 Cache **v27** (`BUILD = 27`, SW `dumpling-v27`). v27: moved feedback-sync setup out of the app into a standalone `setup-feedback.html` (see below), switched status bar to opaque `black` (Braedon's call, accepted the trade-off flagged in v26), throttled viewport refit via rAF.
