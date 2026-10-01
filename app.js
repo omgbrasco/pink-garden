@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 28;
+  const BUILD = 29;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -382,7 +382,8 @@
   function colorOf(s) {
     const keys = Object.keys(COLORS);
     for (let i = 0; i < keys.length; i++) {
-      if (s.indexOf(keys[i]) !== -1) return keys[i];
+      // Whole words only: "tired", "bored", "scared" all contain "red".
+      if (new RegExp("\\b" + keys[i] + "\\b").test(s)) return keys[i];
     }
     if (/\bgold\b|\bsun\b/.test(s)) return "yellow";
     return null;
@@ -415,15 +416,15 @@
       setSkin("pink");
       return "Pink garden's back. I can paint the moon here.";
     }
-    if (/catch|firefl|play|game/.test(s)) {
+    if (/catch|firefl|\bplay\b|\bgames?\b/.test(s)) {
       startGame();
       return "Tap the little glows. I'll cheer.";
     }
-    if (/night|goodnight|bedtime|dark|sleepy/.test(s)) {
+    if (/\bnight\b|goodnight|bedtime|\bdark\b|sleepy/.test(s)) {
       setNight(true);
       return "Lights down. Cozy.";
     }
-    if (/morning|daytime|\bday\b|wake|sunrise/.test(s)) {
+    if (/morning|daytime|make it day|\bwake|sunrise/.test(s)) {
       setNight(false);
       return "Good morning, garden.";
     }
@@ -438,13 +439,11 @@
     }
     if (col) {
       setMoon(col);
+      if (play.skin === "blue") return "Moon's " + col + " now. You'll see it in the pink garden.";
       return "Moon's " + col + " now. Cute.";
     }
-    if (/hello|hi\b|hey|yo\b/.test(s)) {
+    if (/\b(hello+|hi+|hey+|hiya|yo+)\b/.test(s)) {
       return "Hey you. Want a green moon, or a firefly hunt?";
-    }
-    if (/penis|dick|egg|waldo|hidden|find|secret|joke/.test(s)) {
-      return "Tiny purple secret, left bushes. Where's-waldo. Comedy only.";
     }
     if (/help|what can|how do|commands?/.test(s)) {
       return "I can recolor the moon or sky, dim the lights, or play catch-the-fireflies.";
@@ -455,12 +454,12 @@
     if (/thank|thanks|love you|cute|adorable/.test(s)) {
       return pick(["Aww. Right back at you.", "You're sweet. The garden likes you.", "Soft glow, soft vibes."]);
     }
-    if (/boop|poke|hug|pat/.test(s)) {
+    if (/\b(boop|poke|hugs?|pats?)\b/.test(s)) {
       boop();
       return "Boop.";
     }
     return pick([
-      "Hmm. Try make the moon teal, or catch fireflies.",
+      "Hmm. Try making the moon teal, or catch fireflies.",
       "I'm mostly a garden guy. Say a color for the moon.",
       "Poke me, tap the glows, or paint the moon. That's the fun."
     ]);
