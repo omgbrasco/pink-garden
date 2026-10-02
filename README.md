@@ -11,7 +11,7 @@ A one-page iPhone gift. She talks to Dumpling from a home-screen icon. No login,
 - App: `index.html` `styles.css` `app.js` `sw.js` `manifest.webmanifest`
 - `assets/` — what the phone loads (WebP, icon)
 - `originals/` — PNG masters, not served
-- `docs/` — handoff, changelog, how to reverse a ship
+- `docs/` — handoff, changelog, how to reverse a ship, `JOURNEY.md` (lessons learned)
 
 ## Ship
 
@@ -19,4 +19,4 @@ Bump the same cache version in html query strings, `BUILD` in `app.js`, the SW c
 
 ## Rails (short)
 
-Static HTML/CSS/JS. Layered art (no fake CSS moon). Blue garden is home. Floating Dumpling is pink-only. Keep the joke egg. No extra NSFW. No force-push.
+Static HTML/CSS/JS. Layered art (no fake CSS moon). Blue garden is home. Floating Dumpling is pink-only. Joke egg removed (v18), no NSFW. No force-push.

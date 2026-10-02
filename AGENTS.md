@@ -40,7 +40,7 @@ originals/   # PNG masters, not served
 docs/        # handoff for humans and coding agents
 ```
 
-`setup-feedback.html` is intentionally an orphan page - do not add a link/button to it from index.html or the tab bar. That was tried and explicitly rejected: the shipped app lives on her phone, and dev/setup tooling has no business being reachable from her normal navigation.
+`setup-feedback.html` is intentionally an orphan page - do not add a link/button to it from index.html or the ☰ menu. That was tried and explicitly rejected: the shipped app lives on her phone, and dev/setup tooling has no business being reachable from her normal navigation.
 
 ## Ship (every visible change)
 
@@ -53,7 +53,7 @@ docs/        # handoff for humans and coding agents
 3. `git push origin master` (never `--force`).
 4. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=24**.
+Current cache as of this handoff: **v=30**. `docs/STATE.md` always has the live number.
 
 ## Product rules that already bit us
 
