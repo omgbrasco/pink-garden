@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 29;
+  const BUILD = 30;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -43,7 +43,10 @@
     sky: document.getElementById("sky"),
     garden: document.getElementById("garden-art"),
     mic: document.getElementById("mic"),
-    tabbar: document.getElementById("tabbar"),
+    menuBtn: document.getElementById("menu-btn"),
+    drawer: document.getElementById("drawer"),
+    scrim: document.getElementById("scrim"),
+    drSkinLabel: document.getElementById("dr-skin-label"),
     starsFar: document.getElementById("stars-far"),
     said: document.getElementById("said"),
     speech: document.getElementById("speech"),
@@ -56,7 +59,6 @@
     moonRow: document.getElementById("moon-row"),
     moonSwatches: document.getElementById("moon-swatches"),
     settingsCatch: document.getElementById("settings-catch"),
-    skinSwitch: document.getElementById("skin-switch"),
     streak: document.getElementById("streak"),
     streakN: document.getElementById("streak-n"),
     fbText: document.getElementById("fb-text"),
@@ -99,7 +101,14 @@
   els.stage.addEventListener("click", onStage);
   els.hudDone.addEventListener("click", function () { if (playing) endGame("Okay, pausing. The glows will wait."); });
   els.chips.addEventListener("click", onChip);
-  if (els.tabbar) els.tabbar.addEventListener("click", onTab);
+  if (els.menuBtn) els.menuBtn.addEventListener("click", function (e) { e.stopPropagation(); openMenu(); });
+  if (els.scrim) els.scrim.addEventListener("click", closeMenu);
+  if (els.drawer) els.drawer.addEventListener("click", onMenuPick);
+  document.addEventListener("click", function (e) {
+    const b = e.target.closest(".back[data-go]");
+    if (b) go(b.getAttribute("data-go"));
+  });
+  armSwipeClose();
   if (els.mic) els.mic.addEventListener("click", onMic);
   if (els.segSkin) els.segSkin.addEventListener("click", function (e) {
     const b = e.target.closest("button[data-skin]");
@@ -113,18 +122,19 @@
     const b = e.target.closest("button[data-moon]");
     if (b) setMoon(b.getAttribute("data-moon"));
   });
-  if (els.skinSwitch) els.skinSwitch.addEventListener("click", function () {
-    setSkin(play.skin === "blue" ? "pink" : "blue");
-  });
   if (els.fbRec) els.fbRec.addEventListener("click", onFbRec);
   if (els.fbClipClear) els.fbClipClear.addEventListener("click", clearFbClip);
   if (els.fbSend) els.fbSend.addEventListener("click", onFbSend);
   if (els.settingsCatch) els.settingsCatch.addEventListener("click", function () {
-    document.body.setAttribute("data-tab", "home");
-    els.tabbar.querySelectorAll("button").forEach(function (b) {
-      b.classList.toggle("on", b.getAttribute("data-tab") === "home");
-    });
+    go("home");
     startGame();
+  });
+  if (els.fbText) els.fbText.addEventListener("focus", function () {
+    // Keep the idea box above the keyboard: lift it to the top of Settings.
+    setTimeout(function () {
+      const box = document.getElementById("ideas");
+      if (box) box.scrollIntoView({ block: "start", behavior: "smooth" });
+    }, 250);
   });
   if (els.speech) els.speech.addEventListener("click", function (e) { e.stopPropagation(); hideSpeech(); });
   if (els.said) els.said.addEventListener("click", function (e) { e.stopPropagation(); els.said.hidden = true; clearTimeout(els.said._t); });
@@ -227,6 +237,10 @@
       });
     }
     if (els.moonRow) els.moonRow.hidden = play.skin !== "pink";
+    if (els.drSkinLabel) {
+      els.drSkinLabel.textContent = play.skin === "blue" ? "Pink garden" : "Blue night";
+      els.drSkinLabel.previousElementSibling.textContent = play.skin === "blue" ? "🌸" : "🌙";
+    }
     if (els.moonSwatches) {
       els.moonSwatches.querySelectorAll("button").forEach(function (b) {
         b.classList.toggle("sel", b.getAttribute("data-moon") === play.moon);
@@ -534,7 +548,7 @@
 
 
   function onStage(e) {
-    if (e.target.closest("#buddy") || e.target.closest("#hud")) return;
+    if (e.target.closest("#buddy") || e.target.closest("#hud") || e.target.closest("#menu-btn")) return;
     if (e.target.classList && e.target.classList.contains("firefly")) return;
     if (document.activeElement === els.box) els.box.blur();
     if (play.skin === "blue" && !playing) showSpeech("boop", false);
@@ -622,18 +636,50 @@
     if (msg) add("bot", msg);
   }
 
-  function onTab(e) {
-    const btn = e.target.closest("button[data-tab]");
-    if (!btn) return;
-    const tab = btn.getAttribute("data-tab");
-    document.body.setAttribute("data-tab", tab);
-    els.tabbar.querySelectorAll("button").forEach(function (b) {
-      b.classList.toggle("on", b === btn);
+  /* ============ side menu + screens ============ */
+  function go(screen) {
+    closeMenu();
+    document.body.setAttribute("data-tab", screen);
+    if (screen !== "home" && playing) endGame("");
+    if (screen === "chats") renderChats();
+    if (screen === "settings") { renderSettings(); renderFeedbackLog(); flushFeedbackQueue(); }
+    const sc = document.getElementById(screen + "-screen");
+    if (sc) sc.scrollTop = screen === "chats" ? sc.scrollHeight : 0;
+  }
+  function openMenu() {
+    if (document.activeElement === els.box) els.box.blur();
+    document.body.classList.add("menu-open");
+    els.drawer.removeAttribute("inert");
+    els.drawer.setAttribute("aria-hidden", "false");
+    els.menuBtn.setAttribute("aria-expanded", "true");
+  }
+  function closeMenu() {
+    if (!document.body.classList.contains("menu-open")) return;
+    document.body.classList.remove("menu-open");
+    els.drawer.setAttribute("inert", "");
+    els.drawer.setAttribute("aria-hidden", "true");
+    els.menuBtn.setAttribute("aria-expanded", "false");
+  }
+  function onMenuPick(e) {
+    const b = e.target.closest("button[data-go]");
+    if (!b) return;
+    const dest = b.getAttribute("data-go");
+    if (dest === "skin") { setSkin(play.skin === "blue" ? "pink" : "blue"); closeMenu(); return; }
+    if (dest === "catch") { go("home"); startGame(); return; }
+    go(dest);
+  }
+  function armSwipeClose() {
+    let x0 = null, y0 = 0;
+    [els.drawer, els.scrim].forEach(function (el) {
+      if (!el) return;
+      el.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+      el.addEventListener("touchend", function (e) {
+        if (x0 === null) return;
+        const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+        x0 = null;
+        if (dx < -50 && Math.abs(dx) > Math.abs(dy)) closeMenu();
+      }, { passive: true });
     });
-    if (tab !== "home" && playing) endGame("");
-    if (tab === "chats") renderChats();
-    if (tab === "settings") renderSettings();
-    if (tab === "feedback") { renderFeedbackLog(); flushFeedbackQueue(); }
   }
   let rec = null;
   let listening = false;

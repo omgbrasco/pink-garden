@@ -6,7 +6,7 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=24** (`BUILD = 24`, SW `dumpling-v24`)
+- Cache: **v=30** (`BUILD = 30`, SW `dumpling-v30`). `docs/STATE.md` has the latest.
 - Last ship: pink garden's `#garden` is now full-bleed (`inset:0`), matching blue. It was previously capped to the bottom ~52% of the screen with a flat CSS gradient filling the rest above it — but `garden.webp` already contains a complete painted sky, so that produced a hard, ugly seam. `moon.webp` shares the same crop as `garden.webp`, so alignment carried over automatically with no separate retuning.
 
 ## What she sees (default = blue garden)
@@ -17,7 +17,8 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 - Her lines: `#said`, faint at the top, then fade.
 - One glass composer pill: field + in-pill mic + send arrow.
 - Tap mic → waveform in the pill → SpeechRecognition transcript → `sendText`.
-- Tabs: **Home** (garden + composer, live per-message speech/thought bubbles), **Chats** (full scrollable transcript, permanent, never wipes), **Settings** (plain-English "how I work" note, Skin toggle, Light toggle, moon-color swatches when on pink, "Catch fireflies" button).
+- No tab bar (removed v30). Home is just the garden, Dumpling's bubble, and the composer.
+- ☰ top-left opens a slide-out menu: streak in the header, then **Chat history** (full transcript, never wipes), switch garden, **Catch fireflies**, **Settings** (Skin, Light, moon swatches on pink, "Ideas for Braedon" box that syncs to the gist, Catch fireflies, "How I work" note). Chat history and Settings are full screens with a back arrow.
 - Quick-action chips (Pink garden, Catch fireflies, night/morning, etc.) still float above the composer on Home while she's actively typing — those are shortcuts into chat, separate from the real controls in Settings.
 
 ## Pink garden (opt-in)

@@ -16,8 +16,15 @@ Phase 2 leftovers (not done): simple to-do/checklist. Local reminders/notificati
 
 Phase 3: variety in the firefly game so it doesn't get stale; expand the idle-thought pool past 5 lines; natural "go enjoy your day" closing lines instead of open-ended engagement.
 
+## Make it useful for her (ideas, Braedon picks order)
+
+- **Lists** (top pick, already the Phase 2 leftover): "add oat milk to my list", "what's on my list", "done with oat milk". Local, works like notes.
+- **Countdowns**: "how many days until our trip?" Dates set by her or by Braedon in the repo.
+- **A daily note from Braedon**: he writes a batch into the repo, one unlocks each morning. No backend needed.
+
 ## Next (optional, hired hands)
 
+- Pink garden: Dumpling's reply bubbles sit on top of the floating dumpling (was like this before v30 too). Needs a call on where he floats.
 - Speech-bubble nudge on 16 Pro. Ask for a screenshot first.
 - Version git tags when a real slice ships (`v0.19.0` or keep cache numbers).
 - First `docs/jobs/` file only when Claude/Codex is hired for a slice.
