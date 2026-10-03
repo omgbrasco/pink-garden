@@ -77,6 +77,7 @@ As a home-screen app, subtract the status bar from the height. Test with the hom
   - Data lives on one phone. No sync and no backup.
   - Push notifications need a server to send them (iOS 16.4+, home-screen apps only, the person has to allow them). A web app can't schedule its own alarm.
   - Mic and dictation in Safari are flaky. Always offer typing too.
+- **Reminders without a server:** save the due time. When the app opens, comes back to the front, or a timer ticks, the character says it. Be honest in the reply: "come see me after 5". It's free and private, but the app has to be opened.
 
 ## 6. Design rules
 

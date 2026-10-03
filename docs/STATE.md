@@ -6,7 +6,7 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
-Cache **v31** (`BUILD = 31`, SW `dumpling-v31`). v31: Settings = Garden + Feedback only (type it / say it). How I work and the Settings fireflies button removed. What's-new card on first open after an update (`NEWS` list in app.js, `dumpling-seen-v1` key). See CHANGELOG.
+Cache **v31** (`BUILD = 31`, SW `dumpling-v31`). v31: Settings = Garden + Feedback only (type it / say it). How I work and the Settings fireflies button removed. What's-new card on first open after an update (`NEWS` list in app.js, `dumpling-seen-v1` key). My list + in-app reminders (`dumpling-list-v1`; no notifications, no server, Braedon's call). See CHANGELOG.
 
 Cache **v30** (`BUILD = 30`, SW `dumpling-v30`). v30: tab bar removed. Home = Dumpling + speech bubble + composer. ☰ top-left opens a slide-out menu (Chat history, switch garden, Catch fireflies, Settings). Feedback now lives inside Settings as "Ideas for Braedon". Streak is in the menu header. See CHANGELOG.
 

@@ -74,6 +74,21 @@
         <div id="chats-list"></div>
       </div>
     </div>
+    <div id="list-screen" class="screen">
+      <div class="screen-inner">
+        <div class="screen-head"><button type="button" class="back" data-go="home" aria-label="Back"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2>My list</h2></div>
+        <form id="list-add" class="list-add" autocomplete="off">
+          <input id="list-input" maxlength="120" enterkeyhint="done" placeholder="Add something…" aria-label="Add to my list">
+          <button type="submit" aria-label="Add"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+        </form>
+        <div id="list-items"></div>
+        <div id="list-empty" hidden>
+          <img src="assets/dumpling-avatar.webp?v=31" alt="">
+          <p>Try: “add milk to my list”<br>or “remind me to call mom at 5”</p>
+        </div>
+        <button type="button" id="list-clear" hidden>Clear done</button>
+      </div>
+    </div>
     <div id="settings-screen" class="screen">
       <div class="screen-inner">
         <div class="screen-head"><button type="button" class="back" data-go="home" aria-label="Back"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2>Settings</h2></div>
@@ -124,6 +139,7 @@
         </div>
       </div>
       <div class="dr-list">
+        <button type="button" data-go="list"><span class="dr-ico">📝</span>My list<span id="dr-list-n" class="dr-count" hidden></span></button>
         <button type="button" data-go="chats"><span class="dr-ico">💬</span>Chat history</button>
         <button type="button" data-go="skin" id="dr-skin"><span class="dr-ico">🌸</span><span id="dr-skin-label">Pink garden</span></button>
         <button type="button" data-go="catch"><span class="dr-ico">✨</span>Catch fireflies</button>
@@ -133,7 +149,7 @@
     <div id="news" hidden>
       <div class="news-card" role="dialog" aria-modal="true" aria-labelledby="news-text">
         <img class="news-dumpling" src="assets/dumpling-avatar.webp?v=31" alt="">
-        <div class="news-bubble" id="news-text"></div>
+        <div class="news-bubble"><div id="news-text"></div><div class="news-dots" id="news-dots" hidden></div></div>
         <button type="button" id="news-go" class="news-go">Show me</button>
         <button type="button" id="news-ok" class="news-ok">Got it</button>
       </div>

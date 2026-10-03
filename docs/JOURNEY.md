@@ -7,7 +7,7 @@ What building this taught me, so the next project starts smarter.
 ## Entries
 
 ### v31 (2026-10-03): less reading, more showing
-- Changed: Settings cut to Garden + Feedback ("type it or say it"). What's-new card: Dumpling explains each update once.
+- Changed: Settings cut to Garden + Feedback ("type it or say it"). What's-new card: Dumpling explains each update once. My list + reminders, kept in the app with no server.
 - Bit me: a startup-order bug that would have silently stopped feedback sending. Only caught because the size test fails on any JS error.
 - Do again: always fail tests on JS errors. Send screenshots of the finished product, not descriptions.
 

@@ -18,8 +18,8 @@ Phase 3: variety in the firefly game so it doesn't get stale; expand the idle-th
 
 ## Make it useful for her (ideas, Braedon picks order)
 
-- **Lists** (next build, Braedon likes it): "add oat milk to my list", "what's on my list", "done with oat milk". Local, works like notes.
-- **Reminders**: "remind me to call mom at 5". Real phone notifications need a small server to send them at the right time (iOS 16.4+, home-screen app, she taps Allow once). That breaks the no-backend rule, so it's Braedon's call. No-server version: Dumpling reminds her the next time she opens the app.
+- **Lists**: done in v31 (`dumpling-list-v1`). It was: "add oat milk to my list", "what's on my list", "done with oat milk". Local, works like notes.
+- **Reminders**: in-app version done in v31; Braedon picked in-app, no server. The original idea, kept for reference: "remind me to call mom at 5". Real phone notifications need a small server to send them at the right time (iOS 16.4+, home-screen app, she taps Allow once). That breaks the no-backend rule, so it's Braedon's call. No-server version: Dumpling reminds her the next time she opens the app.
 - **Countdowns**: "how many days until our trip?" Dates set by her or by Braedon in the repo.
 - **A daily note from Braedon**: he writes a batch into the repo, one unlocks each morning. No backend needed.
 

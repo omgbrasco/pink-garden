@@ -121,7 +121,8 @@ body.night #veil {
 }
 body.skin-blue .screen { background: #0c1830; color: #fff; }
 body[data-tab="chats"] #chats-screen,
-body[data-tab="settings"] #settings-screen { display: block; }
+body[data-tab="settings"] #settings-screen,
+body[data-tab="list"] #list-screen { display: block; }
 body:not([data-tab="home"]) #stage,
 body:not([data-tab="home"]) #chat { display: none !important; }
 .screen-inner { max-width: 480px; margin: 0 auto; }
@@ -427,6 +428,12 @@ body.skin-blue #drawer { background: #0c1830; color: #fff; }
 .dr-list button:active { background: rgba(122,45,102,.1); }
 body.skin-blue .dr-list button:active { background: rgba(255,255,255,.12); }
 .dr-ico { width: 24px; text-align: center; font-size: 18px; }
+.dr-count {
+  margin-left: auto; min-width: 24px; height: 24px; padding: 0 7px; border-radius: 999px;
+  display: grid; place-items: center; font-size: 12px; font-weight: 800;
+  background: #ff5eac; color: #fff;
+}
+.dr-count[hidden] { display: none; }
 @keyframes drift {
   0%,100% { transform: scale(1) translateY(0); }
   50% { transform: scale(1.045) translateY(-6px); }
@@ -533,3 +540,60 @@ body:not(.skin-blue) #speech { display: none !important; }
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cardUp { from { opacity: 0; transform: translateY(24px) scale(.96); } to { opacity: 1; transform: none; } }
+
+/* My list: things she asked Dumpling to keep, some with a reminder time. */
+.list-add {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 14px;
+  padding: 5px 5px 5px 14px; border-radius: 999px;
+  border: 1px solid rgba(122,45,102,.18); background: rgba(122,45,102,.06);
+}
+body.skin-blue .list-add { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.08); }
+.list-add input {
+  flex: 1; min-width: 0; border: 0; background: transparent; outline: none;
+  padding: 9px 0; font-size: 16px; color: inherit; font-family: inherit;
+}
+.list-add button {
+  width: 38px; height: 38px; flex: 0 0 auto; border: 0; border-radius: 50%;
+  display: grid; place-items: center; background: #ff5eac; color: #fff;
+}
+#list-items { display: flex; flex-direction: column; gap: 6px; }
+.li {
+  display: flex; align-items: center; gap: 12px; min-height: 52px;
+  padding: 8px 12px 8px 8px; border-radius: 16px;
+  background: rgba(122,45,102,.06);
+}
+body.skin-blue .li { background: rgba(255,255,255,.07); }
+.li-check {
+  width: 36px; height: 36px; flex: 0 0 auto; border: 0; padding: 0; border-radius: 50%;
+  display: grid; place-items: center; background: none; color: inherit;
+}
+.li-check i {
+  width: 24px; height: 24px; border-radius: 50%; border: 2px solid currentColor; opacity: .45;
+  display: grid; place-items: center; font-style: normal; font-size: 14px; font-weight: 900;
+}
+.li.done .li-check i { opacity: 1; border-color: #ff5eac; background: #ff5eac; color: #fff; }
+.li-text { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
+.li.done .li-text { text-decoration: line-through; opacity: .45; }
+.li-when {
+  flex: 0 0 auto; padding: 4px 9px; border-radius: 999px;
+  font-size: 12px; font-weight: 700; white-space: nowrap;
+  background: rgba(122,45,102,.1);
+}
+body.skin-blue .li-when { background: rgba(255,255,255,.12); }
+.li-when.due { background: #ff5eac; color: #fff; }
+.li.done .li-when { display: none; }
+#list-empty { text-align: center; padding: 34px 10px 10px; }
+#list-empty[hidden] { display: none; }
+#list-empty img { width: 92px; animation: idle 2.8s ease-in-out infinite; }
+#list-empty p { margin-top: 12px; font-size: 15px; font-weight: 600; line-height: 1.5; opacity: .75; }
+#list-clear {
+  display: block; margin: 16px auto 0; padding: 10px 18px; border: 0; border-radius: 999px;
+  background: none; color: inherit; font-size: 14px; font-weight: 700; opacity: .6;
+}
+#list-clear[hidden] { display: none; }
+
+/* What's-new card: dots when there's more than one step. */
+.news-dots { display: flex; gap: 6px; justify-content: center; margin-top: 12px; }
+.news-dots[hidden] { display: none; }
+.news-dots i { width: 7px; height: 7px; border-radius: 50%; background: #ffd0ea; }
+.news-dots i.on { background: #ff5eac; width: 18px; border-radius: 99px; }

@@ -7,16 +7,22 @@
   const STREAK_KEY = "dumpling-streak-v1";
   const NOTES_KEY = "dumpling-notes-v1";
   const NOTES_MAX = 40;
+  const LIST_KEY = "dumpling-list-v1";
+  const LIST_MAX = 100;
   const FB_QUEUE_KEY = "dumpling-fb-queue-v1";
   const FB_TOKEN_KEY = "dumpling-fb-token";
   const FB_GIST_KEY = "dumpling-fb-gist";
   const FB_FILE = "dumpling-feedback.json";
   const FB_MAX_SEC = 90;
   const SEEN_KEY = "dumpling-seen-v1";
-  // What's new card: add one entry per update she'd notice. Two short lines, no paragraphs.
-  // She sees the newest entry she hasn't seen yet, once. `show: "menu"` makes "Show me" open the menu.
+  // What's new card: add one entry per update she'd notice. Each step is two short lines, no paragraphs.
+  // She sees the newest entry she hasn't seen yet, once. `show: "menu"` makes the last button open the menu.
   const NEWS = [
-    { v: 31, lines: ["I got a little makeover!", "Tap ☰ for our chats, garden & feedback."], show: "menu" }
+    { v: 31, show: "menu", steps: [
+      ["I got a little makeover!", "Tap ☰ for our chats, garden & feedback."],
+      ["I can keep your list now 📝", "Say “add milk to my list”."],
+      ["And I'll remind you ⏰", "Say “remind me to call mom at 5”."]
+    ] }
   ];
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -71,6 +77,13 @@
     fbRecLabel: document.getElementById("fb-rec-label"),
     fbSend: document.getElementById("fb-send"),
     fbStatus: document.getElementById("fb-status"),
+    listItems: document.getElementById("list-items"),
+    listEmpty: document.getElementById("list-empty"),
+    listClear: document.getElementById("list-clear"),
+    listAdd: document.getElementById("list-add"),
+    listInput: document.getElementById("list-input"),
+    drListN: document.getElementById("dr-list-n"),
+    newsDots: document.getElementById("news-dots"),
     news: document.getElementById("news"),
     newsText: document.getElementById("news-text"),
     newsGo: document.getElementById("news-go"),
@@ -88,6 +101,8 @@
   let thoughtTimer = 0;
   let idleTimer = 0;
   let fbFlushing = false, fbFlushAgain = false;
+  let holdUntil = 0; // keep a reminder on screen; idle chatter waits
+  let newsItem = null, newsStep = 0;
 
   applyPlay();
   spawnStars();
@@ -102,6 +117,12 @@
   bumpStreak();
   flushFeedbackQueue();
   showNews();
+  renderMenuCount();
+  setTimeout(checkReminders, 1600);
+  setInterval(checkReminders, 20000);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") setTimeout(checkReminders, 600);
+  });
 
   els.form.addEventListener("submit", onSubmit);
   els.buddy.addEventListener("click", boop);
@@ -136,8 +157,33 @@
   });
   if (els.newsOk) els.newsOk.addEventListener("click", closeNews);
   if (els.newsGo) els.newsGo.addEventListener("click", function () {
+    if (newsStep < newsItem.steps.length - 1) { newsStep++; renderNewsStep(); return; }
     closeNews();
-    if (els.newsGo.getAttribute("data-show") === "menu") openMenu();
+    if (newsItem.show === "menu") openMenu();
+  });
+  if (els.listAdd) els.listAdd.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const v = (els.listInput.value || "").trim();
+    if (!v) return;
+    const w = parseWhen(v);
+    addListItem(cleanTask(w.rest) || v, w.due);
+    els.listInput.value = "";
+    renderList();
+  });
+  if (els.listItems) els.listItems.addEventListener("click", function (e) {
+    const row = e.target.closest(".li");
+    if (!row) return;
+    const list = loadList();
+    const it = list.find(function (i) { return i.id === row.getAttribute("data-id"); });
+    if (!it) return;
+    it.done = !it.done;
+    saveList(list);
+    renderList();
+    try { navigator.vibrate && navigator.vibrate(8); } catch (err) {}
+  });
+  if (els.listClear) els.listClear.addEventListener("click", function () {
+    saveList(loadList().filter(function (i) { return !i.done; }));
+    renderList();
   });
   if (els.news) els.news.addEventListener("click", function (e) { if (e.target === els.news) closeNews(); });
   if (els.fbText) els.fbText.addEventListener("focus", function () {
@@ -385,7 +431,7 @@
   function armIdle() {
     clearTimeout(idleTimer);
     idleTimer = setTimeout(function () {
-      if (!busy && !playing && document.activeElement !== els.box) {
+      if (!busy && !playing && Date.now() > holdUntil && document.activeElement !== els.box) {
         if (play.skin === "blue") showSpeech(pick(IDLE_THOUGHTS), false);
         else showThought(pick(IDLE_THOUGHTS), false);
       }
@@ -422,7 +468,18 @@
       endGame("Okay, pausing. The glows will wait.");
       return null;
     }
-    if (/what did i (tell|say)|remind me( what)?|any notes|what do you remember|remember anything|remember something|do you remember/.test(s)) {
+    const remind = t.match(/^(?:hey[,!]?\s+)?(?:can you\s+|could you\s+|please\s+|dumpling[,!]?\s+)*(?:remind me(?!\s+what\b)|set a reminder)\b[\s,:]*(.*)$/i);
+    const rememberTo = !remind && t.match(/^(?:please\s+)?remember to\s+(.+)$/i);
+    if (remind || (rememberTo && parseWhen(rememberTo[1]).due)) {
+      return addReminder(remind ? remind[1] : rememberTo[1]);
+    }
+    const addM = t.match(/^(?:please\s+|can you\s+|could you\s+)*(?:add|put|stick|throw)\s+(.+?)\s+(?:to|on|onto|in)\s+(?:my|the)\s+(?:shopping\s+|grocery\s+|to-?do\s+)?list\b/i);
+    if (addM) return addToList(addM[1]);
+    if (/\b(what'?s|whats|what is) on (my|the) list\b|^(show|read|check)( me)? (my|the) list\b|^(my|the) list[?!.]*$|\bwhat do i need\b/i.test(t)) return readList();
+    if (/^(clear|empty|wipe) (my |the )?list\b/i.test(t)) { saveList([]); return "Fresh list ✨"; }
+    const doneM = t.match(/^(?:i\s+)?(?:done with|got|bought|finished|did|picked up|remove|cross off|check off|delete|take off)\s+(.+?)(?:\s+(?:from|off)\s+(?:my|the)\s+list)?[.!]*$/i);
+    if (doneM) { const r = checkOffByName(doneM[1]); if (r) return r; }
+    if (/what did i (tell|say)|remind me what|any notes|what do you remember|remember anything|remember something|do you remember/.test(s)) {
       return recallNote();
     }
     const noteMatch = t.match(/^(remember|note to self|don'?t forget|keep this|save this)[:,]?\s+(.+)/i);
@@ -537,6 +594,7 @@
             ["Pink garden", "pink garden"],
             ["Catch fireflies", "catch fireflies"],
             [play.night ? "Make it morning" : "Make it night", play.night ? "make it morning" : "make it night"],
+            ["My list", "what's on my list"],
             ["What did I tell you?", "what did i tell you"]
           ]
         : [
@@ -544,6 +602,7 @@
             ["Catch fireflies", "catch fireflies"],
             [play.night ? "Make it morning" : "Make it night", play.night ? "make it morning" : "make it night"],
             ["Blue garden", "blue garden"],
+            ["My list", "what's on my list"],
             ["What did I tell you?", "what did i tell you"]
           ]);
     els.chips.innerHTML = "";
@@ -653,6 +712,8 @@
     document.body.setAttribute("data-tab", screen);
     if (screen !== "home" && playing) endGame("");
     if (screen === "chats") renderChats();
+    if (screen === "list") renderList();
+    if (screen === "home") setTimeout(checkReminders, 400);
     if (screen === "settings") { renderSettings(); flushFeedbackQueue(); }
     const sc = document.getElementById(screen + "-screen");
     if (sc) sc.scrollTop = screen === "chats" ? sc.scrollHeight : 0;
@@ -953,20 +1014,207 @@
     try { seen = parseInt(localStorage.getItem(SEEN_KEY) || "0", 10) || 0; } catch (e) {}
     const unseen = NEWS.filter(function (n) { return n.v > seen; });
     if (!unseen.length) return;
-    const item = unseen[unseen.length - 1];
+    newsItem = unseen[unseen.length - 1];
+    newsStep = 0;
+    renderNewsStep();
+    els.news.hidden = false;
+  }
+  function renderNewsStep() {
+    const steps = newsItem.steps, last = newsStep === steps.length - 1;
     els.newsText.innerHTML = '<span class="tag">NEW ✨</span>';
-    item.lines.forEach(function (line) {
+    steps[newsStep].forEach(function (line) {
       const p = document.createElement("p");
       p.textContent = line;
       els.newsText.appendChild(p);
     });
-    els.newsGo.hidden = !item.show;
-    els.newsGo.setAttribute("data-show", item.show || "");
-    els.news.hidden = false;
+    els.newsGo.textContent = last ? (newsItem.show ? "Show me" : "Yay!") : "Next";
+    els.newsDots.hidden = steps.length < 2;
+    els.newsDots.innerHTML = steps.map(function (_, i) { return i === newsStep ? '<i class="on"></i>' : "<i></i>"; }).join("");
   }
   function closeNews() {
     els.news.hidden = true;
     try { localStorage.setItem(SEEN_KEY, String(BUILD)); } catch (e) {}
+    setTimeout(checkReminders, 500);
+  }
+
+  /* ============ my list + reminders (no server: Dumpling reminds her in the app) ============ */
+  function loadList() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(LIST_KEY) || "[]");
+      return Array.isArray(raw) ? raw : [];
+    } catch (e) { return []; }
+  }
+  function saveList(list) {
+    if (list.length > LIST_MAX) list.splice(0, list.length - LIST_MAX);
+    try { localStorage.setItem(LIST_KEY, JSON.stringify(list)); } catch (e) {}
+    renderMenuCount();
+  }
+  function addListItem(text, due) {
+    const list = loadList();
+    const it = { id: Date.now() + "-" + Math.random().toString(36).slice(2, 7), text: text, done: false, t: Date.now() };
+    if (due) { it.due = due; it.reminded = false; }
+    list.push(it);
+    saveList(list);
+  }
+  function tidyItem(x) {
+    return x.replace(/^(and|or)\s+/i, "").replace(/^(some|a|an|the)\s+/i, "").replace(/[.!?]+$/, "").trim();
+  }
+  function addToList(raw) {
+    const items = raw.split(/\s*,\s*/).map(tidyItem).filter(Boolean);
+    if (!items.length) return "Add what? Try “add milk to my list”.";
+    items.forEach(function (x) { addListItem(x); });
+    return items.length === 1 ? "Added “" + items[0] + "” 📝" : "Added " + items.length + " things 📝";
+  }
+  function readList() {
+    const open = loadList().filter(function (i) { return !i.done; });
+    if (!open.length) return "Your list is empty ✨ Say “add milk to my list”.";
+    const names = open.slice(0, 4).map(function (i) { return i.text; });
+    return "📝 " + names.join(" · ") + (open.length > 4 ? " · +" + (open.length - 4) + " more" : "");
+  }
+  function checkOffByName(q) {
+    const want = tidyItem(q.toLowerCase().replace(/^my\s+/, ""));
+    if (want.length < 2) return null;
+    const list = loadList();
+    const open = list.filter(function (i) { return !i.done; });
+    const it = open.find(function (i) { return i.text.toLowerCase() === want; }) ||
+      open.find(function (i) { const x = i.text.toLowerCase(); return x.indexOf(want) !== -1 || want.indexOf(x) !== -1; });
+    if (!it) return null; // not on her list: let the rest of chat handle it ("got it", etc.)
+    it.done = true;
+    saveList(list);
+    return "Checked off “" + it.text + "” ✓";
+  }
+  function cleanTask(x) {
+    return x.replace(/\s+/g, " ").trim()
+      .replace(/^(to|that|about|i need to|i have to|me to)\s+/i, "")
+      .replace(/\s+(please|pls)$/i, "")
+      .replace(/^(at|on|in)\s+|\s+(at|on|in|to)$/i, "")
+      .replace(/[.!?,]+$/, "").trim();
+  }
+  function addReminder(rest) {
+    const w = parseWhen(rest);
+    const task = cleanTask(w.rest);
+    if (!task) return "Remind you of what? Try “remind me to call mom at 5”.";
+    addListItem(task, w.due);
+    if (!w.due) return "On your list 📝 Add a time and I'll remind you too.";
+    return "Got it ⏰ Come see me " + whenSentence(w.due) + " and I'll remind you.";
+  }
+  // Finds a time in plain words ("at 5", "5:30pm", "in 20 minutes", "tomorrow", "tonight", "friday")
+  // and returns it with the rest of the sentence.
+  function parseWhen(str) {
+    let s = " " + str + " ";
+    const now = new Date();
+    let m, day = null, hh = null, mm = 0, ampm = null, partHint = null;
+    function cut(re) { const r = s.match(re); if (r) s = s.replace(r[0], " "); return r; }
+    if ((m = cut(/\s(?:in|within)\s+(an?|half an?|\d+(?:\.\d+)?)\s*(m|mins?|minutes?|h|hrs?|hours?)\b/i))) {
+      const n = /^half/i.test(m[1]) ? 0.5 : /^an?$/i.test(m[1]) ? 1 : parseFloat(m[1]);
+      const unit = /^h/i.test(m[2]) ? 3600000 : 60000;
+      return { due: Date.now() + n * unit, rest: s };
+    }
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    if (cut(/\stomorrow\b/i)) day = new Date(today.getTime() + 864e5);
+    if ((m = cut(/\s(?:on\s+)?(sun|mon|tues|wednes|thurs|fri|satur)day\b/i))) {
+      const target = ["sun", "mon", "tues", "wednes", "thurs", "fri", "satur"].indexOf(m[1].toLowerCase());
+      const ahead = ((target - today.getDay() + 7) % 7) || 7;
+      day = new Date(today.getTime() + ahead * 864e5);
+    }
+    if (cut(/\stonight\b/i)) { day = day || today; partHint = 20; }
+    if ((m = cut(/\s(?:this\s+)?(morning|afternoon|evening|night)\b/i))) {
+      day = day || today;
+      partHint = { morning: 9, afternoon: 15, evening: 18, night: 20 }[m[1].toLowerCase()];
+    }
+    if (cut(/\s(?:at\s+)?noon\b/i)) { hh = 12; }
+    else if (cut(/\s(?:at\s+)?midnight\b/i)) { hh = 0; if (!day) day = new Date(today.getTime() + 864e5); }
+    else if ((m = cut(/\s(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)(?=\s|[.,!?]|$)/i))) {
+      hh = parseInt(m[1], 10) % 12; mm = parseInt(m[2] || "0", 10); ampm = /^p/i.test(m[3]) ? "pm" : "am";
+      if (ampm === "pm") hh += 12;
+    } else if ((m = cut(/\sat\s+(\d{1,2})(?::(\d{2}))?\b/i))) {
+      hh = parseInt(m[1], 10); mm = parseInt(m[2] || "0", 10);
+    }
+    if (hh === null && day === null) return { due: null, rest: str };
+    if (hh !== null && hh > 23) return { due: null, rest: str };
+    if (hh === null) { hh = partHint || 9; mm = 0; }
+    else if (!ampm && hh >= 1 && hh <= 11) {
+      // "at 5" with no am/pm: evening words mean pm; otherwise pick the next 5 o'clock coming up.
+      if (partHint && partHint >= 15) hh += 12;
+      else if (partHint === 9) { /* morning: keep am */ }
+      else if (day) { if (hh < 7) hh += 12; }
+      else {
+        const am = new Date(today.getTime()); am.setHours(hh, mm, 0, 0);
+        if (am.getTime() <= now.getTime()) hh += 12;
+      }
+    }
+    const base = day || today;
+    const when = new Date(base.getFullYear(), base.getMonth(), base.getDate(), hh, mm, 0, 0);
+    if (!day && when.getTime() <= now.getTime()) when.setDate(when.getDate() + 1);
+    return { due: when.getTime(), rest: s };
+  }
+  function whenStr(ts) {
+    const d = new Date(ts), now = new Date();
+    const time = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    const days = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
+    if (days === 0) return time;
+    if (days === 1) return "tomorrow " + time;
+    if (days > 1 && days < 7) return d.toLocaleDateString([], { weekday: "short" }) + " " + time;
+    return d.toLocaleDateString([], { month: "short", day: "numeric" }) + " " + time;
+  }
+  function whenSentence(ts) {
+    // "after 5:00 PM", "tomorrow after 9:00 AM", "Monday after 5:00 PM"
+    const d = new Date(ts), now = new Date();
+    const time = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    const days = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
+    if (days === 0) return "after " + time;
+    if (days === 1) return "tomorrow after " + time;
+    if (days > 1 && days < 7) return d.toLocaleDateString([], { weekday: "long" }) + " after " + time;
+    return d.toLocaleDateString([], { month: "short", day: "numeric" }) + " after " + time;
+  }
+  function checkReminders() {
+    if (els.news && !els.news.hidden) return;
+    if (document.body.getAttribute("data-tab") !== "home" || document.visibilityState === "hidden") return;
+    const list = loadList(), now = Date.now();
+    const due = list.filter(function (i) { return !i.done && i.due && i.due <= now && !i.reminded; });
+    if (!due.length) return;
+    due.forEach(function (i) { i.reminded = true; });
+    saveList(list);
+    const msg = "⏰ Don't forget: " + due[0].text + (due.length > 1 ? " (+" + (due.length - 1) + " more on your list)" : "");
+    holdUntil = now + 15000;
+    if (play.skin === "blue") { pushHistory("bot", msg); showSpeech(msg, false, 15000); }
+    else add("bot", msg);
+    try { navigator.vibrate && navigator.vibrate([20, 60, 20]); } catch (e) {}
+  }
+  function renderList() {
+    if (!els.listItems) return;
+    const list = loadList(), now = Date.now();
+    const sorted = list.slice().sort(function (a, b) {
+      return (a.done - b.done) || ((a.due || 9e15) - (b.due || 9e15)) || (a.t - b.t);
+    });
+    els.listItems.innerHTML = "";
+    sorted.forEach(function (i) {
+      const row = document.createElement("div");
+      row.className = "li" + (i.done ? " done" : "");
+      row.setAttribute("data-id", i.id);
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = "li-check";
+      btn.setAttribute("aria-label", i.done ? "Not done" : "Done");
+      btn.innerHTML = "<i>" + (i.done ? "✓" : "") + "</i>";
+      const tx = document.createElement("span");
+      tx.className = "li-text"; tx.textContent = i.text;
+      row.appendChild(btn); row.appendChild(tx);
+      if (i.due) {
+        const w = document.createElement("span");
+        w.className = "li-when" + (i.due <= now ? " due" : "");
+        w.textContent = "⏰ " + whenStr(i.due);
+        row.appendChild(w);
+      }
+      els.listItems.appendChild(row);
+    });
+    els.listEmpty.hidden = list.length > 0;
+    els.listClear.hidden = !list.some(function (i) { return i.done; });
+  }
+  function renderMenuCount() {
+    if (!els.drListN) return;
+    const n = loadList().filter(function (i) { return !i.done; }).length;
+    els.drListN.textContent = String(n);
+    els.drListN.hidden = n === 0;
   }
   function registerWorker() {
     if (!("serviceWorker" in navigator)) return;

@@ -50,7 +50,7 @@ docs/        # handoff for humans and coding agents
    - `app.js` `const BUILD = N`
    - `sw.js` `dumpling-vN`
    - `manifest.webmanifest` `start_url` and icon `?v=N`
-2. If she'd notice the change, add one `NEWS` entry at the top of `app.js`: two short lines, plus `show` if a button can show it. That's the what's-new card she sees once.
+2. If she'd notice the change, add one `NEWS` entry at the top of `app.js`: one or more steps of two short lines, plus `show` if the last button can show it. That's the what's-new card she sees once.
 3. Commit with a short why-message, open a PR, and send Braedon phone screenshots of the finished product.
 4. Merge to `master` when Braedon says so (never `--force`).
 5. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
