@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v31** (`BUILD = 31`, SW `dumpling-v31`). v31: Settings = Garden + Feedback only (type it / say it). How I work and the Settings fireflies button removed. What's-new card on first open after an update (`NEWS` list in app.js, `dumpling-seen-v1` key). See CHANGELOG.
+
 Cache **v30** (`BUILD = 30`, SW `dumpling-v30`). v30: tab bar removed. Home = Dumpling + speech bubble + composer. ☰ top-left opens a slide-out menu (Chat history, switch garden, Catch fireflies, Settings). Feedback now lives inside Settings as "Ideas for Braedon". Streak is in the menu header. See CHANGELOG.
 
 Cache **v29** (`BUILD = 29`, SW `dumpling-v29`). v29: chat reply matching fixed so everyday words stop triggering commands ("tired" no longer = red moon, "long day" no longer = morning, etc.), dead joke-egg reply removed. See CHANGELOG.
@@ -22,11 +24,11 @@ Default skin is the blue garden. Pink garden is opt-in via Settings, or the swit
 
 Grok Bot **Dumpling** is retired. Hired hands (Claude Code or Codex) open this folder. No replacement Grok bot.
 
-**First network call this app makes, ever:** the Feedback tab, on purpose (see AGENTS.md). Everything else stays 100% local. The "How I work" panel in Settings was updated to say this honestly - don't let it drift back to claiming zero network activity while the Feedback tab exists.
+**First network call this app makes, ever:** Feedback (in Settings), on purpose (see AGENTS.md). Everything else stays 100% local. The "How I work" panel was removed in v31 (Braedon's call: less reading). If any privacy note comes back, it must say Feedback goes to Braedon.
 
 ## Not wired
 
-- Feedback sync needs Braedon to actually create a private gist + a gist-scoped token and enter both in Settings > Feedback sync on his phone AND hers. Until that's done, her entries queue locally on her phone and nothing is lost, they just don't reach him yet.
+- Feedback sync needs Braedon to actually create a private gist + a gist-scoped token and enter both on `setup-feedback.html` on his phone AND hers. Until that's done, her entries queue locally on her phone and nothing is lost, they just don't reach him yet.
 - Speech bubble `#speech` may need a 16 Pro nudge. Screenshot before guessing.
 - iOS page dictation is flaky in Safari. No cloud STT for the Feedback tab's raw voice memos either - they're saved as an audio clip only, not transcribed (no backend to do that without breaking the no-LLM rule).
 - `originals/dumpling-icon-landscape.png` is unused. Keep. Do not serve.

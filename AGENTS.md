@@ -18,6 +18,7 @@ Read `docs/HANDOFF.md` before you touch code. Read `docs/REVERSING.md` before an
 - Sandbox: moon/sky/skins, localStorage play state, firefly mini-game, chat replies from `app.js` dictionaries.
 - She must never leave the garden (no external links).
 - Keep it cute, simple, safe, playful.
+- Show, don't tell (v31, Braedon's call): no paragraphs in the app. Teach new things with the what's-new card, not text in Settings.
 - The joke egg was removed (v18, Braedon's call). Do not add it or any other NSFW back.
 - iPhone 13 first, then iPhone 16 Pro. Safe areas, `viewport-fit=cover`, home-screen capable.
 - Pinch-zoom, double-tap-zoom, and page rubber-band/bounce are deliberately killed (viewport meta + CSS `overscroll-behavior` + JS `gesturestart`/multi-touch guards in `app.js`). Do not remove these; she and Braedon are the only two users and it should feel like a fixed native screen, not a webpage.
@@ -49,11 +50,12 @@ docs/        # handoff for humans and coding agents
    - `app.js` `const BUILD = N`
    - `sw.js` `dumpling-vN`
    - `manifest.webmanifest` `start_url` and icon `?v=N`
-2. Commit on `master` with a short why-message.
-3. `git push origin master` (never `--force`).
-4. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
+2. If she'd notice the change, add one `NEWS` entry at the top of `app.js`: two short lines, plus `show` if a button can show it. That's the what's-new card she sees once.
+3. Commit with a short why-message, open a PR, and send Braedon phone screenshots of the finished product.
+4. Merge to `master` when Braedon says so (never `--force`).
+5. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=30**. `docs/STATE.md` always has the live number.
+Current cache as of this handoff: **v=31**. `docs/STATE.md` always has the live number.
 
 ## Product rules that already bit us
 

@@ -10,13 +10,13 @@
 <meta name="theme-color" content="#ff8fc5">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
-<link rel="apple-touch-icon" href="assets/dumpling-icon.png?v=30">
-<link rel="manifest" href="manifest.webmanifest?v=30">
-<link rel="preload" as="image" href="assets/skin-blue.webp?v=30">
-<link rel="preload" as="image" href="assets/garden.webp?v=30">
-<link rel="preload" as="image" href="assets/moon.webp?v=30">
-<link rel="preload" as="image" href="assets/dumpling-avatar.webp?v=30">
-<link rel="stylesheet" href="styles.css?v=30">
+<link rel="apple-touch-icon" href="assets/dumpling-icon.png?v=31">
+<link rel="manifest" href="manifest.webmanifest?v=31">
+<link rel="preload" as="image" href="assets/skin-blue.webp?v=31">
+<link rel="preload" as="image" href="assets/garden.webp?v=31">
+<link rel="preload" as="image" href="assets/moon.webp?v=31">
+<link rel="preload" as="image" href="assets/dumpling-avatar.webp?v=31">
+<link rel="stylesheet" href="styles.css?v=31">
 <title>Dumpling</title>
 </head>
 <body data-tab="home">
@@ -25,8 +25,8 @@
       <div id="sky"></div>
       <div id="stars-far" aria-hidden="true"></div>
       <div id="garden">
-        <img class="scene" id="garden-art" src="assets/skin-blue.webp?v=30" alt="">
-        <img class="scene" id="moon-art" src="assets/moon.webp?v=30" alt="">
+        <img class="scene" id="garden-art" src="assets/skin-blue.webp?v=31" alt="">
+        <img class="scene" id="moon-art" src="assets/moon.webp?v=31" alt="">
       </div>
       <div id="veil"></div>
       <div id="said" hidden></div>
@@ -48,7 +48,7 @@
           <span class="dots" id="thought-dots" hidden><i></i><i></i><i></i></span>
         </div>
         <button type="button" id="buddy" aria-label="Dumpling">
-          <img src="assets/dumpling-avatar.webp?v=30" alt="">
+          <img src="assets/dumpling-avatar.webp?v=31" alt="">
         </button>
       </div>
     </div>
@@ -99,42 +99,25 @@
           </div>
         </div>
         <div class="s-group" id="ideas">
-          <h3>Ideas for Braedon</h3>
-          <p>Got an idea? Type it, dictate with your keyboard's mic, or record a quick voice memo. It goes straight to Braedon so it's never lost.</p>
-          <div class="fb-box">
-            <textarea id="fb-text" placeholder="Type or dictate an idea…" maxlength="600" rows="3"></textarea>
-            <div class="fb-box-row">
-              <button type="button" id="fb-rec" aria-label="Record a voice memo">
-                <svg class="mic-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v3"/></svg>
-                <span id="fb-rec-time" hidden>0:00</span>
-              </button>
-              <span id="fb-clip-chip" hidden>🎤 <span id="fb-clip-len"></span><button type="button" id="fb-clip-clear" aria-label="Remove voice memo">×</button></span>
-              <span class="fb-box-spacer"></span>
-              <button type="button" id="fb-send" aria-label="Send to Braedon">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3.4 20.6 21 12 3.4 3.4 3 10l11 2-11 2z"/></svg>
-              </button>
-            </div>
+          <h3>Feedback</h3>
+          <div class="fb-type">
+            <textarea id="fb-text" placeholder="Type it…" maxlength="600" rows="2" enterkeyhint="send" aria-label="Type feedback"></textarea>
+            <button type="button" id="fb-send" aria-label="Send">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3.4 20.6 21 12 3.4 3.4 3 10l11 2-11 2z"/></svg>
+            </button>
           </div>
+          <button type="button" id="fb-rec" class="fb-say">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v3"/></svg>
+            <span id="fb-rec-label">Say it</span>
+          </button>
           <p id="fb-status" hidden></p>
-          <div id="fb-log"></div>
-        </div>
-        <div class="s-group">
-          <h3>Play</h3>
-          <button type="button" id="settings-catch" class="s-btn">Catch fireflies</button>
-        </div>
-        <div class="s-group">
-          <h3>How I work</h3>
-          <p>I live only on your phone. I don't have internet access, and nothing you say to me ever leaves this app.</p>
-          <p>When you added me to your home screen, you installed a "web app" - a tiny website that acts like a real app, works without wifi, and remembers things using your phone's own storage instead of a company's server.</p>
-          <p>Nothing here is watched, saved online, or used to train anything. Just you, me, and this garden. The one exception is the "Ideas for Braedon" box above - anything you send from there goes to Braedon, on purpose, so your idea doesn't get lost.</p>
-          <p>Tell me to remember something - "remember I love lilies" - and I'll keep it just for us. Ask "what did I tell you?" anytime to hear it back.</p>
         </div>
       </div>
     </div>
     <div id="scrim"></div>
     <aside id="drawer" aria-label="Menu" aria-hidden="true" inert>
       <div class="dr-head">
-        <img src="assets/dumpling-avatar.webp?v=30" alt="">
+        <img src="assets/dumpling-avatar.webp?v=31" alt="">
         <div>
           <strong>Dumpling</strong>
           <span id="streak" hidden><span id="streak-n"></span></span>
@@ -147,7 +130,15 @@
         <button type="button" data-go="settings"><span class="dr-ico">⚙️</span>Settings</button>
       </div>
     </aside>
+    <div id="news" hidden>
+      <div class="news-card" role="dialog" aria-modal="true" aria-labelledby="news-text">
+        <img class="news-dumpling" src="assets/dumpling-avatar.webp?v=31" alt="">
+        <div class="news-bubble" id="news-text"></div>
+        <button type="button" id="news-go" class="news-go">Show me</button>
+        <button type="button" id="news-ok" class="news-ok">Got it</button>
+      </div>
+    </div>
   </div>
-  <script src="app.js?v=30"></script>
+  <script src="app.js?v=31"></script>
 </body>
 </html>

@@ -6,7 +6,7 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=30** (`BUILD = 30`, SW `dumpling-v30`). `docs/STATE.md` has the latest.
+- Cache: **v=31** (`BUILD = 31`, SW `dumpling-v31`). `docs/STATE.md` has the latest.
 - Last ship: pink garden's `#garden` is now full-bleed (`inset:0`), matching blue. It was previously capped to the bottom ~52% of the screen with a flat CSS gradient filling the rest above it — but `garden.webp` already contains a complete painted sky, so that produced a hard, ugly seam. `moon.webp` shares the same crop as `garden.webp`, so alignment carried over automatically with no separate retuning.
 
 ## What she sees (default = blue garden)
@@ -18,8 +18,12 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 - One glass composer pill: field + in-pill mic + send arrow.
 - Tap mic → waveform in the pill → SpeechRecognition transcript → `sendText`.
 - No tab bar (removed v30). Home is just the garden, Dumpling's bubble, and the composer.
-- ☰ top-left opens a slide-out menu: streak in the header, then **Chat history** (full transcript, never wipes), switch garden, **Catch fireflies**, **Settings** (Skin, Light, moon swatches on pink, "Ideas for Braedon" box that syncs to the gist, Catch fireflies, "How I work" note). Chat history and Settings are full screens with a back arrow.
+- ☰ top-left opens a slide-out menu: streak in the header, then **Chat history** (full transcript, never wipes), switch garden, **Catch fireflies**, **Settings** (Garden: Skin, Light, moon swatches on pink. Feedback: "Type it…" box + fat "Say it" button, syncs to the gist). Chat history and Settings are full screens with a back arrow.
 - Quick-action chips (Pink garden, Catch fireflies, night/morning, etc.) still float above the composer on Home while she's actively typing — those are shortcuts into chat, separate from the real controls in Settings.
+
+## What's new card
+
+First open after an update: Dumpling pops up with a short bubble and a "Show me" button. Entries live in the `NEWS` list at the top of `app.js` (two short lines each). Seen state: `dumpling-seen-v1` in localStorage.
 
 ## Pink garden (opt-in)
 

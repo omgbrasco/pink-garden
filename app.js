@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 30;
+  const BUILD = 31;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -12,6 +12,12 @@
   const FB_GIST_KEY = "dumpling-fb-gist";
   const FB_FILE = "dumpling-feedback.json";
   const FB_MAX_SEC = 90;
+  const SEEN_KEY = "dumpling-seen-v1";
+  // What's new card: add one entry per update she'd notice. Two short lines, no paragraphs.
+  // She sees the newest entry she hasn't seen yet, once. `show: "menu"` makes "Show me" open the menu.
+  const NEWS = [
+    { v: 31, lines: ["I got a little makeover!", "Tap ☰ for our chats, garden & feedback."], show: "menu" }
+  ];
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
     purple: ["#f0d4ff", "#c58cff", "#9b5cff"],
@@ -58,18 +64,17 @@
     segNight: document.getElementById("seg-night"),
     moonRow: document.getElementById("moon-row"),
     moonSwatches: document.getElementById("moon-swatches"),
-    settingsCatch: document.getElementById("settings-catch"),
     streak: document.getElementById("streak"),
     streakN: document.getElementById("streak-n"),
     fbText: document.getElementById("fb-text"),
     fbRec: document.getElementById("fb-rec"),
-    fbRecTime: document.getElementById("fb-rec-time"),
-    fbClipChip: document.getElementById("fb-clip-chip"),
-    fbClipLen: document.getElementById("fb-clip-len"),
-    fbClipClear: document.getElementById("fb-clip-clear"),
+    fbRecLabel: document.getElementById("fb-rec-label"),
     fbSend: document.getElementById("fb-send"),
     fbStatus: document.getElementById("fb-status"),
-    fbLog: document.getElementById("fb-log")
+    news: document.getElementById("news"),
+    newsText: document.getElementById("news-text"),
+    newsGo: document.getElementById("news-go"),
+    newsOk: document.getElementById("news-ok")
   };
 
   if (!els.log || !els.box || !els.form || !els.buddy || !els.stage || !els.sky) return;
@@ -82,6 +87,7 @@
   let caught = 0;
   let thoughtTimer = 0;
   let idleTimer = 0;
+  let fbFlushing = false, fbFlushAgain = false;
 
   applyPlay();
   spawnStars();
@@ -95,6 +101,7 @@
   fitViewport();
   bumpStreak();
   flushFeedbackQueue();
+  showNews();
 
   els.form.addEventListener("submit", onSubmit);
   els.buddy.addEventListener("click", boop);
@@ -123,12 +130,16 @@
     if (b) setMoon(b.getAttribute("data-moon"));
   });
   if (els.fbRec) els.fbRec.addEventListener("click", onFbRec);
-  if (els.fbClipClear) els.fbClipClear.addEventListener("click", clearFbClip);
   if (els.fbSend) els.fbSend.addEventListener("click", onFbSend);
-  if (els.settingsCatch) els.settingsCatch.addEventListener("click", function () {
-    go("home");
-    startGame();
+  if (els.fbText) els.fbText.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onFbSend(); }
   });
+  if (els.newsOk) els.newsOk.addEventListener("click", closeNews);
+  if (els.newsGo) els.newsGo.addEventListener("click", function () {
+    closeNews();
+    if (els.newsGo.getAttribute("data-show") === "menu") openMenu();
+  });
+  if (els.news) els.news.addEventListener("click", function (e) { if (e.target === els.news) closeNews(); });
   if (els.fbText) els.fbText.addEventListener("focus", function () {
     // Keep the idea box above the keyboard: lift it to the top of Settings.
     setTimeout(function () {
@@ -642,7 +653,7 @@
     document.body.setAttribute("data-tab", screen);
     if (screen !== "home" && playing) endGame("");
     if (screen === "chats") renderChats();
-    if (screen === "settings") { renderSettings(); renderFeedbackLog(); flushFeedbackQueue(); }
+    if (screen === "settings") { renderSettings(); flushFeedbackQueue(); }
     const sc = document.getElementById(screen + "-screen");
     if (sc) sc.scrollTop = screen === "chats" ? sc.scrollHeight : 0;
   }
@@ -817,8 +828,8 @@
     return "You told me (" + agoStr(n.ts) + "): “" + n.text + "”";
   }
 
-  /* ============ feedback capture ============ */
-  let fbRecorder = null, fbChunks = [], fbRecording = false, fbRecTimer = null, fbRecStart = 0, fbClipDataUrl = null;
+  /* ============ feedback: type it or say it ============ */
+  let fbRecorder = null, fbChunks = [], fbRecording = false, fbRecTimer = null, fbRecStart = 0, fbStatusTimer = 0;
   function loadFbQueue() {
     try {
       const raw = JSON.parse(localStorage.getItem(FB_QUEUE_KEY) || "[]");
@@ -830,66 +841,62 @@
   }
   function fbStatus(msg) {
     if (!els.fbStatus) return;
-    if (!msg) { els.fbStatus.hidden = true; return; }
+    clearTimeout(fbStatusTimer);
     els.fbStatus.textContent = msg;
     els.fbStatus.hidden = false;
+    fbStatusTimer = setTimeout(function () { els.fbStatus.hidden = true; }, 2600);
+  }
+  function fbRecLabel(text) { if (els.fbRecLabel) els.fbRecLabel.textContent = text; }
+  function queueFeedback(text, audio) {
+    const q = loadFbQueue();
+    q.push({ id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), ts: Date.now(), text: text, audio: audio || null });
+    saveFbQueue(q);
+    // Saved on her phone either way; it goes to Braedon now or on the next try.
+    fbStatus("Got it 💌");
+    flushFeedbackQueue();
+  }
+  function onFbSend() {
+    const text = (els.fbText && els.fbText.value ? els.fbText.value : "").trim();
+    if (!text) { if (els.fbText) els.fbText.focus(); return; }
+    els.fbText.value = "";
+    els.fbText.blur();
+    queueFeedback(text, null);
   }
   async function onFbRec() {
+    // Tap to start, tap again to stop and send. No extra steps.
     if (fbRecording) { try { fbRecorder.stop(); } catch (e) {} return; }
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      fbStatus("Voice memo needs a browser mic permission this phone doesn't support here. Type or dictate instead.");
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+      fbStatus("Mic isn't available here. Type it instead.");
       return;
     }
     let stream;
     try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
-    catch (e) { fbStatus("Mic permission was blocked. Type or dictate instead."); return; }
+    catch (e) { fbStatus("Mic is off for Dumpling. Type it instead."); return; }
     fbChunks = [];
-    try { fbRecorder = new MediaRecorder(stream); } catch (e) { fbStatus("Recording isn't supported here. Type or dictate instead."); return; }
+    try { fbRecorder = new MediaRecorder(stream); } catch (e) { stream.getTracks().forEach(function (t) { t.stop(); }); fbStatus("Mic isn't available here. Type it instead."); return; }
     fbRecorder.ondataavailable = function (ev) { if (ev.data && ev.data.size) fbChunks.push(ev.data); };
     fbRecorder.onstop = function () {
       stream.getTracks().forEach(function (t) { t.stop(); });
       fbRecording = false;
       clearInterval(fbRecTimer);
-      const finalLen = Math.floor((Date.now() - fbRecStart) / 1000);
       if (els.fbRec) els.fbRec.classList.remove("on");
-      if (els.fbRecTime) els.fbRecTime.hidden = true;
-      if (!fbChunks.length) return;
-      const blob = new Blob(fbChunks, { type: fbRecorder.mimeType || "audio/webm" });
+      fbRecLabel("Say it");
+      const ms = Date.now() - fbRecStart;
+      if (!fbChunks.length || ms < 1000) return; // an accidental tap, not a memo
       const reader = new FileReader();
-      reader.onload = function () {
-        fbClipDataUrl = reader.result;
-        if (els.fbClipLen) els.fbClipLen.textContent = Math.floor(finalLen / 60) + ":" + String(finalLen % 60).padStart(2, "0");
-        if (els.fbClipChip) els.fbClipChip.hidden = false;
-      };
-      reader.readAsDataURL(blob);
+      reader.onload = function () { queueFeedback("", reader.result); };
+      reader.readAsDataURL(new Blob(fbChunks, { type: fbRecorder.mimeType || "audio/webm" }));
     };
     fbRecorder.start();
     fbRecording = true;
     fbRecStart = Date.now();
     if (els.fbRec) els.fbRec.classList.add("on");
-    if (els.fbRecTime) els.fbRecTime.hidden = false;
+    fbRecLabel("0:00 · tap to send");
     fbRecTimer = setInterval(function () {
       const sec = Math.floor((Date.now() - fbRecStart) / 1000);
-      if (els.fbRecTime) els.fbRecTime.textContent = Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0");
+      fbRecLabel(Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0") + " · tap to send");
       if (sec >= FB_MAX_SEC) { try { fbRecorder.stop(); } catch (e) {} }
     }, 500);
-  }
-  function clearFbClip() {
-    fbClipDataUrl = null;
-    if (els.fbClipChip) els.fbClipChip.hidden = true;
-  }
-  function onFbSend() {
-    const text = (els.fbText && els.fbText.value ? els.fbText.value : "").trim();
-    if (!text && !fbClipDataUrl) { fbStatus("Nothing to send yet."); return; }
-    const entry = { id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), ts: Date.now(), text: text, audio: fbClipDataUrl || null };
-    const q = loadFbQueue();
-    q.push(entry);
-    saveFbQueue(q);
-    if (els.fbText) els.fbText.value = "";
-    clearFbClip();
-    fbStatus("Saved. Sending to Braedon…");
-    renderFeedbackLog();
-    flushFeedbackQueue();
   }
   async function fbGistFetch(method, body) {
     const token = localStorage.getItem(FB_TOKEN_KEY), id = localStorage.getItem(FB_GIST_KEY);
@@ -903,10 +910,12 @@
     return res.json();
   }
   async function flushFeedbackQueue() {
+    if (fbFlushing) { fbFlushAgain = true; return; }
     const q = loadFbQueue();
-    if (!q.length) { renderFeedbackLog(); return; }
+    if (!q.length) return;
     const token = localStorage.getItem(FB_TOKEN_KEY), gist = localStorage.getItem(FB_GIST_KEY);
-    if (!token || !gist) { renderFeedbackLog(); return; }
+    if (!token || !gist) return;
+    fbFlushing = true;
     try {
       const g = await fbGistFetch("GET");
       const f = g.files && g.files[FB_FILE];
@@ -925,23 +934,39 @@
       const patchFiles = {};
       patchFiles[FB_FILE] = { content: JSON.stringify(existing, null, 1) };
       await fbGistFetch("PATCH", { files: patchFiles });
-      saveFbQueue([]);
-      fbStatus("Sent to Braedon.");
-      renderFeedbackLog();
+      // Only drop what was sent; anything queued mid-send stays for the next round.
+      const sent = {};
+      q.forEach(function (e) { sent[e.id] = true; });
+      saveFbQueue(loadFbQueue().filter(function (e) { return !sent[e.id]; }));
     } catch (e) {
-      fbStatus("Saved on this phone. Will send once sync is set up in Settings.");
-      renderFeedbackLog();
+      // Stays queued on her phone; retried next open or next send.
+    } finally {
+      fbFlushing = false;
+      if (fbFlushAgain) { fbFlushAgain = false; flushFeedbackQueue(); }
     }
   }
-  function renderFeedbackLog() {
-    if (!els.fbLog) return;
-    const q = loadFbQueue();
-    els.fbLog.innerHTML = "";
-    if (!q.length) return;
-    const p = document.createElement("div");
-    p.className = "fb-item";
-    p.textContent = q.length + (q.length === 1 ? " idea waiting to send…" : " ideas waiting to send…");
-    els.fbLog.appendChild(p);
+
+  /* ============ what's new: one cute card per update ============ */
+  function showNews() {
+    if (!els.news) return;
+    let seen = 0;
+    try { seen = parseInt(localStorage.getItem(SEEN_KEY) || "0", 10) || 0; } catch (e) {}
+    const unseen = NEWS.filter(function (n) { return n.v > seen; });
+    if (!unseen.length) return;
+    const item = unseen[unseen.length - 1];
+    els.newsText.innerHTML = '<span class="tag">NEW ✨</span>';
+    item.lines.forEach(function (line) {
+      const p = document.createElement("p");
+      p.textContent = line;
+      els.newsText.appendChild(p);
+    });
+    els.newsGo.hidden = !item.show;
+    els.newsGo.setAttribute("data-show", item.show || "");
+    els.news.hidden = false;
+  }
+  function closeNews() {
+    els.news.hidden = true;
+    try { localStorage.setItem(SEEN_KEY, String(BUILD)); } catch (e) {}
   }
   function registerWorker() {
     if (!("serviceWorker" in navigator)) return;
