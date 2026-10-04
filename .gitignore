@@ -9,3 +9,6 @@ Desktop.ini
 node_modules/
 .env
 .env.*
+
+# Test screenshots never live in the repo root (art lives in assets/ and originals/)
+/*.png
