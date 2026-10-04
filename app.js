@@ -103,6 +103,7 @@
   let fbFlushing = false, fbFlushAgain = false;
   let holdUntil = 0; // keep a reminder on screen; idle chatter waits
   let newsItem = null, newsStep = 0;
+  let kbGuess = false; // iOS gave no keyboard size: use a typical one so the "Say hi" box stays visible
 
   applyPlay();
   spawnStars();
@@ -196,8 +197,20 @@
   if (els.speech) els.speech.addEventListener("click", function (e) { e.stopPropagation(); hideSpeech(); });
   if (els.said) els.said.addEventListener("click", function (e) { e.stopPropagation(); els.said.hidden = true; clearTimeout(els.said._t); });
   if (els.thought) els.thought.addEventListener("click", function (e) { e.stopPropagation(); hideThought(); });
-  els.box.addEventListener("focus", function () { document.body.classList.add("chatting"); });
+  els.box.addEventListener("focus", function () {
+    document.body.classList.add("chatting");
+    // Re-measure while the keyboard slides up, in case iOS skips the resize events.
+    kbGuess = false;
+    [120, 400].forEach(function (ms) { setTimeout(fitViewport, ms); });
+    setTimeout(function () {
+      if (document.activeElement !== els.box) return;
+      const vv = window.visualViewport;
+      if (!vv || window.innerHeight - vv.height < 80) { kbGuess = true; fitViewport(); }
+    }, 800);
+  });
   els.box.addEventListener("blur", function () {
+    kbGuess = false;
+    [60, 400].forEach(function (ms) { setTimeout(fitViewport, ms); });
     setTimeout(function () {
       if (document.activeElement !== els.box) document.body.classList.remove("chatting");
     }, 180);
@@ -815,13 +828,16 @@
   }
 
   function fitViewport() {
-
     const vv = window.visualViewport;
     const inner = window.innerHeight;
     const vis = vv ? vv.height : inner;
-    const offset = vv ? (vv.offsetTop || 0) : 0;
     const focused = document.activeElement === els.box;
-    const kb = focused ? Math.max(0, Math.round(inner - vis - offset)) : 0;
+    // Keyboard height = the part of the screen the keyboard covers. Don't subtract visualViewport.offsetTop:
+    // iOS 26 reports it > 0 while the screen isn't actually shifted, which cancelled the lift and left the
+    // "Say hi" box hidden behind the keyboard (WebKit bug 297779). We keep the page at the top anyway.
+    let kb = focused ? Math.max(0, Math.round(inner - vis)) : 0;
+    // If iOS gives no keyboard numbers at all, lift to a typical iPhone keyboard height instead of hiding the box.
+    if (focused && kb < 80 && kbGuess) kb = Math.round(inner * 0.45);
     const h = inner;
     try { window.scrollTo(0, 0); } catch (e) {}
     document.documentElement.style.setProperty("--app-h", h + "px");

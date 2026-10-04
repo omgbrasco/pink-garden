@@ -71,6 +71,7 @@ As a home-screen app, subtract the status bar from the height. Test with the hom
 - **Tags:** `viewport-fit=cover`, `apple-mobile-web-app-capable`, a status bar style, and a square 512×512 icon.
 - **Safe areas:** pad the top and bottom with `env(safe-area-inset-*)`.
 - **Height:** use `window.innerHeight`. Never `screen.height`.
+- **Keyboard:** keyboard height = `innerHeight - visualViewport.height`. Don't trust `visualViewport.offsetTop` on iOS 26. Test it by faking `visualViewport` in the browser.
 - **Taps:** buttons at least 44pt.
 - **Updates:** the service worker cache name carries the version, so bump it to ship. On the phone, force-quit the icon to pick up the update.
 - **Hard limits of a no-server app:**

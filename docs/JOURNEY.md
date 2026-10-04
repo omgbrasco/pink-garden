@@ -8,7 +8,7 @@ What building this taught me, so the next project starts smarter.
 
 ### v32 (2026-10-04): pink is home, the night garden becomes midnight pink
 - Changed: pink garden is the default. The night garden is now a dark version of the pink theme, not a separate navy look.
-- Bit me: test screenshots got committed into the repo. Fixed, and root PNGs are ignored now.
+- Bit me: test screenshots got committed into the repo (fixed, root PNGs ignored). iOS 26 broke the keyboard lift with a bogus `offsetTop`. Found it from a single phone screenshot plus a web search, then reproduced it with a fake keyboard before fixing.
 - Do again: theme colors as variables. One set of components, two color sets.
 
 ### v31 (2026-10-03): less reading, more showing

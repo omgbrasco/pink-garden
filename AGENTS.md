@@ -67,6 +67,7 @@ Current cache as of this handoff: **v=32**. `docs/STATE.md` always has the live 
 - App icon must be **square** (512×512). A 3:2 PNG gets stretched by iOS.
 - `100dvh` + a dark `body` background = black bar on 16 Pro. Fill the screen; keep chat padding inside the safe area.
 - Composer is **one glass pill**. Mic lives inside it. Do not bring back a separate mic button.
+- Keyboard lift (v32): `--kb` = `innerHeight - visualViewport.height`. **Do not subtract `visualViewport.offsetTop`.** iOS 26 reports it > 0 while the screen isn't actually shifted (WebKit bug 297779), which cancelled the lift and hid the "Say hi" box behind the keyboard. If iOS gives no keyboard size at all, `kbGuess` lifts to 45% of the screen. The ^ ∨ ✓ bar above the keyboard is iOS's own form bar and can't be removed from a web app.
 - `fitViewport()` in `app.js` used to force `--app-h` to `screen.height` on standalone iOS as a black-bar workaround. Removed in v23: it was overshooting the real visible screen on her 13 and pushing the whole tab bar off the bottom edge (invisible, composer sat flush at the very bottom). `--app-h` now just tracks `window.innerHeight`. If a black/pink bar comes back on either phone, do not re-add the `screen.height` snap blindly — get a screenshot first and check `visualViewport` values instead.
 
 ## Play state
