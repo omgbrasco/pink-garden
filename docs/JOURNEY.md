@@ -6,6 +6,11 @@ What building this taught me, so the next project starts smarter.
 
 ## Entries
 
+### v31 (2026-10-03): less reading, more showing
+- Changed: Settings cut to Garden + Feedback ("type it or say it"). What's-new card: Dumpling explains each update once. My list + reminders, kept in the app with no server.
+- Bit me: a startup-order bug that would have silently stopped feedback sending. Only caught because the size test fails on any JS error.
+- Do again: always fail tests on JS errors. Send screenshots of the finished product, not descriptions.
+
 ### v30 (2026-10-02): clean home + side menu
 - Changed: tab bar gone. Home is just Dumpling. ☰ menu holds Chat history, garden switch, fireflies, Settings. Feedback moved into Settings.
 - Bit me: an empty voice-memo chip had been showing in the Feedback box. No test caught it; it only showed up when someone looked at a screenshot.
@@ -41,13 +46,7 @@ What building this taught me, so the next project starts smarter.
 
 ## Industry practices
 
-**Already doing:** version control, changelog, small PRs, revert-don't-reset, offline-first web app, cache versioning, written rules for helpers.
-
-**Not yet, in order of payoff:**
-1. **Automatic checks on every PR (CI).** Run the iPhone-size and chat tests on GitHub so a broken PR can't be merged. Test tools stay dev-only and never ship to her phone.
-2. **Real-phone check before merge.** Two minutes on the 16 Pro catches what headless tests can't: the keyboard, the mic, how it feels.
-3. **A git tag per ship.** One-tap rollback points.
-4. **Backup for her stuff.** Chats and notes live only on her phone. If the icon gets deleted, they're gone.
+Moved to `docs/TOOLKIT.md` section 7, so there's one list to keep current.
 
 ## Template
 

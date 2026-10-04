@@ -11,7 +11,7 @@ A one-page iPhone gift. She talks to Dumpling from a home-screen icon. No login,
 - App: `index.html` `styles.css` `app.js` `sw.js` `manifest.webmanifest`
 - `assets/` — what the phone loads (WebP, icon)
 - `originals/` — PNG masters, not served
-- `docs/` — handoff, changelog, how to reverse a ship, `JOURNEY.md` (lessons learned)
+- `docs/` — handoff, changelog, how to reverse a ship, `JOURNEY.md` (lessons learned), `TOOLKIT.md` (reusable playbook)
 
 ## Ship
 

@@ -11,3 +11,5 @@ This folder is the whole project. You are on a girlfriend gift: a tiny static iP
 Then make a small change, bump cache v, commit, push `master`. Never force-push. Never add a framework or an LLM.
 
 If a request would post, pay, delete originals, or ship something you have not clicked through on the garden/chat/mic path, stop and ask Braedon.
+
+After building, send Braedon phone-size screenshots of the finished product (before/after for visual changes). He reads on his phone. Show, don't describe.
