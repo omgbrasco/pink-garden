@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 31;
+  const BUILD = 32;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -225,11 +225,12 @@
         moon: COLORS[raw.moon] ? raw.moon : "pink",
         sky: COLORS[raw.sky] ? raw.sky : "",
         night: !!raw.night,
-        skin: (!raw.homeBlue || raw.skin !== "pink") ? "blue" : "pink",
-        homeBlue: true
+        // Pink garden is home (v32). First open after that ships lands on pink once; after that her pick sticks.
+        skin: (raw.homePink && raw.skin === "blue") ? "blue" : "pink",
+        homePink: true
       };
     } catch (e) {
-      return { moon: "pink", sky: "", night: false, skin: "blue", homeBlue: true };
+      return { moon: "pink", sky: "", night: false, skin: "pink", homePink: true };
     }
   }
   function savePlay() {
