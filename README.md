@@ -19,4 +19,4 @@ Bump the same cache version in html query strings, `BUILD` in `app.js`, the SW c
 
 ## Rails (short)
 
-Static HTML/CSS/JS. Layered art (no fake CSS moon). Blue garden is home. Floating Dumpling is pink-only. Joke egg removed (v18), no NSFW. No force-push.
+Static HTML/CSS/JS. Layered art (no fake CSS moon). Pink garden is home (v32); the night garden is the dark theme. Floating Dumpling is pink-only. Joke egg removed (v18), no NSFW. No force-push.

@@ -6,6 +6,11 @@ What building this taught me, so the next project starts smarter.
 
 ## Entries
 
+### v32 (2026-10-04): pink is home, the night garden becomes midnight pink
+- Changed: pink garden is the default. The night garden is now a dark version of the pink theme, not a separate navy look.
+- Bit me: test screenshots got committed into the repo (fixed, root PNGs ignored). iOS 26 broke the keyboard lift with a bogus `offsetTop`. Found it from a single phone screenshot plus a web search, then reproduced it with a fake keyboard before fixing.
+- Do again: theme colors as variables. One set of components, two color sets.
+
 ### v31 (2026-10-03): less reading, more showing
 - Changed: Settings cut to Garden + Feedback ("type it or say it"). What's-new card: Dumpling explains each update once. My list + reminders, kept in the app with no server.
 - Bit me: a startup-order bug that would have silently stopped feedback sending. Only caught because the size test fails on any JS error.

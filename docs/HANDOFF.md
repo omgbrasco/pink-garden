@@ -6,10 +6,12 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=31** (`BUILD = 31`, SW `dumpling-v31`). `docs/STATE.md` has the latest.
+- Cache: **v=32** (`BUILD = 32`, SW `dumpling-v32`). `docs/STATE.md` has the latest.
 - Last ship: pink garden's `#garden` is now full-bleed (`inset:0`), matching blue. It was previously capped to the bottom ~52% of the screen with a flat CSS gradient filling the rest above it — but `garden.webp` already contains a complete painted sky, so that produced a hard, ugly seam. `moon.webp` shares the same crop as `garden.webp`, so alignment carried over automatically with no separate retuning.
 
-## What she sees (default = blue garden)
+## Night garden (opt-in dark theme since v32)
+
+The app opens on the pink garden (see below). The night garden is the opt-in dark theme: the ☰ menu's switch row, or Settings → Skin. Its menus and screens use the "midnight pink" colors (`--ui-*` variables).
 
 - Full-bleed blue night painting (`assets/skin-blue.webp`). Dumpling sits on a mossy rock.
 - No floating cutout on this skin. She is talking to the **painted** dumpling.
@@ -29,9 +31,9 @@ First open after an update: Dumpling pops up with a short bubble (one or more st
 
 `dumpling-list-v1`: `[{ id, text, done, t, due?, reminded? }]`, capped at 100. Chat: "add X to my list", "what's on my list", "got X", "clear my list", "remind me to X at 5 / in 20 minutes / tomorrow / tonight / monday". No server, so no phone notifications: Dumpling shows "⏰ Don't forget: X" on home the first time she's there after the due time. Real push would need a backend and a rail change, and that's Braedon's call (he chose in-app, v31).
 
-## Pink garden (opt-in)
+## Pink garden (default since v32)
 
-Settings → Skin → "Pink garden". Then:
+What she sees when she opens the app:
 
 - Layered scene: CSS sky + `garden.webp` (moon painted out) + `moon.webp` tint layer.
 - Floating Dumpling (`dumpling-avatar.webp`) with thought bubble and idle float.
@@ -55,7 +57,7 @@ Settings → Skin → "Pink garden". Then:
 
 ## localStorage
 
-`dumpling-play-v1`: `{ moon, sky, night, skin, homeBlue }`. First load after `homeBlue` shipped forces blue once; after that her last skin sticks.
+`dumpling-play-v1`: `{ moon, sky, night, skin, homePink }`. The first load after v32 forces pink once; after that her last skin sticks.
 
 `dumpling-chat-v1`: array of every message either side has said (`{ who, text, t }`), capped at 300. Powers the **Chats** tab. Never wiped on ship.
 

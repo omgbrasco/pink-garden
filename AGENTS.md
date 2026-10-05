@@ -55,25 +55,27 @@ docs/        # handoff for humans and coding agents
 4. Merge to `master` when Braedon says so (never `--force`).
 5. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=31**. `docs/STATE.md` always has the live number.
+Current cache as of this handoff: **v=32**. `docs/STATE.md` always has the live number.
 
 ## Product rules that already bit us
 
-- Home is the **blue** night garden (`assets/skin-blue.webp`). Floating Dumpling is **pink garden only**.
+- Home is the **pink** garden (v32, Braedon's call). The night garden (`assets/skin-blue.webp`) is the opt-in dark theme. Floating Dumpling is **pink garden only**.
+- Theme colors for menus, screens and boxes live in `--ui-*` variables in `styles.css`. Pink is light; the night garden overrides them with a dark "midnight pink" set (same look, dark style). Style new UI with the variables, not a hard-coded color per skin.
 - `#garden` is full-bleed (`inset:0`) for **both** skins as of v24. `garden.webp` is a complete painted scene with its own sky baked in, not a foreground cutout — a short bottom-band container leaves a jarring hard seam against the flat CSS `#sky` gradient above it. Do not reintroduce a partial-height `#garden`. `moon.webp` shares `garden.webp`'s exact canvas/crop, so they must keep identical container CSS or the moon glow will drift out of alignment.
 - On blue, she talks to the **painted** dumpling: face bubble (`#speech`), her line fades at the top (`#said`). No stacked chat bubbles on blue.
 - Do not hide Dumpling with a "keyboard is up" class driven by `screen.height` vs `visualViewport` — Safari chrome looks like a keyboard and he vanishes.
 - App icon must be **square** (512×512). A 3:2 PNG gets stretched by iOS.
 - `100dvh` + a dark `body` background = black bar on 16 Pro. Fill the screen; keep chat padding inside the safe area.
 - Composer is **one glass pill**. Mic lives inside it. Do not bring back a separate mic button.
+- Keyboard lift (v32): `--kb` = `innerHeight - visualViewport.height`. **Do not subtract `visualViewport.offsetTop`.** iOS 26 reports it > 0 while the screen isn't actually shifted (WebKit bug 297779), which cancelled the lift and hid the "Say hi" box behind the keyboard. If iOS gives no keyboard size at all, `kbGuess` lifts to 45% of the screen. The ^ ∨ ✓ bar above the keyboard is iOS's own form bar and can't be removed from a web app.
 - `fitViewport()` in `app.js` used to force `--app-h` to `screen.height` on standalone iOS as a black-bar workaround. Removed in v23: it was overshooting the real visible screen on her 13 and pushing the whole tab bar off the bottom edge (invisible, composer sat flush at the very bottom). `--app-h` now just tracks `window.innerHeight`. If a black/pink bar comes back on either phone, do not re-add the `screen.height` snap blindly — get a screenshot first and check `visualViewport` values instead.
 
 ## Play state
 
-`localStorage` key `dumpling-play-v1`: moon color, sky, night, skin (`pink`|`blue`), `homeBlue`.
+`localStorage` key `dumpling-play-v1`: moon color, sky, night, skin (`pink`|`blue`), `homePink` (v32 one-time flip to pink; replaces the old `homeBlue`).
 Do not wipe it unless Braedon asks.
 
 ## Who she is talking to
 
-On **blue** (default): the dumpling sitting on the rock in the painting.
-On **pink**: the floating cutout `#buddy`.
+On **pink** (default): the floating cutout `#buddy`.
+On **blue** (night garden): the dumpling sitting on the rock in the painting.

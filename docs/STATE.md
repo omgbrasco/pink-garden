@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v32** (`BUILD = 32`, SW `dumpling-v32`). v32: pink garden is home (one-time flip via `homePink`). The night garden's menus, screens and bubbles restyled to match pink in a dark "midnight pink" style (`--ui-*` theme variables). See CHANGELOG.
+
 Cache **v31** (`BUILD = 31`, SW `dumpling-v31`). v31: Settings = Garden + Feedback only (type it / say it). How I work and the Settings fireflies button removed. What's-new card on first open after an update (`NEWS` list in app.js, `dumpling-seen-v1` key). My list + in-app reminders (`dumpling-list-v1`; no notifications, no server, Braedon's call). See CHANGELOG.
 
 Cache **v30** (`BUILD = 30`, SW `dumpling-v30`). v30: tab bar removed. Home = Dumpling + speech bubble + composer. ☰ top-left opens a slide-out menu (Chat history, switch garden, Catch fireflies, Settings). Feedback now lives inside Settings as "Ideas for Braedon". Streak is in the menu header. See CHANGELOG.
@@ -20,7 +22,7 @@ Cache **v27** (`BUILD = 27`, SW `dumpling-v27`). v27: moved feedback-sync setup 
 
 Status bar is now opaque `black` (was `black-translucent` through v26). If a black-bar-style regression shows up on either skin, this is the thing to check first before touching viewport/dvh code - it's a one-line meta revert, not a CSS bug. Last ship: a small on-screen skin-switch bubble (top-left, tap to flip blue/pink without going into Settings), a day-streak badge, and a new Feedback tab - she can type, dictate (iOS keyboard mic, free), or record a raw voice memo; it queues in `localStorage` and sends to a private gist once Braedon has entered a gist ID + token in Settings > Feedback sync. No git tags yet.
 
-Default skin is the blue garden. Pink garden is opt-in via Settings, or the switch-garden row in the ☰ menu.
+Default skin is the pink garden (v32). The night garden is the opt-in dark theme (midnight-pink menus and screens), via Settings or the switch-garden row in the ☰ menu.
 
 Grok Bot **Dumpling** is retired. Hired hands (Claude Code or Codex) open this folder. No replacement Grok bot.
 
