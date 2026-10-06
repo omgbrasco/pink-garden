@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 32;
+  const BUILD = 33;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -367,32 +367,22 @@
     document.body.classList.toggle("night", play.night);
   }
 
+  // Her words fade in at the top; Dumpling answers in his own bubble (face bubble on the night garden,
+  // the bubble over the floating dumpling on pink). The full transcript lives in ☰ → Chat history.
   function add(who, text, extra) {
     if (extra !== "typing" && text) pushHistory(who, text);
-    if (play.skin === "blue") {
-      if (extra === "typing") {
-        showSpeech("", true);
-        return { remove: function () { hideSpeech(); } };
-      }
-      if (who === "me") showSaid(text);
-      else showSpeech(text, false, 9000);
-      return { remove: function () {} };
-    }
-    const d = document.createElement("div");
-    d.className = "bubble " + who + (extra ? " " + extra : "");
+    const blue = play.skin === "blue";
     if (extra === "typing") {
-      d.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
-    } else {
-      d.textContent = text;
+      if (blue) showSpeech("", true); else showThought("", true);
+      return { remove: function () { if (blue) hideSpeech(); else hideThought(); } };
     }
-    els.log.appendChild(d);
-    trimLog();
-    els.log.scrollTop = els.log.scrollHeight;
-    return d;
+    if (who === "me") showSaid(text);
+    else if (blue) showSpeech(text, false, readMs(text));
+    else showThought(text, false, readMs(text));
+    return { remove: function () {} };
   }
-  function trimLog() {
-    while (els.log.children.length > 80) els.log.removeChild(els.log.firstChild);
-  }
+  // Long replies stay up a little longer so she can finish reading them.
+  function readMs(text) { return Math.max(9000, Math.min(20000, (text || "").length * 130)); }
   function hello() {
     if (play.skin === "blue") showSpeech("hi, i'm dumpling", false, 4500);
     else showThought("hi, i'm dumpling", false, 4500);
@@ -585,10 +575,9 @@
       typing.remove();
       hideThought();
       if (msg) add("bot", msg);
-      if (playing) showThought("tap the glows", false);
+      else if (playing) showThought("tap the glows", false);
       busy = false;
       renderChips();
-      els.log.scrollTop = els.log.scrollHeight;
     }, wait);
   }
 
@@ -1194,8 +1183,9 @@
     saveList(list);
     const msg = "⏰ Don't forget: " + due[0].text + (due.length > 1 ? " (+" + (due.length - 1) + " more on your list)" : "");
     holdUntil = now + 15000;
-    if (play.skin === "blue") { pushHistory("bot", msg); showSpeech(msg, false, 15000); }
-    else add("bot", msg);
+    pushHistory("bot", msg);
+    if (play.skin === "blue") showSpeech(msg, false, 15000);
+    else showThought(msg, false, 15000);
     try { navigator.vibrate && navigator.vibrate([20, 60, 20]); } catch (e) {}
   }
   function renderList() {

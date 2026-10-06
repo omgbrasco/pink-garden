@@ -55,14 +55,15 @@ docs/        # handoff for humans and coding agents
 4. Merge to `master` when Braedon says so (never `--force`).
 5. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=32**. `docs/STATE.md` always has the live number.
+Current cache as of this handoff: **v=33**. `docs/STATE.md` always has the live number.
 
 ## Product rules that already bit us
 
 - Home is the **pink** garden (v32, Braedon's call). The night garden (`assets/skin-blue.webp`) is the opt-in dark theme. Floating Dumpling is **pink garden only**.
 - Theme colors for menus, screens and boxes live in `--ui-*` variables in `styles.css`. Pink is light; the night garden overrides them with a dark "midnight pink" set (same look, dark style). Style new UI with the variables, not a hard-coded color per skin.
 - `#garden` is full-bleed (`inset:0`) for **both** skins as of v24. `garden.webp` is a complete painted scene with its own sky baked in, not a foreground cutout — a short bottom-band container leaves a jarring hard seam against the flat CSS `#sky` gradient above it. Do not reintroduce a partial-height `#garden`. `moon.webp` shares `garden.webp`'s exact canvas/crop, so they must keep identical container CSS or the moon glow will drift out of alignment.
-- On blue, she talks to the **painted** dumpling: face bubble (`#speech`), her line fades at the top (`#said`). No stacked chat bubbles on blue.
+- On blue, she talks to the **painted** dumpling: face bubble (`#speech`), her line fades at the top (`#said`).
+- On pink (v33), Dumpling answers in the bubble right above the floating dumpling (`#thought`), and her line fades at the top (`#said`). **No stacked chat bubbles on home in either garden** (`#log` is hidden): they used to cover the floating dumpling. The full transcript lives in ☰ → Chat history.
 - Do not hide Dumpling with a "keyboard is up" class driven by `screen.height` vs `visualViewport` — Safari chrome looks like a keyboard and he vanishes.
 - App icon must be **square** (512×512). A 3:2 PNG gets stretched by iOS.
 - `100dvh` + a dark `body` background = black bar on 16 Pro. Fill the screen; keep chat padding inside the safe area.

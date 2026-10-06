@@ -25,7 +25,6 @@ Phase 3: variety in the firefly game so it doesn't get stale; expand the idle-th
 
 ## Next (optional, hired hands)
 
-- Pink garden: Dumpling's reply bubbles sit on top of the floating dumpling (was like this before v30 too). Needs a call on where he floats.
 - Speech-bubble nudge on 16 Pro. Ask for a screenshot first.
 - Version git tags when a real slice ships (`v0.19.0` or keep cache numbers).
 - First `docs/jobs/` file only when Claude/Codex is hired for a slice.

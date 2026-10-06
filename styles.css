@@ -243,14 +243,16 @@ body.skin-blue #menu-btn { background: rgba(40,14,48,.74); color: #ff9ecf; box-s
   transition: bottom .28s ease, opacity .2s ease;
   filter: drop-shadow(0 18px 24px #4a184066);
 }
+/* Dumpling's bubble on the pink garden: his replies show here, right above him. */
 #thought {
-  position: absolute; left: 50%; bottom: 96%;
+  position: absolute; left: 50%; bottom: calc(100% + 12px); /* clears his head even at the top of his float */
   transform: translateX(-50%);
-  background: #fff; color: #7a2d66;
-  padding: 8px 12px; border-radius: 16px;
-  font-size: 13px; font-weight: 600; line-height: 1;
+  width: max-content; max-width: min(78vw, 300px);
+  background: #fff; color: #5a2450;
+  padding: 10px 14px; border-radius: 18px;
+  font-size: 14px; font-weight: 600; line-height: 1.35; text-align: center;
   box-shadow: 0 8px 20px #ff4fbf33;
-  white-space: nowrap; z-index: 5;
+  white-space: normal; overflow-wrap: anywhere; z-index: 5;
 }
 #thought[hidden] { display: none; }
 #thought:after {
@@ -288,14 +290,7 @@ body.skin-blue #menu-btn { background: rgba(40,14,48,.74); color: #ff9ecf; box-s
 }
 body.kb #chat { bottom: var(--kb, 0px); }
 #log, #chips, form { pointer-events: auto; }
-#log {
-  max-height: 18vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  font-size: 15px; padding: 8px 2px 8px;
-  display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%);
-}
+#log { display: none !important; } /* home shows no stacked bubbles; see ☰ → Chat history */
 .bubble {
   max-width: 82%; padding: 9px 13px;
   border-radius: 18px; line-height: 1.35; word-wrap: break-word;
@@ -458,8 +453,7 @@ body.skin-blue #garden .scene {
   object-fit: cover;
   object-position: center 38%;
 }
-body.skin-blue #buddy-wrap,
-body.skin-blue #log { display: none !important; }
+body.skin-blue #buddy-wrap { display: none !important; }
 body.skin-blue #title h1 {
   text-shadow: 0 1px 2px #2a0f30, 0 2px 0 #c2448c, 0 8px 18px #ff4fbf55;
 }
@@ -473,7 +467,6 @@ body.skin-blue #title h1 {
   pointer-events: none;
 }
 #said[hidden] { display: none; }
-body:not(.skin-blue) #said,
 body:not(.skin-blue) #speech { display: none !important; }
 #speech {
   position: absolute;
