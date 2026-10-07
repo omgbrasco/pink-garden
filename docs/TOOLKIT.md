@@ -15,6 +15,7 @@ Diary and lessons: `docs/JOURNEY.md`. This file is the reusable part.
   - `JOURNEY.md`: lessons, 3 lines per ship
   - `REVERSING.md`: how to undo safely
 - **One version number**, bumped in every place on every ship.
+- **Two-agent reviews from day one:** copy the "Two agents" section into `AGENTS.md`, add the PR template, and create the `review-handoff` label (see section 9).
 
 ## 2. The loop for every change
 
@@ -119,11 +120,30 @@ After building: send me phone screenshots of the finished product.
 This bit us: <rule> (vNN, why)
 ```
 
-**PR description:**
+**PR description** (lives in `.github/pull_request_template.md`):
 ```
+Built by: Claude or Codex
+Reviewer: the other one
 ## What she'll see
 ## Why
 ## Tested (sizes, real sentences, screenshots)
 ## Not tested (needs a real phone)
+## Review tickets fixed first
 ## Undo
+```
+
+## 9. Two agents reviewing each other (Claude ⇄ Codex)
+
+They don't share memory, so **GitHub is the shared brain**. It works on every device, and I can read it on my phone.
+
+1. **Tag the work:** `claude/...` or `codex/...` branches, plus `Built by:` in the PR.
+2. **Each one reviews only the other's work,** never its own.
+3. **A review leaves one small ticket:** an issue labeled `review-handoff`, about 15 lines. It names the exact commit, numbered findings (`file:line`, bug or nit), and what was and wasn't checked.
+4. **Every new build starts by reading open tickets** and fixing the bugs first. The builder replies `Fixed in <sha>`, and the reviewer closes the ticket.
+5. **I test on my phone, and I'm the only one who merges.**
+6. **Caught bugs get one line in `docs/REVIEWS.md`.** Caught twice means it becomes a rule in `AGENTS.md`.
+
+**Paste once into each agent's own settings** (Claude: personal preferences / custom instructions; Codex: its custom instructions), so it works in every repo:
+```
+Two-agent reviews (Claude ⇄ Codex): Before starting new work in any repo, check open GitHub issues labeled "review-handoff" and fix their bug items first; reply "Fixed in <sha>" on each. When asked to review, review only work the other agent built (branch claude/* or codex/*, or "Built by:" in the PR), never your own. After a review, leave one short "review-handoff" issue: the exact commit reviewed, numbered findings (file:line, bug or nit), what you checked and didn't. Braedon tests on his phone and is the only one who merges.
 ```

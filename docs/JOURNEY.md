@@ -6,6 +6,12 @@ What building this taught me, so the next project starts smarter.
 
 ## Entries
 
+### v33 (2026-10-06): the bubble stops covering Dumpling
+- Changed: on pink, his replies show in his own bubble above his head and her words fade at the top. No more stacked bubbles on home.
+- Bit me: a new size check caught his float animation poking his head into the bubble. Fixed by raising the bubble 12px.
+- Do again: fix a layout clash by giving each thing one place, not by shoving things around. Both gardens now talk the same way.
+- Then: Codex reviewed it and caught 3 real bugs I missed (idle chatter cutting replies, an over-eager keyboard fallback, a missing card). I reproduced each one in a browser before fixing. Out of that came the two-agent review loop (`AGENTS.md`, `docs/REVIEWS.md`).
+
 ### v32 (2026-10-04): pink is home, the night garden becomes midnight pink
 - Changed: pink garden is the default. The night garden is now a dark version of the pink theme, not a separate navy look.
 - Bit me: test screenshots got committed into the repo (fixed, root PNGs ignored). iOS 26 broke the keyboard lift with a bogus `offsetTop`. Found it from a single phone screenshot plus a web search, then reproduced it with a fake keyboard before fixing.

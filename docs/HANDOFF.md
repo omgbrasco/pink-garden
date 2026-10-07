@@ -6,7 +6,7 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=32** (`BUILD = 32`, SW `dumpling-v32`). `docs/STATE.md` has the latest.
+- Cache: **v=33** (`BUILD = 33`, SW `dumpling-v33`). `docs/STATE.md` has the latest.
 - Last ship: pink garden's `#garden` is now full-bleed (`inset:0`), matching blue. It was previously capped to the bottom ~52% of the screen with a flat CSS gradient filling the rest above it — but `garden.webp` already contains a complete painted sky, so that produced a hard, ugly seam. `moon.webp` shares the same crop as `garden.webp`, so alignment carried over automatically with no separate retuning.
 
 ## Night garden (opt-in dark theme since v32)
@@ -25,7 +25,7 @@ The app opens on the pink garden (see below). The night garden is the opt-in dar
 
 ## What's new card
 
-First open after an update: Dumpling pops up with a short bubble (one or more steps, Next between them) and a "Show me" button. Entries live in the `NEWS` list at the top of `app.js`, with each step two short lines. Seen state: `dumpling-seen-v1` in localStorage.
+First open after an update: Dumpling pops up with a short bubble (one or more steps, Next between them) and a "Show me" button. Entries live in the `NEWS` list at the top of `app.js`, with each step two short lines. If she missed several updates, she sees all their steps in one card, oldest first (up to 4). Seen state: `dumpling-seen-v1` in localStorage.
 
 ## My list + reminders
 
@@ -37,7 +37,7 @@ What she sees when she opens the app:
 
 - Layered scene: CSS sky + `garden.webp` (moon painted out) + `moon.webp` tint layer.
 - Floating Dumpling (`dumpling-avatar.webp`) with thought bubble and idle float.
-- Stacked glass chat bubbles in `#log`.
+- Dumpling's replies show in the bubble right above him (`#thought`, wraps for long replies, stays up 9 to 20s depending on length). Her line fades at the top (`#said`). No stacked bubbles on home (v33).
 - Joke egg is gone (removed v18).
 
 ## Files that matter

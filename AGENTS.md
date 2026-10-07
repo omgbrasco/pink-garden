@@ -8,6 +8,17 @@ Local: `C:\Users\braed\src\pink-garden`
 
 Read `docs/HANDOFF.md` before you touch code. Read `docs/REVERSING.md` before any git write.
 
+## Two agents: review handoffs (Claude ⇄ Codex)
+
+Braedon builds with both Claude Code and Codex. They don't share memory or sessions, so **GitHub is the shared brain**: the repo, PRs, and issues.
+
+- **Tag your work.** Branch `claude/...` or `codex/...`. PR body starts `Built by: Claude` or `Built by: Codex` (the PR template does this).
+- **Review only the other agent's work.** Never review or approve your own.
+- **After a review, leave one small ticket:** a GitHub issue labeled `review-handoff`, titled `Review: PR #N (built by X): N fixes`. Body: the exact commit you reviewed, numbered findings (one line each, `file:line`, **bug** or **nit**), what you checked, and what you didn't. Keep it to about 15 lines.
+- **Before any new build, read open `review-handoff` issues first.** Fix the **bug** items (or reply on the issue saying why not) before starting new work. Reply `Fixed in <sha>` per item. The reviewer checks, then closes the ticket.
+- **Braedon tests on his phone and is the only one who merges.**
+- **Learn from it:** one line per caught bug in `docs/REVIEWS.md`. Anything caught twice becomes a rule under "Product rules that already bit us".
+
 ## Non-negotiables
 
 - Static HTML, CSS, JS only. No React, Vue, Vite, Next, Tailwind-as-a-build, no bundler.
@@ -45,6 +56,7 @@ docs/        # handoff for humans and coding agents
 
 ## Ship (every visible change)
 
+0. Check open `review-handoff` issues first and fix their **bug** items (see "Two agents" above).
 1. Bump the **same** cache number together:
    - `index.html` `?v=N` on every local asset
    - `app.js` `const BUILD = N`
@@ -55,19 +67,21 @@ docs/        # handoff for humans and coding agents
 4. Merge to `master` when Braedon says so (never `--force`).
 5. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=32**. `docs/STATE.md` always has the live number.
+Current cache as of this handoff: **v=33**. `docs/STATE.md` always has the live number.
 
 ## Product rules that already bit us
 
 - Home is the **pink** garden (v32, Braedon's call). The night garden (`assets/skin-blue.webp`) is the opt-in dark theme. Floating Dumpling is **pink garden only**.
 - Theme colors for menus, screens and boxes live in `--ui-*` variables in `styles.css`. Pink is light; the night garden overrides them with a dark "midnight pink" set (same look, dark style). Style new UI with the variables, not a hard-coded color per skin.
 - `#garden` is full-bleed (`inset:0`) for **both** skins as of v24. `garden.webp` is a complete painted scene with its own sky baked in, not a foreground cutout — a short bottom-band container leaves a jarring hard seam against the flat CSS `#sky` gradient above it. Do not reintroduce a partial-height `#garden`. `moon.webp` shares `garden.webp`'s exact canvas/crop, so they must keep identical container CSS or the moon glow will drift out of alignment.
-- On blue, she talks to the **painted** dumpling: face bubble (`#speech`), her line fades at the top (`#said`). No stacked chat bubbles on blue.
+- On blue, she talks to the **painted** dumpling: face bubble (`#speech`), her line fades at the top (`#said`).
+- On pink (v33), Dumpling answers in the bubble right above the floating dumpling (`#thought`), and her line fades at the top (`#said`). **No stacked chat bubbles on home in either garden** (`#log` is hidden): they used to cover the floating dumpling. The full transcript lives in ☰ → Chat history.
 - Do not hide Dumpling with a "keyboard is up" class driven by `screen.height` vs `visualViewport` — Safari chrome looks like a keyboard and he vanishes.
 - App icon must be **square** (512×512). A 3:2 PNG gets stretched by iOS.
 - `100dvh` + a dark `body` background = black bar on 16 Pro. Fill the screen; keep chat padding inside the safe area.
 - Composer is **one glass pill**. Mic lives inside it. Do not bring back a separate mic button.
-- Keyboard lift (v32): `--kb` = `innerHeight - visualViewport.height`. **Do not subtract `visualViewport.offsetTop`.** iOS 26 reports it > 0 while the screen isn't actually shifted (WebKit bug 297779), which cancelled the lift and hid the "Say hi" box behind the keyboard. If iOS gives no keyboard size at all, `kbGuess` lifts to 45% of the screen. The ^ ∨ ✓ bar above the keyboard is iOS's own form bar and can't be removed from a web app.
+- Keyboard lift (v32, fixed in v33 after Codex's review): `--kb` = `innerHeight - visualViewport.height`, and anything under 80px counts as no keyboard. **Do not subtract `visualViewport.offsetTop`.** iOS 26 reports it > 0 while the screen isn't actually shifted (WebKit bug 297779), which cancelled the lift and hid the "Say hi" box behind the keyboard. The 45% fallback (`kbGuess`) runs **only on iOS**, only if no real keyboard numbers came in this focus (`kbSeen`), and is tied to a focus session (`kbSession`) so stale timers can't turn it back on. A web page can't truly detect an on-screen keyboard: with a Bluetooth keyboard on an iPhone, the fallback can still lift the box. The ^ ∨ ✓ bar above the keyboard is iOS's own form bar and can't be removed from a web app.
+- Dumpling's replies hold the bubble for their reading time (`holdUntil`, v33). Idle chatter must check `holdUntil`, or it cuts replies short (Codex caught this). Tapping the bubble clears it.
 - `fitViewport()` in `app.js` used to force `--app-h` to `screen.height` on standalone iOS as a black-bar workaround. Removed in v23: it was overshooting the real visible screen on her 13 and pushing the whole tab bar off the bottom edge (invisible, composer sat flush at the very bottom). `--app-h` now just tracks `window.innerHeight`. If a black/pink bar comes back on either phone, do not re-add the `screen.height` snap blindly — get a screenshot first and check `visualViewport` values instead.
 
 ## Play state
