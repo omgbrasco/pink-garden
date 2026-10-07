@@ -8,6 +8,17 @@ Local: `C:\Users\braed\src\pink-garden`
 
 Read `docs/HANDOFF.md` before you touch code. Read `docs/REVERSING.md` before any git write.
 
+## Two agents: review handoffs (Claude ⇄ Codex)
+
+Braedon builds with both Claude Code and Codex. They don't share memory or sessions, so **GitHub is the shared brain**: the repo, PRs, and issues.
+
+- **Tag your work.** Branch `claude/...` or `codex/...`. PR body starts `Built by: Claude` or `Built by: Codex` (the PR template does this).
+- **Review only the other agent's work.** Never review or approve your own.
+- **After a review, leave one small ticket:** a GitHub issue labeled `review-handoff`, titled `Review: PR #N (built by X): N fixes`. Body: the exact commit you reviewed, numbered findings (one line each, `file:line`, **bug** or **nit**), what you checked, and what you didn't. Keep it to about 15 lines.
+- **Before any new build, read open `review-handoff` issues first.** Fix the **bug** items (or reply on the issue saying why not) before starting new work. Reply `Fixed in <sha>` per item. The reviewer checks, then closes the ticket.
+- **Braedon tests on his phone and is the only one who merges.**
+- **Learn from it:** one line per caught bug in `docs/REVIEWS.md`. Anything caught twice becomes a rule under "Product rules that already bit us".
+
 ## Non-negotiables
 
 - Static HTML, CSS, JS only. No React, Vue, Vite, Next, Tailwind-as-a-build, no bundler.
@@ -45,6 +56,7 @@ docs/        # handoff for humans and coding agents
 
 ## Ship (every visible change)
 
+0. Check open `review-handoff` issues first and fix their **bug** items (see "Two agents" above).
 1. Bump the **same** cache number together:
    - `index.html` `?v=N` on every local asset
    - `app.js` `const BUILD = N`
@@ -68,7 +80,8 @@ Current cache as of this handoff: **v=33**. `docs/STATE.md` always has the live 
 - App icon must be **square** (512×512). A 3:2 PNG gets stretched by iOS.
 - `100dvh` + a dark `body` background = black bar on 16 Pro. Fill the screen; keep chat padding inside the safe area.
 - Composer is **one glass pill**. Mic lives inside it. Do not bring back a separate mic button.
-- Keyboard lift (v32): `--kb` = `innerHeight - visualViewport.height`. **Do not subtract `visualViewport.offsetTop`.** iOS 26 reports it > 0 while the screen isn't actually shifted (WebKit bug 297779), which cancelled the lift and hid the "Say hi" box behind the keyboard. If iOS gives no keyboard size at all, `kbGuess` lifts to 45% of the screen. The ^ ∨ ✓ bar above the keyboard is iOS's own form bar and can't be removed from a web app.
+- Keyboard lift (v32, fixed in v33 after Codex's review): `--kb` = `innerHeight - visualViewport.height`, and anything under 80px counts as no keyboard. **Do not subtract `visualViewport.offsetTop`.** iOS 26 reports it > 0 while the screen isn't actually shifted (WebKit bug 297779), which cancelled the lift and hid the "Say hi" box behind the keyboard. The 45% fallback (`kbGuess`) runs **only on iOS**, only if no real keyboard numbers came in this focus (`kbSeen`), and is tied to a focus session (`kbSession`) so stale timers can't turn it back on. A web page can't truly detect an on-screen keyboard: with a Bluetooth keyboard on an iPhone, the fallback can still lift the box. The ^ ∨ ✓ bar above the keyboard is iOS's own form bar and can't be removed from a web app.
+- Dumpling's replies hold the bubble for their reading time (`holdUntil`, v33). Idle chatter must check `holdUntil`, or it cuts replies short (Codex caught this). Tapping the bubble clears it.
 - `fitViewport()` in `app.js` used to force `--app-h` to `screen.height` on standalone iOS as a black-bar workaround. Removed in v23: it was overshooting the real visible screen on her 13 and pushing the whole tab bar off the bottom edge (invisible, composer sat flush at the very bottom). `--app-h` now just tracks `window.innerHeight`. If a black/pink bar comes back on either phone, do not re-add the `screen.height` snap blindly — get a screenshot first and check `visualViewport` values instead.
 
 ## Play state

@@ -25,7 +25,7 @@ The app opens on the pink garden (see below). The night garden is the opt-in dar
 
 ## What's new card
 
-First open after an update: Dumpling pops up with a short bubble (one or more steps, Next between them) and a "Show me" button. Entries live in the `NEWS` list at the top of `app.js`, with each step two short lines. Seen state: `dumpling-seen-v1` in localStorage.
+First open after an update: Dumpling pops up with a short bubble (one or more steps, Next between them) and a "Show me" button. Entries live in the `NEWS` list at the top of `app.js`, with each step two short lines. If she missed several updates, she sees all their steps in one card, oldest first (up to 4). Seen state: `dumpling-seen-v1` in localStorage.
 
 ## My list + reminders
 

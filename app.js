@@ -16,12 +16,16 @@
   const FB_MAX_SEC = 90;
   const SEEN_KEY = "dumpling-seen-v1";
   // What's new card: add one entry per update she'd notice. Each step is two short lines, no paragraphs.
-  // She sees the newest entry she hasn't seen yet, once. `show: "menu"` makes the last button open the menu.
+  // She sees every entry she hasn't seen yet, oldest first (max 4 steps), once. `show: "menu"` on the newest
+  // entry makes the last button open the menu.
   const NEWS = [
     { v: 31, show: "menu", steps: [
       ["I got a little makeover!", "Tap ☰ for our chats, garden & feedback."],
       ["I can keep your list now 📝", "Say “add milk to my list”."],
       ["And I'll remind you ⏰", "Say “remind me to call mom at 5”."]
+    ] },
+    { v: 33, steps: [
+      ["I talk right above my head now 💬", "Tap my bubble anytime to hide it."]
     ] }
   ];
   const COLORS = {
@@ -103,7 +107,10 @@
   let fbFlushing = false, fbFlushAgain = false;
   let holdUntil = 0; // keep a reminder on screen; idle chatter waits
   let newsItem = null, newsStep = 0;
-  let kbGuess = false; // iOS gave no keyboard size: use a typical one so the "Say hi" box stays visible
+  // Keyboard fallback state, reset on every focus. kbGuess: iPhone gave no keyboard size, use a typical one.
+  // kbSeen: real keyboard numbers arrived this focus, so never guess again until the next focus.
+  let kbGuess = false, kbSeen = false, kbSession = 0;
+  const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
   applyPlay();
   spawnStars();
@@ -194,22 +201,26 @@
       if (box) box.scrollIntoView({ block: "start", behavior: "smooth" });
     }, 250);
   });
-  if (els.speech) els.speech.addEventListener("click", function (e) { e.stopPropagation(); hideSpeech(); });
+  if (els.speech) els.speech.addEventListener("click", function (e) { e.stopPropagation(); holdUntil = 0; hideSpeech(); });
   if (els.said) els.said.addEventListener("click", function (e) { e.stopPropagation(); els.said.hidden = true; clearTimeout(els.said._t); });
-  if (els.thought) els.thought.addEventListener("click", function (e) { e.stopPropagation(); hideThought(); });
+  if (els.thought) els.thought.addEventListener("click", function (e) { e.stopPropagation(); holdUntil = 0; hideThought(); });
   els.box.addEventListener("focus", function () {
     document.body.classList.add("chatting");
+    const session = ++kbSession;
+    kbGuess = false; kbSeen = false;
     // Re-measure while the keyboard slides up, in case iOS skips the resize events.
-    kbGuess = false;
-    [120, 400].forEach(function (ms) { setTimeout(fitViewport, ms); });
+    [120, 400].forEach(function (ms) { setTimeout(function () { if (session === kbSession) fitViewport(); }, ms); });
+    // iPhone only: if iOS still reports no keyboard after 0.8s, assume a typical one so the box stays visible.
+    // A web page can't truly detect an on-screen keyboard, so with a Bluetooth keyboard on an iPhone this guess
+    // can lift the box when it didn't need to; it ends on blur or as soon as real numbers arrive.
     setTimeout(function () {
-      if (document.activeElement !== els.box) return;
+      if (session !== kbSession || !IS_IOS || kbSeen || document.activeElement !== els.box) return;
       const vv = window.visualViewport;
       if (!vv || window.innerHeight - vv.height < 80) { kbGuess = true; fitViewport(); }
     }, 800);
   });
   els.box.addEventListener("blur", function () {
-    kbGuess = false;
+    kbSession++; kbGuess = false; kbSeen = false; // stale timers from this focus can't act any more
     [60, 400].forEach(function (ms) { setTimeout(fitViewport, ms); });
     setTimeout(function () {
       if (document.activeElement !== els.box) document.body.classList.remove("chatting");
@@ -376,8 +387,9 @@
       if (blue) showSpeech("", true); else showThought("", true);
       return { remove: function () { if (blue) hideSpeech(); else hideThought(); } };
     }
-    if (who === "me") showSaid(text);
-    else if (blue) showSpeech(text, false, readMs(text));
+    if (who === "me") { showSaid(text); return { remove: function () {} }; }
+    holdUntil = Date.now() + readMs(text); // idle chatter can't cut a reply short
+    if (blue) showSpeech(text, false, readMs(text));
     else showThought(text, false, readMs(text));
     return { remove: function () {} };
   }
@@ -824,9 +836,10 @@
     // Keyboard height = the part of the screen the keyboard covers. Don't subtract visualViewport.offsetTop:
     // iOS 26 reports it > 0 while the screen isn't actually shifted, which cancelled the lift and left the
     // "Say hi" box hidden behind the keyboard (WebKit bug 297779). We keep the page at the top anyway.
-    let kb = focused ? Math.max(0, Math.round(inner - vis)) : 0;
-    // If iOS gives no keyboard numbers at all, lift to a typical iPhone keyboard height instead of hiding the box.
-    if (focused && kb < 80 && kbGuess) kb = Math.round(inner * 0.45);
+    const measured = focused ? Math.max(0, Math.round(inner - vis)) : 0;
+    let kb = 0; // under 80px isn't a keyboard (e.g. iOS 26's 24px leftover after closing)
+    if (measured >= 80) { kb = measured; kbSeen = true; kbGuess = false; } // real numbers always win
+    else if (focused && kbGuess) kb = Math.round(inner * 0.45);             // iPhone gave nothing at all
     const h = inner;
     try { window.scrollTo(0, 0); } catch (e) {}
     document.documentElement.style.setProperty("--app-h", h + "px");
@@ -1020,7 +1033,10 @@
     try { seen = parseInt(localStorage.getItem(SEEN_KEY) || "0", 10) || 0; } catch (e) {}
     const unseen = NEWS.filter(function (n) { return n.v > seen; });
     if (!unseen.length) return;
-    newsItem = unseen[unseen.length - 1];
+    // Everything she hasn't seen, oldest first (max 4 steps), so two updates in a row don't hide each other.
+    let steps = [];
+    unseen.forEach(function (n) { steps = steps.concat(n.steps); });
+    newsItem = { steps: steps.slice(-4), show: unseen[unseen.length - 1].show || "" };
     newsStep = 0;
     renderNewsStep();
     els.news.hidden = false;
