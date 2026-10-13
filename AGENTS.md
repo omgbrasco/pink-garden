@@ -55,7 +55,7 @@ docs/        # handoff for humans and coding agents
 4. Merge to `master` when Braedon says so (never `--force`).
 5. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=32**. `docs/STATE.md` always has the live number.
+Current cache as of this handoff: **v=34**. `docs/STATE.md` always has the live number.
 
 ## Product rules that already bit us
 

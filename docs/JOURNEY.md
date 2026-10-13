@@ -6,6 +6,11 @@ What building this taught me, so the next project starts smarter.
 
 ## Entries
 
+### v34 (2026-10-13): a note from Braedon, once a day
+- Changed: Dumpling brings her one love note a day, written by Braedon in a local list. Reuses the card. Fully local, nothing about her collected.
+- Bit me: the note card covers the screen like the what's-new card, so every other test had to seed it closed. Same lesson as the news card.
+- Held a line: Braedon asked for hidden data collection on her; built the transparent version instead (notes she can see), declined the covert part.
+
 ### v32 (2026-10-04): pink is home, the night garden becomes midnight pink
 - Changed: pink garden is the default. The night garden is now a dark version of the pink theme, not a separate navy look.
 - Bit me: test screenshots got committed into the repo (fixed, root PNGs ignored). iOS 26 broke the keyboard lift with a bogus `offsetTop`. Found it from a single phone screenshot plus a web search, then reproduced it with a fake keyboard before fixing.

@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 32;
+  const BUILD = 34;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -15,6 +15,7 @@
   const FB_FILE = "dumpling-feedback.json";
   const FB_MAX_SEC = 90;
   const SEEN_KEY = "dumpling-seen-v1";
+  const NOTE_KEY = "dumpling-note-day-v1";
   // What's new card: add one entry per update she'd notice. Each step is two short lines, no paragraphs.
   // She sees the newest entry she hasn't seen yet, once. `show: "menu"` makes the last button open the menu.
   const NEWS = [
@@ -22,7 +23,45 @@
       ["I got a little makeover!", "Tap ☰ for our chats, garden & feedback."],
       ["I can keep your list now 📝", "Say “add milk to my list”."],
       ["And I'll remind you ⏰", "Say “remind me to call mom at 5”."]
+    ] },
+    { v: 34, steps: [
+      ["Braedon left you something 💌", "A little note from him, every day. Tap to see."]
     ] }
+  ];
+  // Notes from Braedon, one per day, oldest first. Braedon edits these lines — they stay on her phone
+  // and nothing about her is collected or sent anywhere. Add as many as you like; when they run out,
+  // the daily card just stops until you add more.
+  const DAILY_NOTES = [
+    "Good morning, prettiest girl in any garden. 🌸",
+    "Just so you know — I'm thinking about you right now.",
+    "You make ordinary days feel like something.",
+    "Drink some water today, okay? For me. 💧",
+    "I'm proud of you. Even on the quiet days.",
+    "You're my favorite hello and my hardest goodbye.",
+    "If you're reading this, you're officially the cutest. Rules are rules.",
+    "Whatever today throws at you, you've got me in your corner.",
+    "I'd choose you again. Every single time.",
+    "Take a deep breath. You're doing better than you think.",
+    "You + me is still my best idea.",
+    "Sending you a little calm for today. 🤍",
+    "You don't have to be okay all the time. I've still got you.",
+    "Somewhere today, I'm smiling about something you said.",
+    "You're not too much. You're exactly enough.",
+    "Can't wait to see you. That's it. That's the note.",
+    "Be soft with yourself today.",
+    "I love the way you love things.",
+    "You're the best part of my ordinary.",
+    "Little reminder: you're deeply loved. 💗",
+    "If today feels heavy, put some of it on me.",
+    "I still get butterflies. Just so you know.",
+    "You make me want to be a better everything.",
+    "Hope something made you laugh today. If not, that's my job tonight.",
+    "Thank you for being you. It's my favorite thing.",
+    "You're the home I didn't know I was looking for.",
+    "Go easy today. The garden isn't going anywhere, and neither am I.",
+    "I believe in you — on the loud days and the quiet ones.",
+    "Every version of you is one I want to know.",
+    "Last one for now, but I'll always have more. I love you. 🌙"
   ];
   const COLORS = {
     green: ["#d9ffd6", "#7dff8a", "#1fbf4a"],
@@ -87,7 +126,10 @@
     news: document.getElementById("news"),
     newsText: document.getElementById("news-text"),
     newsGo: document.getElementById("news-go"),
-    newsOk: document.getElementById("news-ok")
+    newsOk: document.getElementById("news-ok"),
+    note: document.getElementById("note"),
+    noteText: document.getElementById("note-text"),
+    noteOk: document.getElementById("note-ok")
   };
 
   if (!els.log || !els.box || !els.form || !els.buddy || !els.stage || !els.sky) return;
@@ -118,6 +160,7 @@
   bumpStreak();
   flushFeedbackQueue();
   showNews();
+  showNote();
   renderMenuCount();
   setTimeout(checkReminders, 1600);
   setInterval(checkReminders, 20000);
@@ -187,6 +230,8 @@
     renderList();
   });
   if (els.news) els.news.addEventListener("click", function (e) { if (e.target === els.news) closeNews(); });
+  if (els.noteOk) els.noteOk.addEventListener("click", closeNote);
+  if (els.note) els.note.addEventListener("click", function (e) { if (e.target === els.note) closeNote(); });
   if (els.fbText) els.fbText.addEventListener("focus", function () {
     // Keep the idea box above the keyboard: lift it to the top of Settings.
     setTimeout(function () {
@@ -1051,8 +1096,37 @@
   function closeNews() {
     els.news.hidden = true;
     try { localStorage.setItem(SEEN_KEY, String(BUILD)); } catch (e) {}
-    setTimeout(checkReminders, 500);
+    setTimeout(showNote, 400);
   }
+
+  /* ============ a note from Braedon, once a day ============ */
+  function loadNoteState() {
+    try {
+      const st = JSON.parse(localStorage.getItem(NOTE_KEY) || "null");
+      if (st && typeof st.idx === "number") return st;
+    } catch (e) {}
+    return { idx: 0, last: "" };
+  }
+  function showNote() {
+    // Wait behind the what's-new card; one note per calendar day; stop when the notes run out.
+    if (!els.note || !DAILY_NOTES.length) return afterCards();
+    if (els.news && !els.news.hidden) return;
+    const st = loadNoteState();
+    if (st.last === todayStr() || st.idx >= DAILY_NOTES.length) return afterCards();
+    els.noteText.textContent = DAILY_NOTES[st.idx];
+    els.note.hidden = false;
+  }
+  function closeNote() {
+    if (!els.note || els.note.hidden) return;
+    els.note.hidden = true;
+    const st = loadNoteState(), today = todayStr();
+    if (st.last !== today && st.idx < DAILY_NOTES.length) {
+      st.idx += 1; st.last = today;
+      try { localStorage.setItem(NOTE_KEY, JSON.stringify(st)); } catch (e) {}
+    }
+    afterCards();
+  }
+  function afterCards() { setTimeout(checkReminders, 400); }
 
   /* ============ my list + reminders (no server: Dumpling reminds her in the app) ============ */
   function loadList() {
@@ -1185,7 +1259,7 @@
     return d.toLocaleDateString([], { month: "short", day: "numeric" }) + " after " + time;
   }
   function checkReminders() {
-    if (els.news && !els.news.hidden) return;
+    if ((els.news && !els.news.hidden) || (els.note && !els.note.hidden)) return;
     if (document.body.getAttribute("data-tab") !== "home" || document.visibilityState === "hidden") return;
     const list = loadList(), now = Date.now();
     const due = list.filter(function (i) { return !i.done && i.due && i.due <= now && !i.reminded; });
