@@ -504,7 +504,7 @@ body:not(.skin-blue) #speech { display: none !important; }
 }
 
 /* What's new: one cute card the first time she opens after an update. */
-#news {
+#news, #note {
   position: absolute; inset: 0; z-index: 30;
   display: flex; align-items: center; justify-content: center;
   padding: calc(var(--safe-t) + 20px) 22px calc(var(--safe-b) + 20px);
@@ -512,7 +512,7 @@ body:not(.skin-blue) #speech { display: none !important; }
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   animation: fadeIn .3s ease;
 }
-#news[hidden] { display: none; }
+#news[hidden], #note[hidden] { display: none; }
 .news-card {
   width: 100%; max-width: 340px;
   display: flex; flex-direction: column; align-items: center;
@@ -540,6 +540,9 @@ body:not(.skin-blue) #speech { display: none !important; }
 }
 .news-bubble p { font-size: 17px; font-weight: 700; line-height: 1.35; }
 .news-bubble p + p { margin-top: 6px; font-weight: 600; opacity: .85; }
+.news-bubble .tag-love { background: #ffd9ec; color: #e0318c; }
+#note-text { font-size: 18px; font-weight: 700; line-height: 1.4; }
+#note .news-go { font-size: 22px; }
 .news-go {
   width: 100%; height: 54px; margin-top: 16px; border: 0; border-radius: 999px;
   background: linear-gradient(135deg, #ff8fc5, #ff5eac); color: #fff;

@@ -6,7 +6,7 @@ Closed from the Grok Bot "Dumpling" workshop. This repo is the source of truth.
 
 - URL: https://omgbrasco.github.io/pink-garden/
 - Branch: `master` (GitHub Pages)
-- Cache: **v=32** (`BUILD = 32`, SW `dumpling-v32`). `docs/STATE.md` has the latest.
+- Cache: **v=34** (`BUILD = 34`, SW `dumpling-v34`). `docs/STATE.md` has the latest. (v33 = PR #7, still open.)
 - Last ship: pink garden's `#garden` is now full-bleed (`inset:0`), matching blue. It was previously capped to the bottom ~52% of the screen with a flat CSS gradient filling the rest above it — but `garden.webp` already contains a complete painted sky, so that produced a hard, ugly seam. `moon.webp` shares the same crop as `garden.webp`, so alignment carried over automatically with no separate retuning.
 
 ## Night garden (opt-in dark theme since v32)

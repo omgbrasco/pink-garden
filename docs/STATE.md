@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v34** (`BUILD = 34`, SW `dumpling-v34`). v34: a daily note from Braedon — he writes `DAILY_NOTES` in app.js, Dumpling shows one per day on a "FROM BRAEDON" card. Local only (`dumpling-note-day-v1`), nothing about her collected or sent. NOTE: built off v32; v33 (PR #7, bubble fix) is still open — merge #7 first, then this. See CHANGELOG.
+
 Cache **v32** (`BUILD = 32`, SW `dumpling-v32`). v32: pink garden is home (one-time flip via `homePink`). The night garden's menus, screens and bubbles restyled to match pink in a dark "midnight pink" style (`--ui-*` theme variables). See CHANGELOG.
 
 Cache **v31** (`BUILD = 31`, SW `dumpling-v31`). v31: Settings = Garden + Feedback only (type it / say it). How I work and the Settings fireflies button removed. What's-new card on first open after an update (`NEWS` list in app.js, `dumpling-seen-v1` key). My list + in-app reminders (`dumpling-list-v1`; no notifications, no server, Braedon's call). See CHANGELOG.
