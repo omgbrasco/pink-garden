@@ -237,7 +237,7 @@ body.skin-blue #menu-btn { background: rgba(40,14,48,.74); color: #ff9ecf; box-s
 
 #buddy-wrap {
   position: absolute; left: 50%;
-  bottom: calc(78px + var(--safe-b) + var(--kb));
+  bottom: calc(var(--chat-h, 78px) + var(--safe-b) + var(--kb));
   transform: translateX(-50%);
   width: var(--buddy-w); z-index: 4;
   transition: bottom .28s ease, opacity .2s ease;
