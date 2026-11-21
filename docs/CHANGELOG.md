@@ -2,6 +2,7 @@
 
 Newest first. Hashes are on `master`.
 
+- v36 — Pink is home again on every phone. One-time flip (`homePink36`): any phone sitting on the night garden opens on pink once after this ship; picking the night garden in the app still sticks after that. Preload now warms the pink garden, not the night one.
 - v35 — Dev vs user phones. Tap the "Dumpling" title 7 times fast to flip a phone to dev (`dumpling-role` = `dev`); do it again to flip back. Dev shows a small "DEV · vN" tag under the title. Her phone stays user (default) and never shows it. Feedback entries now carry `from: dev|user` and `build`. Each phone keeps its own data; nothing syncs (Braedon's call). v34's what's-new card now uses Christmas + "countdown to it, plus the date" instead of a made-up trip.
 - v34 — Countdowns, chat only, local only (`dumpling-countdowns-v1`, max 20). "countdown to our trip on Dec 20" (also 3/14, 14 March, tomorrow, friday). Ask "how many days until our trip?", "how long till christmas" (Christmas, New Year, Valentine's, Halloween built in), "my countdowns", "delete the trip countdown". On the day before and the day of, Dumpling cheers once that day. Help line mentions list, reminders and countdowns. What's-new card: 2 steps.
 - v33 — Dumpling stops sitting on the chat. On the pink garden he now floats just above the chat and rises as messages come in, so his face never covers a reply (old backlog bug). His idle thoughts went from 5 to 13, plus a few that fit the time of day (morning coffee, sleepy at night). No what's-new card: small, visible on its own.

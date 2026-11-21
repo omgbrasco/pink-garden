@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 35;
+  const BUILD = 36;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -291,12 +291,13 @@
         moon: COLORS[raw.moon] ? raw.moon : "pink",
         sky: COLORS[raw.sky] ? raw.sky : "",
         night: !!raw.night,
-        // Pink garden is home (v32). First open after that ships lands on pink once; after that her pick sticks.
-        skin: (raw.homePink && raw.skin === "blue") ? "blue" : "pink",
-        homePink: true
+        // Pink garden is home. v36 flips every phone back to pink once more (Braedon's call);
+        // after that, picking the night garden in the app sticks until she picks pink again.
+        skin: (raw.homePink36 && raw.skin === "blue") ? "blue" : "pink",
+        homePink36: true
       };
     } catch (e) {
-      return { moon: "pink", sky: "", night: false, skin: "pink", homePink: true };
+      return { moon: "pink", sky: "", night: false, skin: "pink", homePink36: true };
     }
   }
   function savePlay() {

@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v36** (`BUILD = 36`, SW `dumpling-v36`). v36: one-time flip back to pink on every phone (`homePink36`). See CHANGELOG.
+
 Cache **v35** (`BUILD = 35`, SW `dumpling-v35`). v35: dev/user phones (7 taps on title; `dumpling-role`). See CHANGELOG.
 
 Cache **v34** (`BUILD = 34`, SW `dumpling-v34`). v34: countdowns in chat (`dumpling-countdowns-v1`). See CHANGELOG.
