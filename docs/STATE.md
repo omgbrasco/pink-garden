@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v38** (`BUILD = 38`, SW `dumpling-v38`). v38: tap the box → chat slides up into a full thread (`body.thread`). See CHANGELOG.
+
 Cache **v37** (`BUILD = 37`, SW `dumpling-v37`). v37: full screen (`black-translucent` status bar), no blur anywhere. See CHANGELOG.
 
 Cache **v36** (`BUILD = 36`, SW `dumpling-v36`). v36: one-time flip back to pink on every phone (`homePink36`). See CHANGELOG.
