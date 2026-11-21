@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 34;
+  const BUILD = 35;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -17,12 +17,13 @@
   const FB_FILE = "dumpling-feedback.json";
   const FB_MAX_SEC = 90;
   const SEEN_KEY = "dumpling-seen-v1";
+  const ROLE_KEY = "dumpling-role"; // "dev" on Braedon's phone; anything else = her (user)
   // What's new card: add one entry per update she'd notice. Each step is two short lines, no paragraphs.
   // She sees the newest entry she hasn't seen yet, once. `show: "menu"` makes the last button open the menu.
   const NEWS = [
     { v: 34, steps: [
       ["I can count down now ⏳", "Ask me “how many days until Christmas?”"],
-      ["Add your own too", "Say “countdown to date night on Friday”."]
+      ["Got a big day coming?", "Say “countdown to” it, plus the date."]
     ] },
     { v: 31, show: "menu", steps: [
       ["I got a little makeover!", "Tap ☰ for our chats, garden & feedback."],
@@ -246,6 +247,31 @@
       document.documentElement.style.setProperty("--chat-h", (chat.offsetHeight + 4) + "px");
     }).observe(chat);
   })();
+  // Dev vs user: Braedon taps the "Dumpling" title 7 times fast to flip his phone to dev.
+  // Her phone stays user. Each phone keeps its own data; nothing syncs.
+  function isDev() { try { return localStorage.getItem(ROLE_KEY) === "dev"; } catch (e) { return false; } }
+  function applyRole() {
+    document.body.classList.toggle("dev", isDev());
+    const tag = document.getElementById("dev-tag");
+    if (tag) tag.textContent = "DEV · v" + BUILD;
+  }
+  (function armDevTaps() {
+    const h = document.querySelector("#title h1");
+    if (!h) return;
+    let taps = [];
+    h.addEventListener("click", function () {
+      const now = Date.now();
+      taps = taps.filter(function (t) { return now - t < 3000; }).concat(now);
+      if (taps.length < 7) return;
+      taps = [];
+      try {
+        if (isDev()) localStorage.removeItem(ROLE_KEY); else localStorage.setItem(ROLE_KEY, "dev");
+      } catch (e) {}
+      applyRole();
+      showThought(isDev() ? "dev mode on 🛠" : "dev mode off", false, 2500);
+    });
+  })();
+  applyRole();
   function fitViewportThrottled() {
     if (fitQueued) return;
     fitQueued = true;
@@ -956,7 +982,7 @@
   function fbRecLabel(text) { if (els.fbRecLabel) els.fbRecLabel.textContent = text; }
   function queueFeedback(text, audio) {
     const q = loadFbQueue();
-    q.push({ id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), ts: Date.now(), text: text, audio: audio || null });
+    q.push({ id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), ts: Date.now(), from: isDev() ? "dev" : "user", build: BUILD, text: text, audio: audio || null });
     saveFbQueue(q);
     // Saved on her phone either way; it goes to Braedon now or on the next try.
     fbStatus("Got it 💌");

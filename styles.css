@@ -207,6 +207,15 @@ body:not([data-tab="home"]) #chat { display: none !important; }
 }
 #fb-status { margin: 12px 0 0; text-align: center; font-size: 15px; font-weight: 700; opacity: 1; }
 #fb-status[hidden] { display: none; }
+#title h1 { pointer-events: auto; -webkit-user-select: none; user-select: none; }
+#dev-tag {
+  display: none; margin: 4px auto 0; width: max-content;
+  padding: 3px 9px; border-radius: 999px;
+  font-size: 11px; font-weight: 800; letter-spacing: .06em;
+  color: #fff; background: rgba(40,14,48,.72);
+  box-shadow: 0 0 0 1px #ff9ecf88;
+}
+body.dev #dev-tag { display: block; }
 #title h1 {
   font-size: 20px; font-weight: 800; letter-spacing: .02em;
   color: #fff; text-shadow: 0 1px 2px #4a1840, 0 2px 0 #e85aa8, 0 8px 18px #ff4fbf66;

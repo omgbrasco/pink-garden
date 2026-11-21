@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v35** (`BUILD = 35`, SW `dumpling-v35`). v35: dev/user phones (7 taps on title; `dumpling-role`). See CHANGELOG.
+
 Cache **v34** (`BUILD = 34`, SW `dumpling-v34`). v34: countdowns in chat (`dumpling-countdowns-v1`). See CHANGELOG.
 
 Cache **v33** (`BUILD = 33`, SW `dumpling-v33`). v33: Dumpling floats above the chat (no more covering replies), more idle thoughts incl. time-of-day. See CHANGELOG.
