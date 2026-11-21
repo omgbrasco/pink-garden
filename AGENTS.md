@@ -55,7 +55,7 @@ docs/        # handoff for humans and coding agents
 4. Merge to `master` when Braedon says so (never `--force`).
 5. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=33**. `docs/STATE.md` always has the live number.
+Current cache as of this handoff: **v=35**. `docs/STATE.md` always has the live number.
 
 ## Product rules that already bit us
 
@@ -69,6 +69,12 @@ Current cache as of this handoff: **v=33**. `docs/STATE.md` always has the live 
 - Composer is **one glass pill**. Mic lives inside it. Do not bring back a separate mic button.
 - Keyboard lift (v32): `--kb` = `innerHeight - visualViewport.height`. **Do not subtract `visualViewport.offsetTop`.** iOS 26 reports it > 0 while the screen isn't actually shifted (WebKit bug 297779), which cancelled the lift and hid the "Say hi" box behind the keyboard. If iOS gives no keyboard size at all, `kbGuess` lifts to 45% of the screen. The ^ ∨ ✓ bar above the keyboard is iOS's own form bar and can't be removed from a web app.
 - `fitViewport()` in `app.js` used to force `--app-h` to `screen.height` on standalone iOS as a black-bar workaround. Removed in v23: it was overshooting the real visible screen on her 13 and pushing the whole tab bar off the bottom edge (invisible, composer sat flush at the very bottom). `--app-h` now just tracks `window.innerHeight`. If a black/pink bar comes back on either phone, do not re-add the `screen.height` snap blindly — get a screenshot first and check `visualViewport` values instead.
+
+## Dev vs user phones (v35)
+
+Braedon's phone = **dev** (`dumpling-role` = `dev`, set by 7 fast taps on the title; shows a DEV tag). Her phone = **user** (default, no tag). The two phones must NOT sync data (Braedon's call). Dev-only extras go behind `body.dev` / `isDev()`, never on her phone.
+
+No server for now (Braedon, Nov 2026). Real notifications + real AI are parked until he says "server".
 
 ## Play state
 

@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 33;
+  const BUILD = 35;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -9,15 +9,22 @@
   const NOTES_MAX = 40;
   const LIST_KEY = "dumpling-list-v1";
   const LIST_MAX = 100;
+  const COUNT_KEY = "dumpling-countdowns-v1";
+  const COUNT_MAX = 20;
   const FB_QUEUE_KEY = "dumpling-fb-queue-v1";
   const FB_TOKEN_KEY = "dumpling-fb-token";
   const FB_GIST_KEY = "dumpling-fb-gist";
   const FB_FILE = "dumpling-feedback.json";
   const FB_MAX_SEC = 90;
   const SEEN_KEY = "dumpling-seen-v1";
+  const ROLE_KEY = "dumpling-role"; // "dev" on Braedon's phone; anything else = her (user)
   // What's new card: add one entry per update she'd notice. Each step is two short lines, no paragraphs.
   // She sees the newest entry she hasn't seen yet, once. `show: "menu"` makes the last button open the menu.
   const NEWS = [
+    { v: 34, steps: [
+      ["I can count down now ⏳", "Ask me “how many days until Christmas?”"],
+      ["Got a big day coming?", "Say “countdown to” it, plus the date."]
+    ] },
     { v: 31, show: "menu", steps: [
       ["I got a little makeover!", "Tap ☰ for our chats, garden & feedback."],
       ["I can keep your list now 📝", "Say “add milk to my list”."],
@@ -240,6 +247,31 @@
       document.documentElement.style.setProperty("--chat-h", (chat.offsetHeight + 4) + "px");
     }).observe(chat);
   })();
+  // Dev vs user: Braedon taps the "Dumpling" title 7 times fast to flip his phone to dev.
+  // Her phone stays user. Each phone keeps its own data; nothing syncs.
+  function isDev() { try { return localStorage.getItem(ROLE_KEY) === "dev"; } catch (e) { return false; } }
+  function applyRole() {
+    document.body.classList.toggle("dev", isDev());
+    const tag = document.getElementById("dev-tag");
+    if (tag) tag.textContent = "DEV · v" + BUILD;
+  }
+  (function armDevTaps() {
+    const h = document.querySelector("#title h1");
+    if (!h) return;
+    let taps = [];
+    h.addEventListener("click", function () {
+      const now = Date.now();
+      taps = taps.filter(function (t) { return now - t < 3000; }).concat(now);
+      if (taps.length < 7) return;
+      taps = [];
+      try {
+        if (isDev()) localStorage.removeItem(ROLE_KEY); else localStorage.setItem(ROLE_KEY, "dev");
+      } catch (e) {}
+      applyRole();
+      showThought(isDev() ? "dev mode on 🛠" : "dev mode off", false, 2500);
+    });
+  })();
+  applyRole();
   function fitViewportThrottled() {
     if (fitQueued) return;
     fitQueued = true;
@@ -508,6 +540,8 @@
     if (remind || (rememberTo && parseWhen(rememberTo[1]).due)) {
       return addReminder(remind ? remind[1] : rememberTo[1]);
     }
+    const cd = countdownReply(t);
+    if (cd) return cd;
     const addM = t.match(/^(?:please\s+|can you\s+|could you\s+)*(?:add|put|stick|throw)\s+(.+?)\s+(?:to|on|onto|in)\s+(?:my|the)\s+(?:shopping\s+|grocery\s+|to-?do\s+)?list\b/i);
     if (addM) return addToList(addM[1]);
     if (/\b(what'?s|whats|what is) on (my|the) list\b|^(show|read|check)( me)? (my|the) list\b|^(my|the) list[?!.]*$|\bwhat do i need\b/i.test(t)) return readList();
@@ -563,7 +597,7 @@
       return "Hey you. Want a green moon, or a firefly hunt?";
     }
     if (/help|what can|how do|commands?/.test(s)) {
-      return "I can recolor the moon or sky, dim the lights, or play catch-the-fireflies.";
+      return "I can paint the moon, keep your list, remind you, count down to big days, or play fireflies.";
     }
     if (/who are you|what are you/.test(s)) {
       return "Just Dumpling. Tiny garden guy. I live on this phone.";
@@ -948,7 +982,7 @@
   function fbRecLabel(text) { if (els.fbRecLabel) els.fbRecLabel.textContent = text; }
   function queueFeedback(text, audio) {
     const q = loadFbQueue();
-    q.push({ id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), ts: Date.now(), text: text, audio: audio || null });
+    q.push({ id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), ts: Date.now(), from: isDev() ? "dev" : "user", build: BUILD, text: text, audio: audio || null });
     saveFbQueue(q);
     // Saved on her phone either way; it goes to Braedon now or on the next try.
     fbStatus("Got it 💌");
@@ -1208,6 +1242,7 @@
   function checkReminders() {
     if (els.news && !els.news.hidden) return;
     if (document.body.getAttribute("data-tab") !== "home" || document.visibilityState === "hidden") return;
+    if (countdownNudge()) return;
     const list = loadList(), now = Date.now();
     const due = list.filter(function (i) { return !i.done && i.due && i.due <= now && !i.reminded; });
     if (!due.length) return;
@@ -1264,5 +1299,105 @@
       sessionStorage.setItem("dumpling-reloaded-" + BUILD, "1");
       location.reload();
     });
+  }
+
+  /* ============ countdowns (local only): "countdown to our trip on Dec 20" ============ */
+  const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  const BIG_DAYS = { "christmas": [11, 25], "xmas": [11, 25], "new year": [0, 1], "new years": [0, 1], "valentine": [1, 14], "valentines": [1, 14], "halloween": [9, 31] };
+  function loadCounts() {
+    try { const c = JSON.parse(localStorage.getItem(COUNT_KEY) || "[]"); return Array.isArray(c) ? c : []; } catch (e) { return []; }
+  }
+  function saveCounts(c) { try { localStorage.setItem(COUNT_KEY, JSON.stringify(c.slice(-COUNT_MAX))); } catch (e) {} }
+  function dayStart(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function nextDate(month, day, year) {
+    const today = dayStart(new Date());
+    let d = new Date(year || today.getFullYear(), month, day);
+    if (d.getMonth() !== month) return null;
+    if (!year && d < today) d = new Date(today.getFullYear() + 1, month, day);
+    return d;
+  }
+  function parseDay(str) {
+    const s = str.toLowerCase().replace(/(\d)(st|nd|rd|th)\b/g, "$1").trim();
+    let m = s.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})(?:,?\s+(\d{4}))?\b/);
+    if (m) return nextDate(MONTHS.indexOf(m[1].slice(0, 3)), +m[2], m[3] ? +m[3] : 0);
+    m = s.match(/\b(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?(?:\s+(\d{4}))?\b/);
+    if (m) return nextDate(MONTHS.indexOf(m[2]), +m[1], m[3] ? +m[3] : 0);
+    m = s.match(/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/);
+    if (m) return nextDate(+m[1] - 1, +m[2], m[3] ? (m[3].length === 2 ? 2000 + +m[3] : +m[3]) : 0);
+    const w = parseWhen(str);
+    return w.due ? dayStart(new Date(w.due)) : null;
+  }
+  function cleanName(n) {
+    return n.replace(/^(?:the|my|our)\s+/i, function (x) { return /our/i.test(x) ? "our " : ""; })
+      .replace(/[?!.]+$/, "").trim();
+  }
+  function daysTo(ts) { return Math.round((dayStart(new Date(ts)) - dayStart(new Date())) / 864e5); }
+  function daysLine(name, days) {
+    if (days === 0) return "Today's the day: " + name + "! 🎉";
+    if (days === 1) return "Tomorrow! " + name + " is so close 💕";
+    if (days < 0) return name + " was " + (-days) + (days === -1 ? " day" : " days") + " ago.";
+    return days + " days until " + name + " ⏳";
+  }
+  function findCount(name) {
+    const n = name.toLowerCase();
+    return loadCounts().find(function (c) {
+      const k = c.name.toLowerCase().replace(/^our\s+/, "");
+      return n.indexOf(k) >= 0 || k.indexOf(n.replace(/^our\s+/, "")) >= 0;
+    });
+  }
+  function countdownReply(t) {
+    // Set: "countdown to our trip on Dec 20", "count down to mom's birthday 3/14"
+    let m = t.match(/^(?:please\s+)?(?:start\s+|set\s+|make\s+|add\s+)?(?:a\s+)?count\s*down\s+(?:to|for|until|till)\s+(.+?)\s+(?:on|is on|is|=|:)?\s*((?:\w+\.?\s+\d{1,2}(?:st|nd|rd|th)?|\d{1,2}(?:st|nd|rd|th)?\s+\w+|\d{1,2}\/\d{1,2}(?:\/\d{2,4})?|tomorrow|(?:next\s+)?\w+day)(?:,?\s+\d{4})?)[.!]*$/i);
+    if (m) {
+      const name = cleanName(m[1]), day = parseDay(m[2]);
+      if (!day) return "Hmm, what day? Try “countdown to " + name + " on Dec 20”.";
+      const list = loadCounts().filter(function (c) { return c.name.toLowerCase() !== name.toLowerCase(); });
+      list.push({ name: name, date: day.getTime(), nudged: "" });
+      saveCounts(list);
+      const d = daysTo(day.getTime());
+      return "Counting down! " + (d === 0 ? "It's today! 🎉" : d === 1 ? "Just 1 day to " + name + "." : d + " days to " + name + " ⏳");
+    }
+    if (/^(?:please\s+)?(?:start\s+|set\s+|make\s+)?(?:a\s+)?count\s*down\b/i.test(t) && !/\b(my|our|all|the)?\s*count\s*downs\b/i.test(t)) {
+      return "To what, and when? Like “countdown to our trip on Dec 20”.";
+    }
+    // Delete: "delete the trip countdown", "stop counting down to the trip"
+    m = t.match(/^(?:please\s+)?(?:delete|remove|forget|stop|cancel|clear)\s+(?:the\s+|my\s+|our\s+)?(?:counting\s+down\s+(?:to|for)\s+)?(.+?)(?:\s+count\s*down)?[.!]*$/i);
+    if (m && /count\s*down|counting\s+down/i.test(t)) {
+      const c = findCount(cleanName(m[1]));
+      if (!c) return "I don't have that countdown.";
+      saveCounts(loadCounts().filter(function (x) { return x !== c && x.name !== c.name; }));
+      return "Okay, no more countdown to " + c.name + ".";
+    }
+    // List: "my countdowns"
+    if (/\b(my|our|all|the|any)\s+count\s*downs\b|^count\s*downs[?!.]*$/i.test(t)) {
+      const up = loadCounts().filter(function (c) { return daysTo(c.date) >= 0; })
+        .sort(function (a, b) { return a.date - b.date; });
+      if (!up.length) return "No countdowns yet. Say “countdown to our trip on Dec 20”.";
+      return up.slice(0, 4).map(function (c) { const d = daysTo(c.date); return c.name + ": " + (d === 0 ? "today! 🎉" : d + (d === 1 ? " day" : " days")); }).join(" · ");
+    }
+    // Ask: "how many days until our trip", "how long till christmas", "days until mom's birthday"
+    m = t.match(/(?:how\s+many\s+(?:more\s+)?(?:days|sleeps)|how\s+long|days)\s+(?:until|till|til|to|before)\s+(.+?)[?!.]*$/i);
+    if (m) {
+      const name = cleanName(m[1]);
+      const c = findCount(name);
+      if (c) return daysLine(c.name, daysTo(c.date));
+      const key = name.toLowerCase().replace(/[’']s?\b/g, "s").replace(/\s+day$/, "").trim();
+      const big = BIG_DAYS[key] || BIG_DAYS[key.replace(/s$/, "")];
+      if (big) return daysLine(name, daysTo(nextDate(big[0], big[1], 0).getTime()));
+      return "I don't know when " + name + " is yet. Say “countdown to " + name + " on Dec 20”.";
+    }
+    return null;
+  }
+  function countdownNudge() {
+    // Once a day, on the day before and the day of: Dumpling cheers.
+    const list = loadCounts(), today = todayStr();
+    const c = list.find(function (x) { const d = daysTo(x.date); return (d === 0 || d === 1) && x.nudged !== today; });
+    if (!c) return false;
+    c.nudged = today; saveCounts(list);
+    const msg = daysLine(c.name, daysTo(c.date));
+    holdUntil = Date.now() + 12000;
+    if (play.skin === "blue") { pushHistory("bot", msg); showSpeech(msg, false, 12000); }
+    else add("bot", msg);
+    return true;
   }
 })();
