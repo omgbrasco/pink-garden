@@ -21,8 +21,8 @@
   // She sees the newest entry she hasn't seen yet, once. `show: "menu"` makes the last button open the menu.
   const NEWS = [
     { v: 34, steps: [
-      ["I can count down now ⏳", "Say “countdown to our trip on Dec 20”."],
-      ["Then just ask me", "“How many days until our trip?”"]
+      ["I can count down now ⏳", "Ask me “how many days until Christmas?”"],
+      ["Add your own too", "Say “countdown to date night on Friday”."]
     ] },
     { v: 31, show: "menu", steps: [
       ["I got a little makeover!", "Tap ☰ for our chats, garden & feedback."],
