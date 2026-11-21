@@ -55,7 +55,7 @@ docs/        # handoff for humans and coding agents
 4. Merge to `master` when Braedon says so (never `--force`).
 5. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=35**. `docs/STATE.md` always has the live number.
+Current cache as of this handoff: **v=36**. `docs/STATE.md` always has the live number.
 
 ## Product rules that already bit us
 
@@ -78,7 +78,7 @@ No server for now (Braedon, Nov 2026). Real notifications + real AI are parked u
 
 ## Play state
 
-`localStorage` key `dumpling-play-v1`: moon color, sky, night, skin (`pink`|`blue`), `homePink` (v32 one-time flip to pink; replaces the old `homeBlue`).
+`localStorage` key `dumpling-play-v1`: moon color, sky, night, skin (`pink`|`blue`), `homePink36` (v36 one-time flip to pink; replaced v32's `homePink`, which replaced the old `homeBlue`).
 Do not wipe it unless Braedon asks.
 
 ## Who she is talking to
