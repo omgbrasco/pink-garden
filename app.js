@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 32;
+  const BUILD = 33;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -35,7 +35,20 @@
     red: ["#ffd6d6", "#ff6b6b", "#e03131"],
     teal: ["#d6fff8", "#5ef0d0", "#12b89a"]
   };
-  const IDLE_THOUGHTS = ["...", "warm", "boop?", "moon", "zzz"];
+  const IDLE_THOUGHTS = ["...", "warm", "boop?", "moon", "zzz", "hm hm", "hi 👋", "so fluffy", "✨", "snack?", "la la la", "*wiggle*", "you're nice"];
+  // A few extra thoughts that fit the time of day.
+  const IDLE_BY_HOUR = [
+    [5, 11, ["good morning ☀️", "coffee?", "sleepy...", "big stretch"]],
+    [11, 17, ["sunny ☀️", "lunch time?", "nap time?", "drink water 💧"]],
+    [17, 22, ["cozy time", "pretty sky", "dinner?", "long day?"]],
+    [22, 29, ["sleepy 🌙", "zzz...", "bedtime?", "night night"]]
+  ];
+  function idleThought() {
+    const h = new Date().getHours();
+    const hh = h < 5 ? h + 24 : h;
+    const slot = IDLE_BY_HOUR.find(function (r) { return hh >= r[0] && hh < r[1]; });
+    return pick(slot && Math.random() < 0.5 ? slot[2] : IDLE_THOUGHTS);
+  }
   const NEED = 8;
 
   const els = {
@@ -219,6 +232,14 @@
   document.addEventListener("gesturechange", function (e) { e.preventDefault(); }, { passive: false });
   document.addEventListener("touchmove", function (e) { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
   let fitQueued = false;
+  // Dumpling floats just above the chat, so replies never sit on his face.
+  (function trackChatHeight() {
+    const chat = document.getElementById("chat");
+    if (!chat || !window.ResizeObserver) return;
+    new ResizeObserver(function () {
+      document.documentElement.style.setProperty("--chat-h", (chat.offsetHeight + 4) + "px");
+    }).observe(chat);
+  })();
   function fitViewportThrottled() {
     if (fitQueued) return;
     fitQueued = true;
@@ -446,8 +467,8 @@
     clearTimeout(idleTimer);
     idleTimer = setTimeout(function () {
       if (!busy && !playing && Date.now() > holdUntil && document.activeElement !== els.box) {
-        if (play.skin === "blue") showSpeech(pick(IDLE_THOUGHTS), false);
-        else showThought(pick(IDLE_THOUGHTS), false);
+        if (play.skin === "blue") showSpeech(idleThought(), false);
+        else showThought(idleThought(), false);
       }
       armIdle();
     }, 9000 + Math.random() * 4000);
