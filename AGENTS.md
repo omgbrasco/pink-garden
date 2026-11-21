@@ -55,9 +55,12 @@ docs/        # handoff for humans and coding agents
 4. Merge to `master` when Braedon says so (never `--force`).
 5. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=36**. `docs/STATE.md` always has the live number.
+Current cache as of this handoff: **v=37**. `docs/STATE.md` always has the live number.
 
 ## Product rules that already bit us
+
+- **No blur** (v37, Braedon's call). No `backdrop-filter` anywhere. Use more solid backgrounds for readability instead.
+- **Full screen** (v37): status bar is `black-translucent`; keep the garden under the clock. Do not go back to opaque `black`.
 
 - Home is the **pink** garden (v32, Braedon's call). The night garden (`assets/skin-blue.webp`) is the opt-in dark theme. Floating Dumpling is **pink garden only**.
 - Theme colors for menus, screens and boxes live in `--ui-*` variables in `styles.css`. Pink is light; the night garden overrides them with a dark "midnight pink" set (same look, dark style). Style new UI with the variables, not a hard-coded color per skin.
