@@ -296,6 +296,49 @@ body.skin-blue #menu-btn { background: rgba(40,14,48,.74); color: #ff9ecf; box-s
   transition: bottom .2s ease;
 }
 body.kb #chat { bottom: var(--kb, 0px); }
+/* Closed: only the last exchange shows, full size, never faded or cut off. */
+body:not(.thread) #log { max-height: none; overflow: visible; mask-image: none; -webkit-mask-image: none; }
+body:not(.thread) #log > .bubble:not(:nth-last-child(-n+2)) { display: none; }
+/* Open: the chat slides up into a full message thread. */
+#thread-head { display: none; }
+body.thread #chat {
+  top: calc(var(--safe-t) + 58px);
+  background: var(--ui-bg); color: var(--ui-fg);
+  border-radius: 26px 26px 0 0;
+  padding-top: 0;
+  pointer-events: auto;
+  box-shadow: 0 -12px 40px rgba(74,24,64,.28);
+  animation: threadUp .28s cubic-bezier(.2,.9,.3,1.1);
+}
+@keyframes threadUp { from { transform: translateY(60%); opacity: .4; } to { transform: none; opacity: 1; } }
+body.thread #thread-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 2px 8px; flex: 0 0 auto;
+  border-bottom: 1px solid var(--ui-border);
+}
+body.thread #thread-head:before {
+  content: ""; position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+  width: 38px; height: 5px; border-radius: 3px; background: var(--ui-border);
+}
+body.thread #thread-head img { width: 34px; height: 34px; object-fit: contain; }
+body.thread #thread-head strong { flex: 1; font-size: 17px; }
+#thread-close {
+  width: 38px; height: 38px; border: 0; border-radius: 50%; padding: 0;
+  display: grid; place-items: center; background: var(--ui-surface); color: inherit;
+}
+#thread-close:active { background: var(--ui-press); }
+body.thread #log {
+  display: flex !important; flex: 1 1 auto; min-height: 0; max-height: none;
+  justify-content: flex-start; padding-top: 12px;
+  mask-image: none; -webkit-mask-image: none;
+}
+body.thread #log > .bubble:first-child { margin-top: auto; }
+body.thread .bot { background: var(--ui-surface); color: var(--ui-fg); box-shadow: 0 0 0 1px var(--ui-border); }
+body.thread #buddy-wrap, body.thread #title, body.thread #menu-btn, body.thread #speech, body.thread #said { opacity: 0; pointer-events: none; }
+body.thread .composer { background: var(--ui-surface); box-shadow: 0 0 0 1px var(--ui-border); }
+body.thread .composer input { color: var(--ui-fg); }
+body.thread .composer input::placeholder { color: var(--ui-fg); opacity: .5; }
+body.thread #mic { color: var(--ui-fg); }
 #log, #chips, form { pointer-events: auto; }
 #log {
   max-height: 18vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
@@ -462,7 +505,7 @@ body.skin-blue #garden .scene {
   object-position: center 38%;
 }
 body.skin-blue #buddy-wrap,
-body.skin-blue #log { display: none !important; }
+body.skin-blue:not(.thread) #log { display: none !important; }
 body.skin-blue #title h1 {
   text-shadow: 0 1px 2px #2a0f30, 0 2px 0 #c2448c, 0 8px 18px #ff4fbf55;
 }

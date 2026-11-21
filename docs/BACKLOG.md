@@ -30,6 +30,10 @@ Phase 3: variety in the firefly game so it doesn't get stale; expand the idle-th
 - Version git tags when a real slice ships (`v0.19.0` or keep cache numbers).
 - First `docs/jobs/` file only when Claude/Codex is hired for a slice.
 
+## Bugs
+
+- "add oat milk, eggs and bread to my list" saves "eggs and bread" as one item (only commas split, not "and").
+
 ## Parked
 
 - Reliable iOS page dictation without leaving the Safari sandbox.

@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 37;
+  const BUILD = 38;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -218,6 +218,7 @@
   if (els.said) els.said.addEventListener("click", function (e) { e.stopPropagation(); els.said.hidden = true; clearTimeout(els.said._t); });
   if (els.thought) els.thought.addEventListener("click", function (e) { e.stopPropagation(); hideThought(); });
   els.box.addEventListener("focus", function () {
+    openThread();
     document.body.classList.add("chatting");
     // Re-measure while the keyboard slides up, in case iOS skips the resize events.
     kbGuess = false;
@@ -272,6 +273,45 @@
     });
   })();
   applyRole();
+  // Message thread: tapping the box slides the chat up into a full thread so nothing gets cut off.
+  // Close with the ⌄ button, a swipe down on the header, or a tap on the garden above.
+  let threadOpen = false;
+  function openThread() {
+    if (threadOpen || playing) return;
+    threadOpen = true;
+    hideSpeech(); hideThought();
+    if (els.said) els.said.hidden = true;
+    els.log.innerHTML = "";
+    history.slice(-80).forEach(function (h) {
+      const d = document.createElement("div");
+      d.className = "bubble " + (h.who === "me" ? "me" : "bot");
+      d.textContent = h.text;
+      els.log.appendChild(d);
+    });
+    document.body.classList.add("thread");
+    requestAnimationFrame(function () { els.log.scrollTop = els.log.scrollHeight; });
+  }
+  function closeThread() {
+    if (!threadOpen) return;
+    threadOpen = false;
+    document.body.classList.remove("thread");
+    if (document.activeElement === els.box) els.box.blur();
+    if (play.skin === "blue") els.log.innerHTML = "";
+  }
+  (function armThread() {
+    const btn = document.getElementById("thread-close");
+    const head = document.getElementById("thread-head");
+    if (btn) btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); closeThread(); });
+    if (head) {
+      let y0 = null;
+      head.addEventListener("touchstart", function (e) { y0 = e.touches[0].clientY; }, { passive: true });
+      head.addEventListener("touchend", function (e) {
+        if (y0 !== null && e.changedTouches[0].clientY - y0 > 50) closeThread();
+        y0 = null;
+      }, { passive: true });
+    }
+    els.stage.addEventListener("click", function () { if (threadOpen) closeThread(); }, true);
+  })();
   function fitViewportThrottled() {
     if (fitQueued) return;
     fitQueued = true;
@@ -423,7 +463,7 @@
 
   function add(who, text, extra) {
     if (extra !== "typing" && text) pushHistory(who, text);
-    if (play.skin === "blue") {
+    if (play.skin === "blue" && !threadOpen) {
       if (extra === "typing") {
         showSpeech("", true);
         return { remove: function () { hideSpeech(); } };
