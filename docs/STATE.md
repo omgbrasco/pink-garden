@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v40** (`BUILD = 40`, SW `dumpling-v40`). v40: daily notes from Braedon (`dumpling-note-day`, `NOTES_PACK`). Placeholder notes until he sends real ones. See CHANGELOG.
+
 Cache **v39** (`BUILD = 39`, SW `dumpling-v39`). v39: list splits on "and". See CHANGELOG.
 
 Cache **v38** (`BUILD = 38`, SW `dumpling-v38`). v38: tap the box → chat slides up into a full thread (`body.thread`). See CHANGELOG.
