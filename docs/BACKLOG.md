@@ -32,7 +32,7 @@ Phase 3: variety in the firefly game so it doesn't get stale; expand the idle-th
 
 ## Bugs
 
-- "add oat milk, eggs and bread to my list" saves "eggs and bread" as one item (only commas split, not "and").
+- ~~"eggs and bread" saved as one item~~ fixed v39.
 
 ## Parked
 

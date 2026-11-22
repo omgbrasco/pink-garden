@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 38;
+  const BUILD = 39;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -1173,10 +1173,17 @@
     return x.replace(/^(and|or)\s+/i, "").replace(/^(some|a|an|the)\s+/i, "").replace(/[.!?]+$/, "").trim();
   }
   function addToList(raw) {
-    const items = raw.split(/\s*,\s*/).map(tidyItem).filter(Boolean);
+    // Split on commas and on "and" ("milk, eggs and bread" = 3 things),
+    // but keep food pairs together ("mac and cheese").
+    const KEEP = /\b(mac|macaroni|salt|peanut butter|pb|chips|bread|fish|rice|beans|half|sweet|sour|rock|cookies|biscuits|surf|ham|bacon|pork|franks|chicken|spaghetti|cheese|milk|cream|cookies n)\s+and\s+(cheese|pepper|jelly|j|salsa|butter|chips|beans|half|sour|roll|cream|gravy|turf|eggs|waffles|crackers|meatballs|cookies|vinegar)\b/gi;
+    const safe = raw.replace(KEEP, function (m) { return m.replace(/\s+and\s+/i, " \u0001 "); });
+    const items = safe.split(/\s*,\s*|\s+(?:and|&|plus)\s+/i)
+      .map(function (x) { return tidyItem(x.replace(/ \u0001 /g, " and ")); }).filter(Boolean);
     if (!items.length) return "Add what? Try “add milk to my list”.";
     items.forEach(function (x) { addListItem(x); });
-    return items.length === 1 ? "Added “" + items[0] + "” 📝" : "Added " + items.length + " things 📝";
+    if (items.length === 1) return "Added “" + items[0] + "” 📝";
+    if (items.length <= 4) return "Added " + items.join(" · ") + " 📝";
+    return "Added " + items.length + " things 📝";
   }
   function readList() {
     const open = loadList().filter(function (i) { return !i.done; });
