@@ -4,6 +4,8 @@
 //   POST /chat   { phone, key, text, history:[{who,text}] }  -> { reply }
 //   POST /send   { phone, key, text }                        -> { ok }   (Dumpling-to-Dumpling message)
 //   GET  /inbox?phone=..&key=..                              -> { messages:[{from,text,ts}] } (and clears them)
+//   GET  /memory?phone=..&key=..                             -> { memory:[...] }  (what Dumpling remembers about this phone's person)
+//   POST /forget { phone, key }                              -> { ok }   (wipes it)
 //   GET  /health                                             -> { ok, model }
 //
 // Phones: "user" (her) and "dev" (Braedon). Each has its own key and its own memory file.
@@ -126,6 +128,19 @@ const server = http.createServer(async (req, res) => {
       const box = readJson(inboxFile(other(b.phone)), []);
       box.push({ from: NAMES[b.phone], text, ts: Date.now() });
       writeJson(inboxFile(other(b.phone)), box.slice(-50));
+      return send(res, 200, { ok: true }, origin);
+    }
+
+    // She can always see and wipe what Dumpling remembers about her (from her own phone).
+    if (url.pathname === "/memory" && req.method === "GET") {
+      const phone = url.searchParams.get("phone"), key = url.searchParams.get("key");
+      if (!authed(phone, key)) return send(res, 401, { error: "nope" }, origin);
+      return send(res, 200, { memory: readJson(memFile(phone), []) }, origin);
+    }
+    if (url.pathname === "/forget" && req.method === "POST") {
+      const b = await body(req);
+      if (!authed(b.phone, b.key)) return send(res, 401, { error: "nope" }, origin);
+      writeJson(memFile(b.phone), []);
       return send(res, 200, { ok: true }, origin);
     }
 
