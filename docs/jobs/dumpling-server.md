@@ -30,11 +30,13 @@ A tiny server so Dumpling gets a real (free, local) AI brain + memory, and so th
    `schtasks /Create /TN "Dumpling Brain" /TR "\"%USERPROFILE%\pink-garden\server\start-dumpling.bat\"" /SC ONLOGON /RL LIMITED /F`
    (adjust the path to the real clone). Ollama already starts itself at login. Funnel `--bg` persists.
    Check the PC doesn't sleep on AC power: `powercfg /query SCHEME_CURRENT SUB_SLEEP STANDBYIDLE`. If it sleeps, tell Braedon (don't change power settings without asking).
-8. **Keys file for Braedon.** Write `%USERPROFILE%\Desktop\dumpling-keys.txt` with: the Funnel URL, KEY_USER (her phone), KEY_DEV (his phone). Do **not** paste the keys into chat or commits.
+8. **Link codes for Braedon.** Make one link code per phone (app v41+ understands them):
+   `node -e "const u=process.argv[1];for(const [p,k] of [['user',process.argv[2]],['dev',process.argv[3]]])console.log(p, Buffer.from(JSON.stringify({u,k,p})).toString('base64url'))" <FUNNEL_URL> <KEY_USER> <KEY_DEV>`
+   Write `%USERPROFILE%\Desktop\dumpling-keys.txt` with the Funnel URL and, for each phone, the exact line to type into that phone's Dumpling chat: `link dumpling <code>` (her phone gets the `user` code, his gets the `dev` code). Do **not** paste keys or codes into chat or commits.
 9. **Report** (short, to Braedon's phone): Funnel URL, model, test reply text, memory test passed y/n, auto-start set y/n, PC sleep status. Then append one line to `docs/CHANGELOG.md` under a "Server" heading (URL is fine to write; keys are not), commit, push master.
 
 ## Not this job
-- The app (phone) side: linking each phone to the server, AI replies in chat, "tell Braedon …" messages. That's the next app version, built after the URL works.
+- The app side is already shipped (v41): each phone links by typing `link dumpling <code>` in its Dumpling chat. Small talk goes to the brain; commands (moon, list, countdowns) stay instant on the phone; "tell Braedon …" / "tell her …" passes a note; incoming notes show as "💌 Braedon says: …". PC off = old built-in replies.
 - Don't change `persona.md` unless Braedon asks. He edits it to change Dumpling's personality (takes effect next message, no restart).
 
 ## If something breaks later
