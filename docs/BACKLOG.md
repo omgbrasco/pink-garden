@@ -2,7 +2,7 @@
 
 ## Now
 
-Braedon: create a private gist + gist-scoped GitHub token, enter both on `setup-feedback.html` on your phone and hers, so Feedback tab actually reaches you. Until then her entries queue locally, safe but unsent.
+Gist setup no longer needed (v43): once the PC server is running and both phones are linked, the Feedback tab goes to the PC. Next: run the PC server job, then text her her `link dumpling …` line.
 
 ## Assistant roadmap (Braedon's call, mostly offline - one deliberate exception now, see AGENTS.md)
 
