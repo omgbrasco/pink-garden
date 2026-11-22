@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v42** (`BUILD = 42`, SW `dumpling-v42`). v42: she can see/wipe brain memory. See CHANGELOG.
+
 Cache **v41** (`BUILD = 41`, SW `dumpling-v41`). v41: hotfix for v40 first-open-of-day crash + brain link (`dumpling-brain-v1`). See CHANGELOG.
 
 Cache **v40** (`BUILD = 40`, SW `dumpling-v40`). v40: daily notes from Braedon (`dumpling-note-day`, `NOTES_PACK`). Placeholder notes until he sends real ones. See CHANGELOG.

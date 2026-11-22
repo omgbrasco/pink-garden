@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 41;
+  const BUILD = 42;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -756,12 +756,27 @@
         if (!j || !j.ok) throw new Error("bad");
         try { localStorage.setItem(BRAIN_KEY, JSON.stringify({ u: cfg.u, k: cfg.k, p: cfg.p })); } catch (e) {}
         checkInbox();
-        return "Linked 🧠 I'm a little smarter now.";
+        return "Linked 🧠 I'm smarter now. Our chats go to Braedon's PC so I can remember things. Ask “what do you remember about me?” anytime, or say “forget everything”.";
       }).catch(function () { return "Couldn't reach my brain. Is Braedon's PC on?"; });
     }
     if (/^unlink (?:dumpling|brain)[.!]*$/i.test(t)) {
       try { localStorage.removeItem(BRAIN_KEY); } catch (e) {}
       return "Unlinked. Back to my simple self.";
+    }
+    // Visible memory: she can see and wipe everything the brain remembers about her.
+    if (brain() && /what do you (know|remember) about me|what have you remembered|show (me )?(your|my) memory/i.test(t)) {
+      const b = brain();
+      return brainFetch("/memory?phone=" + encodeURIComponent(b.p) + "&key=" + encodeURIComponent(b.k), null, 15000)
+        .then(function (j) {
+          const mem = (j && j.memory) || [];
+          if (!mem.length) return "Nothing yet! I only remember what you tell me.";
+          return "I remember: " + mem.slice(-8).join(" · ") + (mem.length > 8 ? " (+" + (mem.length - 8) + " more)" : "") + ". Say “forget everything” to wipe it.";
+        }).catch(function () { return "Can't reach my brain right now. Braedon's PC might be off."; });
+    }
+    if (brain() && /^(?:please\s+)?forget (?:everything|it all|all of it|what you know)(?: about me)?[.!]*$/i.test(t)) {
+      return brainFetch("/forget", {}, 15000)
+        .then(function () { return "Done. Fresh start 🌱"; })
+        .catch(function () { return "Can't reach my brain right now. Try again later."; });
     }
     // "tell Braedon I'm home" / on his phone: "tell her I miss her"
     m = t.match(/^(?:can you\s+|please\s+)?(?:tell|text|message|send)\s+(?:braedon|him|her|babe|my (?:bf|gf|boyfriend|girlfriend))\b[\s,:-]*(?:that\s+)?(.+)$/i);

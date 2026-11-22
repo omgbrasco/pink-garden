@@ -1,4 +1,4 @@
-const VER = "dumpling-v41";
+const VER = "dumpling-v42";
 const V = VER.replace("dumpling-v", "");
 const PRECACHE = [
   "./",
