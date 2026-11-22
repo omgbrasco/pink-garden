@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 40;
+  const BUILD = 41;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -18,6 +18,7 @@
   const FB_MAX_SEC = 90;
   const SEEN_KEY = "dumpling-seen-v1";
   const NOTE_KEY = "dumpling-note-day";
+  const BRAIN_KEY = "dumpling-brain-v1"; // { u: server url, k: this phone's key, p: "user"|"dev" }
   // Daily notes from Braedon. Lightly scrambled so they don't read as plain text in the repo
   // (stops a casual look, not a determined one). Rebuild with tools/notes.py.
   const NOTES_PACK = "XSI1OWNkdVxkMzhkdVwgeWFkIGduaXphbWEgcnVveSBodGl3IG5vIHRlZyBuYWMgdW95IG9zIHlscmFlIGV0b24gZWh0IGduaWRuRSIgLCIudW95IGV2b2wgSSB5YXMgSSAuaWggc3lhcyBnbmlscG11RCIgLCIudGFodCByb2YgdW95IGtuYWhUIC5yZXRmb3MgZWZpbCB5bSBla2FtIHVvWSIgLCIuc3JlZHJvIHMnZkIgLnlhZG90IGZsZXNydW95IHJvZiBlY2luIGduaWh0ZW1vcyBvZCBvRyIgLCIudGkgd29uayBJIHdvbmsgb3QgdW95IGRldG5hdyB0c3VKIC50aSB3b25rIEkgLnlrY3VsIG0nSSIgLCIudGFodCBlcm9mZWIgZW1pdCB5cmV2ZSBkbkEgLnVveSB3YXMgSSBlbWl0IHRzYWwgZWh0IGV0dWMgZGVrb29sIHVvWSIgLCIucmVodGVnb3QgdHVvIHRpIGVydWdpZiBsbCdldyAsdHVvYmEgZGVpcnJvdyBlcid1b3kgcmV2ZXRhaFciICwiLm1hZXQgZXRpcm92YWYgeW0gPSBlbSArIHVvWSIgLCIuc2V0dW5pbSBldmlmIHRpYXcgbmFjIGRscm93IGVoVCAudHNlciBvdCByZWJtZW1lUiIgLCIuc2VjaXRvbiB5ZG9ib24ga25paHQgdW95IHRhaHQgb2QgdW95IHNnbmlodCBlbHR0aWwgZWh0IGV2b2wgSSIgLCIub290IHVveSBodGl3IGVsdG5lZyBlYiBsbCdJIC55YWRvdCBmbGVzcnVveSBodGl3IGVsdG5lZyBlQiIgLCIuc25lcHBhaCBkb29nIGduaWh0ZW1vcyBuZWh3IGxsZXQgb3QgdG5hdyBJIGduaWh0IHRzcmlmIGVodCBlcid1b1kiICwiLnRpIG5pYWxweGUgdCduYWMgZWNuZWljUyAuc2duaWh0IHhpZiBzZ3VoIHJ1b1kiICwiLmRhZWggeW0gbmkgbndvZCBnbml0bnVvQyAubmlhZ2EgdW95IGVlcyBvdCB0aWF3IHQnbmFDIiAsIi5rbmlodCB1b3kgbmFodCByZXR0ZWIgZ25pb2QgZXIndW9ZIC55ZUgiICwiLnRvbCBhIHRvbCBhICxla2lMIC5lbSBvdCBuYWVtIHVveSBoY3VtIHdvaCB3b25rIHVveSBlcG9oIEkiICwiLm5hYyB1b3kgZmkgZW5vIGVrYVQgLnlhZCB5em9jICx3b2xzIGEgZXZyZXNlZCB1b1kiICwiLmVsaW1zIHVveSBnbmlrYW0gZWtpbCBJIGVzdWFjZWIgcHBhIGVsb2h3IHNpaHQgZWRhbSBJIiAsIi5tYWV0IHJ1b3kgbm8gbSdJICxzZW9nIHlhZG90IHdvaCByZXR0YW0gb04iICwiLmduaWh0eW5hIHlsbGFjaXNhYiBuYWh0IGVyb20gaGd1YWwgcnVveSBla2lsIEkiICwiLmVubyBodGl3IGVub2QgeWRhZXJsYSBlcid1b1kgLmV0dWMgZWIgLGh0YWVyYiBhIGVrYXQgLGtjYW5zIGEgdGFlIDpub2lzc2ltIHMneWFkb1QiICwiLnRpIGVjaXRvbiBJIC5lbSBodGl3IHRuZWl0YXAgZ25pZWIgcm9mIHVveSBrbmFoVCIgLCIuZXNsZSBlbm95cmV2ZSBvdCByaWFmbnUgeWx0c2Vub2ggcyd0aSB5dHRlcnAgb3MgZXIndW9ZIiAsIi5lbm9ocCB5bSBubyBwdSBzcG9wIGVtYW4gcnVveSBlbWl0IHlyZXZlIHlwcGFoIHRlZyBsbGl0cyBJIiAsIi5lbSBsbGV0IGVtb2MgbmVoVCAuZ25pbHBtdUQgbGxldCBlbW9jICxkcmFoIHN0ZWcgeWFkb3QgZkkiICwiLmduaWh0ZW1vcyBla2lsIGxlZWYgc3lhZCBnbmlyb2IgZWh0IGVrYW0gdW9ZIiAsIjdhY2R1XGQzOGR1XCB1b3kgdHVvYmEgZ25pa25paHQgbSdJIHdvbmsgZG5hIHJldGF3IGVtb3Mga25pckQiICwiLnRpIGVraWwgbGVlZiB0J25vZCB1b3kgc3lhZCBlaHQgbm8gbmV2RSAudW95IGZvIGR1b3JwIG0nSSIgLCIuZXRvbiBlaHQgcyd0YWhUIC50aSBzJ3RhaFQgLm5vc3JlcCBldGlyb3ZhZiB5bSBlcid1b3kgOnJlZG5pbWVyIGEgdHN1SiIgLCIudW95IG5vIHlzYWUgc2kgeWFkb3QgZXBvaCBJIC5sdWZpdHVhZWIgZ25pbnJvbSBkb29HIls=";
@@ -247,7 +248,7 @@
   document.addEventListener("gesturestart", function (e) { e.preventDefault(); }, { passive: false });
   document.addEventListener("gesturechange", function (e) { e.preventDefault(); }, { passive: false });
   document.addEventListener("touchmove", function (e) { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-  let fitQueued = false;
+  var fitQueued = false;
   // Dumpling floats just above the chat, so replies never sit on his face.
   (function trackChatHeight() {
     const chat = document.getElementById("chat");
@@ -283,7 +284,7 @@
   applyRole();
   // Message thread: tapping the box slides the chat up into a full thread so nothing gets cut off.
   // Close with the ⌄ button, a swipe down on the header, or a tap on the garden above.
-  let threadOpen = false;
+  var threadOpen = false;
   function openThread() {
     if (threadOpen || playing) return;
     threadOpen = true;
@@ -647,21 +648,25 @@
       return "Moon's " + col + " now. Cute.";
     }
     if (/\b(hello+|hi+|hey+|hiya|yo+)\b/.test(s)) {
+      chatty = true;
       return "Hey you. Want a green moon, or a firefly hunt?";
     }
     if (/help|what can|how do|commands?/.test(s)) {
-      return "I can paint the moon, keep your list, remind you, count down to big days, or play fireflies.";
+      return "I can paint the moon, keep your list, remind you, count down to big days, play fireflies" + (brain() ? ", or pass a note: “tell " + otherName() + " …”." : ".");
     }
     if (/who are you|what are you/.test(s)) {
+      chatty = true;
       return "Just Dumpling. Tiny garden guy. I live on this phone.";
     }
     if (/thank|thanks|love you|cute|adorable/.test(s)) {
+      chatty = true;
       return pick(["Aww. Right back at you.", "You're sweet. The garden likes you.", "Soft glow, soft vibes."]);
     }
     if (/\b(boop|poke|hugs?|pats?)\b/.test(s)) {
       boop();
       return "Boop.";
     }
+    chatty = true;
     return pick([
       "Hmm. Try making the moon teal, or catch fireflies.",
       "I'm mostly a garden guy. Say a color for the moon.",
@@ -684,12 +689,12 @@
   }
   function sendText(t) {
     busy = true;
+    const past = history.slice(-12);
     add("me", t);
     showThought("", true);
     const typing = add("bot", "", "typing");
     const wait = 480 + Math.floor(Math.random() * 420);
-    setTimeout(function () {
-      const msg = reply(t);
+    function finish(msg) {
       typing.remove();
       hideThought();
       if (msg) add("bot", msg);
@@ -697,8 +702,94 @@
       busy = false;
       renderChips();
       els.log.scrollTop = els.log.scrollHeight;
+    }
+    setTimeout(function () {
+      const special = brainCommand(t);
+      if (special) {
+        if (typeof special === "string") return finish(special);
+        return special.then(finish);
+      }
+      chatty = false;
+      const msg = reply(t);
+      // Built-in commands (moon, list, countdowns…) stay instant. Small talk goes to the brain if linked.
+      if (!chatty || !brain()) return finish(msg);
+      askBrain(t, past).then(function (r) { finish(r || msg); });
     }, wait);
   }
+
+  /* ============ brain: real AI on Braedon's PC (server/). Off until this phone is linked. ============ */
+  var chatty = false;
+  function brain() {
+    try { const b = JSON.parse(localStorage.getItem(BRAIN_KEY) || "null"); return b && b.u && b.k && b.p ? b : null; } catch (e) { return null; }
+  }
+  function brainFetch(pathAndQuery, payload, ms) {
+    const b = brain();
+    if (!b) return Promise.reject(new Error("not linked"));
+    const ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer = ctl ? setTimeout(function () { ctl.abort(); }, ms || 30000) : null;
+    return fetch(b.u.replace(/\/+$/, "") + pathAndQuery, payload ? {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify(Object.assign({ phone: b.p, key: b.k }, payload)), signal: ctl && ctl.signal
+    } : { signal: ctl && ctl.signal }).then(function (r) {
+      if (timer) clearTimeout(timer);
+      if (!r.ok) throw new Error("brain " + r.status);
+      return r.json();
+    }, function (e) { if (timer) clearTimeout(timer); throw e; });
+  }
+  function askBrain(text, past) {
+    return brainFetch("/chat", { text: text, history: past }, 30000)
+      .then(function (j) { return (j && j.reply) ? String(j.reply) : null; })
+      .catch(function () { return null; }); // PC off/busy: built-in reply instead
+  }
+  function otherName() { const b = brain(); return b && b.p === "dev" ? "her" : "Braedon"; }
+  function brainCommand(t) {
+    // "link dumpling <code>": code comes from the keys file on Braedon's PC. One time per phone.
+    let m = t.match(/^link (?:dumpling|brain)\s+(\S+)$/i);
+    if (m) {
+      let cfg = null;
+      try {
+        const b64 = m[1].replace(/-/g, "+").replace(/_/g, "/");
+        cfg = JSON.parse(atob(b64 + "===".slice((b64.length + 3) % 4)));
+      } catch (e) {}
+      if (!cfg || !cfg.u || !cfg.k || (cfg.p !== "user" && cfg.p !== "dev")) return "Hmm, that code doesn't look right.";
+      return fetch(String(cfg.u).replace(/\/+$/, "") + "/health").then(function (r) { return r.json(); }).then(function (j) {
+        if (!j || !j.ok) throw new Error("bad");
+        try { localStorage.setItem(BRAIN_KEY, JSON.stringify({ u: cfg.u, k: cfg.k, p: cfg.p })); } catch (e) {}
+        checkInbox();
+        return "Linked 🧠 I'm a little smarter now.";
+      }).catch(function () { return "Couldn't reach my brain. Is Braedon's PC on?"; });
+    }
+    if (/^unlink (?:dumpling|brain)[.!]*$/i.test(t)) {
+      try { localStorage.removeItem(BRAIN_KEY); } catch (e) {}
+      return "Unlinked. Back to my simple self.";
+    }
+    // "tell Braedon I'm home" / on his phone: "tell her I miss her"
+    m = t.match(/^(?:can you\s+|please\s+)?(?:tell|text|message|send)\s+(?:braedon|him|her|babe|my (?:bf|gf|boyfriend|girlfriend))\b[\s,:-]*(?:that\s+)?(.+)$/i);
+    if (m && brain()) {
+      return brainFetch("/send", { text: m[1] }, 15000)
+        .then(function () { return "Sent to " + otherName() + " 💌"; })
+        .catch(function () { return "Couldn't send. Braedon's PC might be off."; });
+    }
+    if (m) return "I can pass notes once Braedon links me up 💌";
+    return null;
+  }
+  var inboxBusy = false;
+  function checkInbox() {
+    const b = brain();
+    if (!b || inboxBusy || document.hidden) return;
+    inboxBusy = true;
+    brainFetch("/inbox?phone=" + encodeURIComponent(b.p) + "&key=" + encodeURIComponent(b.k), null, 15000)
+      .then(function (j) {
+        (j && j.messages || []).forEach(function (msg) {
+          const line = "💌 " + (msg.from || "Someone") + " says: " + msg.text;
+          if (play.skin === "blue" && !threadOpen) { pushHistory("bot", line); showSpeech(line, false, 12000); }
+          else add("bot", line);
+        });
+      }).catch(function () {}).then(function () { inboxBusy = false; });
+  }
+  setInterval(checkInbox, 60000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) checkInbox(); });
+  setTimeout(checkInbox, 2500);
 
   function renderChips() {
     const moonColors = ["green", "teal", "blue", "yellow", "purple"];
@@ -875,9 +966,9 @@
       }, { passive: true });
     });
   }
-  let rec = null;
-  let listening = false;
-  let heard = "";
+  var rec = null;
+  var listening = false;
+  var heard = "";
   function setListen(on) {
     listening = on;
     els.form.classList.toggle("listening", on);
@@ -1005,7 +1096,7 @@
     const d = Math.floor(h / 24);
     return d === 1 ? "yesterday" : d + " days ago";
   }
-  let notesCursor = 0;
+  var notesCursor = 0;
   function recallNote() {
     const notes = loadNotes();
     if (!notes.length) return "You haven't told me anything to remember yet. Say \"remember...\" and I'll keep it.";
@@ -1015,7 +1106,7 @@
   }
 
   /* ============ feedback: type it or say it ============ */
-  let fbRecorder = null, fbChunks = [], fbRecording = false, fbRecTimer = null, fbRecStart = 0, fbStatusTimer = 0;
+  var fbRecorder = null, fbChunks = [], fbRecording = false, fbRecTimer = null, fbRecStart = 0, fbStatusTimer = 0;
   function loadFbQueue() {
     try {
       const raw = JSON.parse(localStorage.getItem(FB_QUEUE_KEY) || "[]");
@@ -1170,7 +1261,7 @@
   }
 
   /* ============ daily note from Braedon: one a day, first open of the day ============ */
-  let notesCache = null;
+  var notesCache = null;
   function allNotes() {
     if (notesCache) return notesCache;
     try {

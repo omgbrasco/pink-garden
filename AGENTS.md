@@ -55,9 +55,11 @@ docs/        # handoff for humans and coding agents
 4. Merge to `master` when Braedon says so (never `--force`).
 5. Tell Braedon: same URL, **force-quit the home-screen icon** (swipe the app away, tap again). Safari refresh is not enough. Dock **icon art** only updates if she deletes the icon and Add-to-Home-Screen again.
 
-Current cache as of this handoff: **v=40**. `docs/STATE.md` always has the live number.
+Current cache as of this handoff: **v=41**. `docs/STATE.md` always has the live number.
 
 ## Product rules that already bit us
+
+- **No top-level `let`/`const` that startup code might touch before its line runs** (v40 crash). Startup runs near the top of `app.js`; module state declared further down must be `var` (or moved above startup).
 
 - **No blur** (v37, Braedon's call). No `backdrop-filter` anywhere. Use more solid backgrounds for readability instead.
 - **Full screen** (v37): status bar is `black-translucent`; keep the garden under the clock. Do not go back to opaque `black`.
