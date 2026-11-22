@@ -12,3 +12,4 @@ node_modules/
 
 # Test screenshots never live in the repo root (art lives in assets/ and originals/)
 /*.png
+tools/notes.txt

@@ -653,3 +653,6 @@ body:not(.skin-blue) #speech { display: none !important; }
 /* Chat history on the night garden: Dumpling's bubbles go midnight pink instead of grey glass. */
 body.skin-blue #chats-list .bot { background: var(--ui-chip); color: var(--ui-fg); box-shadow: none; }
 body.skin-blue .s-group h3 { color: #ff9ecf; opacity: .85; }
+/* Daily note from Braedon (v40): same card, one button, handwritten-ish feel. */
+#news.note .news-ok { display: none; }
+#news.note .news-bubble p { font-weight: 600; font-size: 18px; line-height: 1.4; }

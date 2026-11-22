@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 39;
+  const BUILD = 40;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -17,10 +17,18 @@
   const FB_FILE = "dumpling-feedback.json";
   const FB_MAX_SEC = 90;
   const SEEN_KEY = "dumpling-seen-v1";
+  const NOTE_KEY = "dumpling-note-day";
+  // Daily notes from Braedon. Lightly scrambled so they don't read as plain text in the repo
+  // (stops a casual look, not a determined one). Rebuild with tools/notes.py.
+  const NOTES_PACK = "XSI1OWNkdVxkMzhkdVwgeWFkIGduaXphbWEgcnVveSBodGl3IG5vIHRlZyBuYWMgdW95IG9zIHlscmFlIGV0b24gZWh0IGduaWRuRSIgLCIudW95IGV2b2wgSSB5YXMgSSAuaWggc3lhcyBnbmlscG11RCIgLCIudGFodCByb2YgdW95IGtuYWhUIC5yZXRmb3MgZWZpbCB5bSBla2FtIHVvWSIgLCIuc3JlZHJvIHMnZkIgLnlhZG90IGZsZXNydW95IHJvZiBlY2luIGduaWh0ZW1vcyBvZCBvRyIgLCIudGkgd29uayBJIHdvbmsgb3QgdW95IGRldG5hdyB0c3VKIC50aSB3b25rIEkgLnlrY3VsIG0nSSIgLCIudGFodCBlcm9mZWIgZW1pdCB5cmV2ZSBkbkEgLnVveSB3YXMgSSBlbWl0IHRzYWwgZWh0IGV0dWMgZGVrb29sIHVvWSIgLCIucmVodGVnb3QgdHVvIHRpIGVydWdpZiBsbCdldyAsdHVvYmEgZGVpcnJvdyBlcid1b3kgcmV2ZXRhaFciICwiLm1hZXQgZXRpcm92YWYgeW0gPSBlbSArIHVvWSIgLCIuc2V0dW5pbSBldmlmIHRpYXcgbmFjIGRscm93IGVoVCAudHNlciBvdCByZWJtZW1lUiIgLCIuc2VjaXRvbiB5ZG9ib24ga25paHQgdW95IHRhaHQgb2QgdW95IHNnbmlodCBlbHR0aWwgZWh0IGV2b2wgSSIgLCIub290IHVveSBodGl3IGVsdG5lZyBlYiBsbCdJIC55YWRvdCBmbGVzcnVveSBodGl3IGVsdG5lZyBlQiIgLCIuc25lcHBhaCBkb29nIGduaWh0ZW1vcyBuZWh3IGxsZXQgb3QgdG5hdyBJIGduaWh0IHRzcmlmIGVodCBlcid1b1kiICwiLnRpIG5pYWxweGUgdCduYWMgZWNuZWljUyAuc2duaWh0IHhpZiBzZ3VoIHJ1b1kiICwiLmRhZWggeW0gbmkgbndvZCBnbml0bnVvQyAubmlhZ2EgdW95IGVlcyBvdCB0aWF3IHQnbmFDIiAsIi5rbmlodCB1b3kgbmFodCByZXR0ZWIgZ25pb2QgZXIndW9ZIC55ZUgiICwiLnRvbCBhIHRvbCBhICxla2lMIC5lbSBvdCBuYWVtIHVveSBoY3VtIHdvaCB3b25rIHVveSBlcG9oIEkiICwiLm5hYyB1b3kgZmkgZW5vIGVrYVQgLnlhZCB5em9jICx3b2xzIGEgZXZyZXNlZCB1b1kiICwiLmVsaW1zIHVveSBnbmlrYW0gZWtpbCBJIGVzdWFjZWIgcHBhIGVsb2h3IHNpaHQgZWRhbSBJIiAsIi5tYWV0IHJ1b3kgbm8gbSdJICxzZW9nIHlhZG90IHdvaCByZXR0YW0gb04iICwiLmduaWh0eW5hIHlsbGFjaXNhYiBuYWh0IGVyb20gaGd1YWwgcnVveSBla2lsIEkiICwiLmVubyBodGl3IGVub2QgeWRhZXJsYSBlcid1b1kgLmV0dWMgZWIgLGh0YWVyYiBhIGVrYXQgLGtjYW5zIGEgdGFlIDpub2lzc2ltIHMneWFkb1QiICwiLnRpIGVjaXRvbiBJIC5lbSBodGl3IHRuZWl0YXAgZ25pZWIgcm9mIHVveSBrbmFoVCIgLCIuZXNsZSBlbm95cmV2ZSBvdCByaWFmbnUgeWx0c2Vub2ggcyd0aSB5dHRlcnAgb3MgZXIndW9ZIiAsIi5lbm9ocCB5bSBubyBwdSBzcG9wIGVtYW4gcnVveSBlbWl0IHlyZXZlIHlwcGFoIHRlZyBsbGl0cyBJIiAsIi5lbSBsbGV0IGVtb2MgbmVoVCAuZ25pbHBtdUQgbGxldCBlbW9jICxkcmFoIHN0ZWcgeWFkb3QgZkkiICwiLmduaWh0ZW1vcyBla2lsIGxlZWYgc3lhZCBnbmlyb2IgZWh0IGVrYW0gdW9ZIiAsIjdhY2R1XGQzOGR1XCB1b3kgdHVvYmEgZ25pa25paHQgbSdJIHdvbmsgZG5hIHJldGF3IGVtb3Mga25pckQiICwiLnRpIGVraWwgbGVlZiB0J25vZCB1b3kgc3lhZCBlaHQgbm8gbmV2RSAudW95IGZvIGR1b3JwIG0nSSIgLCIuZXRvbiBlaHQgcyd0YWhUIC50aSBzJ3RhaFQgLm5vc3JlcCBldGlyb3ZhZiB5bSBlcid1b3kgOnJlZG5pbWVyIGEgdHN1SiIgLCIudW95IG5vIHlzYWUgc2kgeWFkb3QgZXBvaCBJIC5sdWZpdHVhZWIgZ25pbnJvbSBkb29HIls=";
   const ROLE_KEY = "dumpling-role"; // "dev" on Braedon's phone; anything else = her (user)
   // What's new card: add one entry per update she'd notice. Each step is two short lines, no paragraphs.
   // She sees the newest entry she hasn't seen yet, once. `show: "menu"` makes the last button open the menu.
   const NEWS = [
+    { v: 40, steps: [
+      ["Braedon left you notes 💌", "A new one shows up each morning."],
+      ["Missed it?", "Ask me “today's note” anytime."]
+    ] },
     { v: 34, steps: [
       ["I can count down now ⏳", "Ask me “how many days until Christmas?”"],
       ["Got a big day coming?", "Say “countdown to” it, plus the date."]
@@ -137,7 +145,7 @@
   fitViewport();
   bumpStreak();
   flushFeedbackQueue();
-  showNews();
+  if (!showNews()) showNote();
   renderMenuCount();
   setTimeout(checkReminders, 1600);
   setInterval(checkReminders, 20000);
@@ -580,6 +588,10 @@
     const rememberTo = !remind && t.match(/^(?:please\s+)?remember to\s+(.+)$/i);
     if (remind || (rememberTo && parseWhen(rememberTo[1]).due)) {
       return addReminder(remind ? remind[1] : rememberTo[1]);
+    }
+    if (/\b(today'?s|my|daily|love)\s+note\b|^note[?!.]*$|note from braedon/i.test(t)) {
+      setTimeout(function () { if (threadOpen) closeThread(); showNote(true); }, 300);
+      return "💌 Here it is.";
     }
     const cd = countdownReply(t);
     if (cd) return cd;
@@ -1126,28 +1138,67 @@
     let seen = 0;
     try { seen = parseInt(localStorage.getItem(SEEN_KEY) || "0", 10) || 0; } catch (e) {}
     const unseen = NEWS.filter(function (n) { return n.v > seen; });
-    if (!unseen.length) return;
+    if (!unseen.length) return false;
     newsItem = unseen[unseen.length - 1];
     newsStep = 0;
     renderNewsStep();
     els.news.hidden = false;
+    return true;
   }
   function renderNewsStep() {
     const steps = newsItem.steps, last = newsStep === steps.length - 1;
-    els.newsText.innerHTML = '<span class="tag">NEW ✨</span>';
+    els.newsText.innerHTML = newsItem.note ? '<span class="tag">💌 FROM BRAEDON</span>' : '<span class="tag">NEW ✨</span>';
     steps[newsStep].forEach(function (line) {
       const p = document.createElement("p");
       p.textContent = line;
       els.newsText.appendChild(p);
     });
-    els.newsGo.textContent = last ? (newsItem.show ? "Show me" : "Yay!") : "Next";
+    els.newsGo.textContent = newsItem.note ? "aww 💕" : last ? (newsItem.show ? "Show me" : "Yay!") : "Next";
     els.newsDots.hidden = steps.length < 2;
     els.newsDots.innerHTML = steps.map(function (_, i) { return i === newsStep ? '<i class="on"></i>' : "<i></i>"; }).join("");
   }
   function closeNews() {
     els.news.hidden = true;
-    try { localStorage.setItem(SEEN_KEY, String(BUILD)); } catch (e) {}
+    els.news.classList.remove("note");
+    const wasNote = newsItem && newsItem.note;
+    try {
+      if (wasNote) localStorage.setItem(NOTE_KEY, todayStr());
+      else localStorage.setItem(SEEN_KEY, String(BUILD));
+    } catch (e) {}
+    if (!wasNote && showNote()) return;
     setTimeout(checkReminders, 500);
+  }
+
+  /* ============ daily note from Braedon: one a day, first open of the day ============ */
+  let notesCache = null;
+  function allNotes() {
+    if (notesCache) return notesCache;
+    try {
+      const bin = atob(NOTES_PACK), bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      notesCache = JSON.parse(new TextDecoder().decode(bytes).split("").reverse().join(""));
+    } catch (e) { notesCache = []; }
+    return notesCache;
+  }
+  function todaysNote() {
+    const n = allNotes();
+    if (!n.length) return "";
+    const d = new Date(), day = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5);
+    return n[day % n.length];
+  }
+  function showNote(force) {
+    if (!els.news || (!els.news.hidden && !force)) return false;
+    let last = "";
+    try { last = localStorage.getItem(NOTE_KEY) || ""; } catch (e) {}
+    if (!force && last === todayStr()) return false;
+    const note = todaysNote();
+    if (!note) return false;
+    newsItem = { note: true, steps: [[note]] };
+    newsStep = 0;
+    renderNewsStep();
+    els.news.classList.add("note");
+    els.news.hidden = false;
+    return true;
   }
 
   /* ============ my list + reminders (no server: Dumpling reminds her in the app) ============ */
