@@ -6,6 +6,8 @@
 //   GET  /inbox?phone=..&key=..                              -> { messages:[{from,text,ts}] } (and clears them)
 //   GET  /memory?phone=..&key=..                             -> { memory:[...] }  (what Dumpling remembers about this phone's person)
 //   POST /forget { phone, key }                              -> { ok }   (wipes it)
+//   POST /feedback { phone, key, entries:[...] }              -> { ok }   (Ideas tab; voice memos saved to data/voice/)
+//   GET  /feedback?phone=dev&key=..                          -> { entries } (dev phone only)
 //   GET  /health                                             -> { ok, model }
 //
 // Phones: "user" (her) and "dev" (Braedon). Each has its own key and its own memory file.
@@ -92,9 +94,9 @@ function send(res, code, obj, origin) {
   res.end(JSON.stringify(obj));
 }
 
-async function body(req) {
+async function body(req, max = 20000) {
   let s = "";
-  for await (const c of req) { s += c; if (s.length > 20000) throw new Error("too big"); }
+  for await (const c of req) { s += c; if (s.length > max) throw new Error("too big"); }
   return s ? JSON.parse(s) : {};
 }
 
@@ -129,6 +131,35 @@ const server = http.createServer(async (req, res) => {
       box.push({ from: NAMES[b.phone], text, ts: Date.now() });
       writeJson(inboxFile(other(b.phone)), box.slice(-50));
       return send(res, 200, { ok: true }, origin);
+    }
+
+    // Feedback ("Ideas for Braedon" tab): phones drop entries here; the dev phone reads them.
+    if (url.pathname === "/feedback" && req.method === "POST") {
+      const b = await body(req, 4_000_000);
+      if (!authed(b.phone, b.key)) return send(res, 401, { error: "nope" }, origin);
+      const file = path.join(DATA, "feedback.json");
+      const all = readJson(file, []);
+      const have = new Set(all.map(e => e.id));
+      for (const e of (Array.isArray(b.entries) ? b.entries : []).slice(0, 50)) {
+        if (!e || have.has(e.id)) continue;
+        let audioFile = null;
+        if (typeof e.audio === "string" && e.audio.startsWith("data:")) {
+          const m = e.audio.match(/^data:audio\/([a-z0-9]+)[^,]*;base64,(.+)$/i);
+          if (m) {
+            audioFile = `voice-${String(e.id).replace(/[^\w-]/g, "")}.${m[1] === "mp4" ? "m4a" : m[1]}`;
+            fs.mkdirSync(path.join(DATA, "voice"), { recursive: true });
+            fs.writeFileSync(path.join(DATA, "voice", audioFile), Buffer.from(m[2], "base64"));
+          }
+        }
+        all.push({ id: String(e.id), ts: +e.ts || Date.now(), from: b.phone, build: e.build, text: String(e.text || "").slice(0, 4000), audio: audioFile });
+      }
+      writeJson(file, all.slice(-500));
+      return send(res, 200, { ok: true }, origin);
+    }
+    if (url.pathname === "/feedback" && req.method === "GET") {
+      const phone = url.searchParams.get("phone"), key = url.searchParams.get("key");
+      if (phone !== "dev" || !authed(phone, key)) return send(res, 401, { error: "nope" }, origin);
+      return send(res, 200, { entries: readJson(path.join(DATA, "feedback.json"), []).slice(-20) }, origin);
     }
 
     // She can always see and wipe what Dumpling remembers about her (from her own phone).

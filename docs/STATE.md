@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v43** (`BUILD = 43`, SW `dumpling-v43`). v43: Ideas tab goes to the PC when linked. See CHANGELOG.
+
 Cache **v42** (`BUILD = 42`, SW `dumpling-v42`). v42: she can see/wipe brain memory. See CHANGELOG.
 
 Cache **v41** (`BUILD = 41`, SW `dumpling-v41`). v41: hotfix for v40 first-open-of-day crash + brain link (`dumpling-brain-v1`). See CHANGELOG.

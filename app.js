@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 42;
+  const BUILD = 43;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -756,6 +756,7 @@
         if (!j || !j.ok) throw new Error("bad");
         try { localStorage.setItem(BRAIN_KEY, JSON.stringify({ u: cfg.u, k: cfg.k, p: cfg.p })); } catch (e) {}
         checkInbox();
+        flushFeedbackQueue();
         return "Linked 🧠 I'm smarter now. Our chats go to Braedon's PC so I can remember things. Ask “what do you remember about me?” anytime, or say “forget everything”.";
       }).catch(function () { return "Couldn't reach my brain. Is Braedon's PC on?"; });
     }
@@ -777,6 +778,15 @@
       return brainFetch("/forget", {}, 15000)
         .then(function () { return "Done. Fresh start 🌱"; })
         .catch(function () { return "Can't reach my brain right now. Try again later."; });
+    }
+    // Dev phone: read what came in through the Ideas tab.
+    if (brain() && brain().p === "dev" && /\b(her|any|new|show|read)\b.*\b(ideas?|feedback)\b|^(ideas?|feedback)[?!.]*$/i.test(t)) {
+      const b = brain();
+      return brainFetch("/feedback?phone=dev&key=" + encodeURIComponent(b.k), null, 15000).then(function (j) {
+        const list = ((j && j.entries) || []).filter(function (e) { return e.from === "user"; }).slice(-5).reverse();
+        if (!list.length) return "No ideas from her yet.";
+        return list.map(function (e) { return "💡 " + agoStr(e.ts) + ": " + (e.text || "(voice memo on the PC)"); }).join("  ·  ");
+      }).catch(function () { return "Can't reach the PC right now."; });
     }
     // "tell Braedon I'm home" / on his phone: "tell her I miss her"
     m = t.match(/^(?:can you\s+|please\s+)?(?:tell|text|message|send)\s+(?:braedon|him|her|babe|my (?:bf|gf|boyfriend|girlfriend))\b[\s,:-]*(?:that\s+)?(.+)$/i);
@@ -1205,6 +1215,22 @@
     if (fbFlushing) { fbFlushAgain = true; return; }
     const q = loadFbQueue();
     if (!q.length) return;
+    // Linked to Braedon's PC? Ideas go there (no gist setup needed).
+    if (brain()) {
+      fbFlushing = true;
+      try {
+        await brainFetch("/feedback", { entries: q }, 60000);
+        const sent = {};
+        q.forEach(function (e) { sent[e.id] = true; });
+        saveFbQueue(loadFbQueue().filter(function (e) { return !sent[e.id]; }));
+      } catch (e) {
+        // Stays queued; retried next open or next send.
+      } finally {
+        fbFlushing = false;
+        if (fbFlushAgain) { fbFlushAgain = false; flushFeedbackQueue(); }
+      }
+      return;
+    }
     const token = localStorage.getItem(FB_TOKEN_KEY), gist = localStorage.getItem(FB_GIST_KEY);
     if (!token || !gist) return;
     fbFlushing = true;
