@@ -77,7 +77,7 @@ Current cache as of this handoff: **v=40**. `docs/STATE.md` always has the live 
 
 Braedon's phone = **dev** (`dumpling-role` = `dev`, set by 7 fast taps on the title; shows a DEV tag). Her phone = **user** (default, no tag). The two phones must NOT sync data (Braedon's call). Dev-only extras go behind `body.dev` / `isDev()`, never on her phone.
 
-No server for now (Braedon, Nov 2026). Real notifications + real AI are parked until he says "server".
+**Server (Nov 22 2026, Braedon's call):** Dumpling's brain runs on Braedon's own Windows PC (`server/`, Ollama local AI, Tailscale Funnel). This is the ONE allowed server. Still no AI company / outbound LLM API, no paid services, no npm packages. Each phone has its own key + memory; phones never share memory. Only Dumpling-to-Dumpling messages cross between phones. The app must keep working (old built-in replies) when the server is off. Setup job: `docs/jobs/dumpling-server.md`.
 
 ## Play state
 

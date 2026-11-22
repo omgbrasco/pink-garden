@@ -2,6 +2,7 @@
 
 Newest first. Hashes are on `master`.
 
+- Server (not an app version) — Added `server/` (Dumpling brain: local Ollama AI + per-phone memory + Dumpling-to-Dumpling inbox, zero npm packages) and `docs/jobs/dumpling-server.md` for Claude Code on Braedon's Windows PC. App unchanged; phones get linked in the next version.
 - v40 — Daily notes from Braedon. First open each day shows a "💌 FROM BRAEDON" card (same card as what's-new, one "aww 💕" button) after any what's-new card. One note per day, same note all day, cycles through the pack. Chat "today's note" / "my note" reopens it. 30 placeholder bf notes for now. Notes are lightly scrambled in `app.js` (`NOTES_PACK`) so a casual repo look doesn't show them; real privacy needs a private repo. To swap in real notes: one per line in `tools/notes.txt` (git-ignored), run `python3 tools/notes.py`, bump cache.
 - v39 — List splits on "and" too: "add oat milk, eggs and bread" = 3 items (was 2). Food pairs stay together (mac and cheese, salt and pepper, chips and salsa, PB and J…). Reply names what was added: "Added oat milk · eggs · bread 📝".
 - v38 — Chat thread. Tapping the "Say hi" box slides the chat up into a full message thread (rounded sheet, Dumpling header, whole recent history, scrolls, nothing faded or cut off). Close with the ⌄ button, a swipe down on the header, or a tap on the garden above. Closed, home shows only the last exchange at full size (no more fade/cut-off at the top of the log). Works on both gardens; on the night garden the thread is the dark midnight-pink style.
