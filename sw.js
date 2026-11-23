@@ -1,4 +1,4 @@
-const VER = "dumpling-v46";
+const VER = "dumpling-v47";
 const V = VER.replace("dumpling-v", "");
 const PRECACHE = [
   "./",
@@ -54,4 +54,20 @@ self.addEventListener("fetch", e => {
       })
       .catch(() => caches.match(e.request))
   );
+});
+
+// Notifications from Braedon's PC (Dumpling brain). Tap opens the app; the note itself is waiting in chat.
+self.addEventListener("push", e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { d = { body: e.data ? e.data.text() : "" }; }
+  e.waitUntil(self.registration.showNotification(d.title || "Dumpling", {
+    body: d.body || "", icon: "assets/dumpling-icon.png?v=" + V, badge: "assets/dumpling-icon.png?v=" + V, tag: d.tag || "dumpling-note"
+  }));
+});
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+    for (const c of list) { if ("focus" in c) return c.focus(); }
+    return self.clients.openWindow("./");
+  }));
 });

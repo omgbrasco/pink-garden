@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 46;
+  const BUILD = 47;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -26,6 +26,10 @@
   // What's new card: add one entry per update she'd notice. Each step is two short lines, no paragraphs.
   // She sees the newest entry she hasn't seen yet, once. `show: "menu"` makes the last button open the menu.
   const NEWS = [
+    { v: 47, show: "notify", steps: [
+      ["Notes can buzz you now 🔔", "When Braedon sends you a note, your phone gets a notification."],
+      ["Want that?", "Tap below, then tap Allow."]
+    ] },
     { v: 40, steps: [
       ["Braedon left you notes 💌", "A new one shows up each morning."],
       ["Missed it?", "Ask me “today's note” anytime."]
@@ -188,8 +192,10 @@
   if (els.newsOk) els.newsOk.addEventListener("click", closeNews);
   if (els.newsGo) els.newsGo.addEventListener("click", function () {
     if (newsStep < newsItem.steps.length - 1) { newsStep++; renderNewsStep(); return; }
+    const show = newsItem.show;
+    if (show === "notify") enablePush().then(function (m) { add("bot", m); }); // inside the tap (iPhone rule)
     closeNews();
-    if (newsItem.show === "menu") openMenu();
+    if (show === "menu") openMenu();
   });
   if (els.listAdd) els.listAdd.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -679,6 +685,7 @@
     const t = (els.box.value || "").trim();
     if (!t || busy) return false;
     els.box.value = "";
+    if (NOTIFY_ON.test(t) || NOTIFY_OFF.test(t)) { notifyCommand(t); return false; }
     sendText(t);
     return false;
   }
@@ -840,6 +847,55 @@
       if (r && r[1] && r[1].trim().length > 0) return [r[0], r[1].trim().replace(/^["“]|["”]$/g, "")];
     }
     return null;
+  }
+  /* ============ notifications (v47): Braedon's PC buzzes this phone when a note arrives ============ */
+  var NOTIFY_ON = /^(?:please\s+)?(?:turn\s+on|enable|allow|start)\s+(?:the\s+)?(?:notifications?|notifs?|buzz(?:es)?|alerts?)[.!]*$|^(?:notifications?|notifs?)\s+on[.!]*$/i;
+  var NOTIFY_OFF = /^(?:please\s+)?(?:turn\s+off|disable|stop)\s+(?:the\s+)?(?:notifications?|notifs?|buzz(?:es)?|alerts?)[.!]*$|^(?:notifications?|notifs?)\s+off[.!]*$/i;
+  function pushSupported() { return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window; }
+  function notifyCommand(t) {
+    add("me", t);
+    const say = function (m) { add("bot", m); els.log.scrollTop = els.log.scrollHeight; };
+    if (NOTIFY_OFF.test(t)) { disablePush().then(say); return; }
+    enablePush().then(say);
+  }
+  // Must be called straight from a tap: iPhone only shows the Allow prompt during one.
+  function enablePush() {
+    if (!brain()) return Promise.resolve("Notifications need my brain linked first 🧠");
+    if (!pushSupported()) return Promise.resolve("This phone can't do notifications here. Open me from the home-screen icon (iOS 16.4+).");
+    if (Notification.permission === "denied") return Promise.resolve("Notifications are blocked. Turn them on in Settings → Notifications → Dumpling.");
+    const ask = Notification.permission === "granted" ? Promise.resolve("granted") : Notification.requestPermission();
+    return ask.then(function (perm) {
+      if (perm !== "granted") return "Okay, no notifications. Say “turn on notifications” anytime.";
+      const b = brain();
+      return fetch(b.u.replace(/\/+$/, "") + "/health").then(function (r) { return r.json(); }).then(function (h) {
+        if (!h || !h.vapid) throw new Error("no key");
+        return navigator.serviceWorker.ready.then(function (reg) {
+          return reg.pushManager.getSubscription().then(function (old) {
+            return old || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64uToBytes(h.vapid) });
+          });
+        });
+      }).then(function (sub) {
+        return brainFetch("/push", { sub: sub.toJSON(), test: true }, 15000);
+      }).then(function () {
+        try { localStorage.setItem("dumpling-push-v1", "on"); } catch (e) {}
+        return "Notifications on 🔔 Notes from " + otherName() + " will buzz you.";
+      });
+    }).catch(function () { return "Couldn't turn on notifications. Is Braedon's PC on?"; });
+  }
+  function disablePush() {
+    try { localStorage.removeItem("dumpling-push-v1"); } catch (e) {}
+    const done = "Notifications off. Notes still show up here.";
+    if (!pushSupported()) return Promise.resolve(done);
+    return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
+      .then(function (sub) { return sub && sub.unsubscribe(); })
+      .then(function () { return brain() ? brainFetch("/push", { off: true }, 15000) : null; })
+      .catch(function () {}).then(function () { return done; });
+  }
+  function b64uToBytes(s) {
+    const b = atob(s.replace(/-/g, "+").replace(/_/g, "/") + "==".slice(0, (4 - s.length % 4) % 4));
+    const out = new Uint8Array(b.length);
+    for (let i = 0; i < b.length; i++) out[i] = b.charCodeAt(i);
+    return out;
   }
   var inboxBusy = false;
   function checkInbox() {
@@ -1328,7 +1384,7 @@
       p.textContent = line;
       els.newsText.appendChild(p);
     });
-    els.newsGo.textContent = newsItem.note ? "aww 💕" : last ? (newsItem.show ? "Show me" : "Yay!") : "Next";
+    els.newsGo.textContent = newsItem.note ? "aww 💕" : last ? (newsItem.show === "notify" ? "Turn on 🔔" : newsItem.show ? "Show me" : "Yay!") : "Next";
     els.newsDots.hidden = steps.length < 2;
     els.newsDots.innerHTML = steps.map(function (_, i) { return i === newsStep ? '<i class="on"></i>' : "<i></i>"; }).join("");
   }

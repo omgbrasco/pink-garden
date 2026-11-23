@@ -8,6 +8,7 @@
 //   POST /forget { phone, key }                              -> { ok }   (wipes it)
 //   POST /feedback { phone, key, entries:[...] }              -> { ok }   (Ideas tab; voice memos saved to data/voice/)
 //   GET  /feedback?phone=dev&key=..                          -> { entries } (dev phone only)
+//   POST /push { phone, key, sub | off:true, test? }          -> { ok }   (notifications; notes to this phone buzz it)
 //   GET  /health                                             -> { ok, model }
 //
 // Phones: "user" (her) and "dev" (Braedon). Each has its own key and its own memory file.
@@ -15,6 +16,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadOrMakeVapid, sendPush } from "./webpush.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 loadEnv(path.join(HERE, ".env"));
@@ -28,6 +30,22 @@ const ORIGINS = (process.env.ALLOW_ORIGINS || "https://omgbrasco.github.io").spl
 const DATA = path.join(HERE, "data");
 const MEMORY_MAX = 60;
 fs.mkdirSync(DATA, { recursive: true });
+const VAPID = loadOrMakeVapid(path.join(DATA, "vapid.json"));
+const PUSH_SUBJECT = process.env.PUSH_SUBJECT || "https://omgbrasco.github.io/pink-garden/";
+const pushFile = phone => path.join(DATA, `push-${phone}.json`);
+async function buzz(phone, data) {
+  const subs = readJson(pushFile(phone), []);
+  if (!subs.length) return;
+  const keep = [];
+  for (const sub of subs) {
+    try {
+      const st = await sendPush(sub, data, VAPID, PUSH_SUBJECT);
+      if (st !== 404 && st !== 410) keep.push(sub);
+      if (st >= 300) console.error(new Date().toISOString(), "push", phone, st);
+    } catch (e) { keep.push(sub); console.error("push error", e.message); }
+  }
+  writeJson(pushFile(phone), keep);
+}
 
 function loadEnv(file) {
   if (!fs.existsSync(file)) return;
@@ -111,7 +129,22 @@ const server = http.createServer(async (req, res) => {
   }
   const url = new URL(req.url, "http://x");
   try {
-    if (url.pathname === "/health") return send(res, 200, { ok: true, model: MODEL, names: NAMES }, origin);
+    if (url.pathname === "/health") return send(res, 200, { ok: true, model: MODEL, names: NAMES, vapid: VAPID.publicKey }, origin);
+
+    // Notifications: a phone hands over its push subscription (or asks to drop it).
+    if (url.pathname === "/push" && req.method === "POST") {
+      const b = await body(req);
+      if (!authed(b.phone, b.key)) return send(res, 401, { error: "nope" }, origin);
+      const sub = b.sub;
+      let subs = readJson(pushFile(b.phone), []);
+      if (b.off) subs = [];
+      else if (sub && typeof sub.endpoint === "string" && /^https:\/\//.test(sub.endpoint) && sub.keys && sub.keys.p256dh && sub.keys.auth) {
+        subs = subs.filter(s => s.endpoint !== sub.endpoint).concat([{ endpoint: sub.endpoint, keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth } }]).slice(-3);
+      } else return send(res, 400, { error: "bad sub" }, origin);
+      writeJson(pushFile(b.phone), subs);
+      if (!b.off && b.test) buzz(b.phone, { title: "Dumpling 🔔", body: "Notifications are on!" });
+      return send(res, 200, { ok: true }, origin);
+    }
 
     if (url.pathname === "/chat" && req.method === "POST") {
       const b = await body(req);
@@ -130,6 +163,7 @@ const server = http.createServer(async (req, res) => {
       const box = readJson(inboxFile(other(b.phone)), []);
       box.push({ from: NAMES[b.phone], text, ts: Date.now() });
       writeJson(inboxFile(other(b.phone)), box.slice(-50));
+      buzz(other(b.phone), { title: "💌 " + NAMES[b.phone], body: text });
       return send(res, 200, { ok: true }, origin);
     }
 
