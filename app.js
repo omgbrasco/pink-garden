@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 45;
+  const BUILD = 46;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -741,7 +741,24 @@
       .then(function (j) { return (j && j.reply) ? String(j.reply) : null; })
       .catch(function () { return null; }); // PC off/busy: built-in reply instead
   }
-  function otherName() { const b = brain(); return b && b.p === "dev" ? "her" : "Braedon"; }
+  // Names come from the PC (.env NAME_USER / NAME_DEV), so her name never sits in this public repo.
+  function otherName() {
+    const b = brain();
+    if (!b) return "Braedon";
+    const n = b.names || {};
+    return b.p === "dev" ? (n.user && n.user !== "her" ? n.user : "her") : (n.dev || "Braedon");
+  }
+  function refreshNames() {
+    const b = brain();
+    if (!b) return;
+    fetch(b.u.replace(/\/+$/, "") + "/health").then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.names) return;
+      const cur = brain(); if (!cur) return;
+      cur.names = { user: String(j.names.user || "").slice(0, 30), dev: String(j.names.dev || "").slice(0, 30) };
+      try { localStorage.setItem(BRAIN_KEY, JSON.stringify(cur)); } catch (e) {}
+    }).catch(function () {});
+  }
+  setTimeout(refreshNames, 1500);
   function brainCommand(t) {
     // "link dumpling <code>": code comes from the keys file on Braedon's PC. One time per phone.
     let m = t.match(/^link\s+(?:dumpling|brain)\s+([\s\S]+)$/i);
@@ -758,7 +775,7 @@
       if (!cfg || !cfg.u || !cfg.k || (cfg.p !== "user" && cfg.p !== "dev")) return "Hmm, that code doesn't look right.";
       return fetch(String(cfg.u).replace(/\/+$/, "") + "/health").then(function (r) { return r.json(); }).then(function (j) {
         if (!j || !j.ok) throw new Error("bad");
-        try { localStorage.setItem(BRAIN_KEY, JSON.stringify({ u: cfg.u, k: cfg.k, p: cfg.p })); } catch (e) {}
+        try { localStorage.setItem(BRAIN_KEY, JSON.stringify({ u: cfg.u, k: cfg.k, p: cfg.p, names: j.names || null })); } catch (e) {}
         checkInbox();
         flushFeedbackQueue();
         return "Linked 🧠 I'm smarter now. Our chats go to Braedon's PC so I can remember things. Ask “what do you remember about me?” anytime, or say “forget everything”.";
@@ -805,7 +822,8 @@
   // Note to the other phone. Loose on purpose: "hey dumpling, can you tell her I miss you",
   // "let Braedon know I'm home", "send him a note saying hi", "pass this to babe: love you".
   function noteToOther(t) {
-    const WHO = "(?:braedon|him|her|babe|bae|baby|my\\s+(?:bf|gf|boyfriend|girlfriend|love|man|girl|babe))";
+    const other = otherName().toLowerCase().replace(/[^a-z0-9 ]/g, "");
+    const WHO = "(?:braedon|him|her|babe|bae|baby|my\\s+(?:bf|gf|boyfriend|girlfriend|love|man|girl|babe)" + (other && other !== "her" && other !== "braedon" ? "|" + other : "") + ")";
     let x = t.trim()
       .replace(/^(?:(?:hey|hi|ok|okay|yo)\s+)?(?:dumpling|dumpy|dump)?[\s,!:-]*/i, "")
       .replace(/^(?:(?:can|could|would|will)\s+you\s+|(?:please|pls|plz)\s+|i\s+(?:want|need)\s+you\s+to\s+|go\s+(?:and\s+)?)+/i, "");

@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v46** (`BUILD = 46`, SW `dumpling-v46`). v46: names from the PC. See CHANGELOG.
+
 Cache **v45** (`BUILD = 45`, SW `dumpling-v45`). v45: looser note phrasing. See CHANGELOG.
 
 Cache **v44** (`BUILD = 44`, SW `dumpling-v44`). v44: forgiving link codes. See CHANGELOG.
