@@ -57,6 +57,10 @@ docs/        # handoff for humans and coding agents
 
 Current cache as of this handoff: **v=46**. `docs/STATE.md` always has the live number.
 
+## Before every merge: smoke test
+
+`tests/smoke.py` runs on every pull request (GitHub Actions, `.github/workflows/smoke.yml`). **Do not merge if it fails.** Run it locally too: `python3 -m http.server 8765 &` then `python3 tests/smoke.py`. When you add a feature, add one line to it.
+
 ## Product rules that already bit us
 
 - **No top-level `let`/`const` that startup code might touch before its line runs** (v40 crash). Startup runs near the top of `app.js`; module state declared further down must be `var` (or moved above startup).
