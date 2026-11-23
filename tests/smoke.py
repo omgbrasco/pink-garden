@@ -62,6 +62,7 @@ async def main():
             ("remember my locker is 42", r"got it|saved|kept"),
             ("tell her hi", r"once braedon links|sent"),
             ("help", r"moon"),
+            ("turn on notifications", r"brain linked first"),
         ], "core commands")
         await phone(p, "localStorage.setItem('dumpling-seen-v1','999');localStorage.setItem('dumpling-brain-v1',JSON.stringify({u:'http://127.0.0.1:9',k:'x',p:'user'}))",
                     [("how are you", r".")], "linked but PC off (falls back)")
