@@ -111,7 +111,7 @@ const server = http.createServer(async (req, res) => {
   }
   const url = new URL(req.url, "http://x");
   try {
-    if (url.pathname === "/health") return send(res, 200, { ok: true, model: MODEL }, origin);
+    if (url.pathname === "/health") return send(res, 200, { ok: true, model: MODEL, names: NAMES }, origin);
 
     if (url.pathname === "/chat" && req.method === "POST") {
       const b = await body(req);
