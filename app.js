@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 43;
+  const BUILD = 44;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -744,13 +744,17 @@
   function otherName() { const b = brain(); return b && b.p === "dev" ? "her" : "Braedon"; }
   function brainCommand(t) {
     // "link dumpling <code>": code comes from the keys file on Braedon's PC. One time per phone.
-    let m = t.match(/^link (?:dumpling|brain)\s+(\S+)$/i);
+    let m = t.match(/^link\s+(?:dumpling|brain)\s+([\s\S]+)$/i);
     if (m) {
+      // Forgiving: codes pasted from texts can pick up spaces/line breaks or lose their last character.
       let cfg = null;
-      try {
-        const b64 = m[1].replace(/-/g, "+").replace(/_/g, "/");
-        cfg = JSON.parse(atob(b64 + "===".slice((b64.length + 3) % 4)));
-      } catch (e) {}
+      const b64 = m[1].replace(/[^A-Za-z0-9_\-+/]/g, "").replace(/-/g, "+").replace(/_/g, "/");
+      let raw = "";
+      const clean = b64.length % 4 === 1 ? b64.slice(0, -1) : b64;
+      try { raw = atob(clean + "==".slice(0, (4 - clean.length % 4) % 4)); } catch (e) {}
+      [raw, raw + "}", raw + "\"}"].some(function (x) {
+        try { cfg = JSON.parse(x); return true; } catch (e) { return false; }
+      });
       if (!cfg || !cfg.u || !cfg.k || (cfg.p !== "user" && cfg.p !== "dev")) return "Hmm, that code doesn't look right.";
       return fetch(String(cfg.u).replace(/\/+$/, "") + "/health").then(function (r) { return r.json(); }).then(function (j) {
         if (!j || !j.ok) throw new Error("bad");
