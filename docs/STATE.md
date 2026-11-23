@@ -6,6 +6,8 @@ Live: https://omgbrasco.github.io/pink-garden/
 
 Girlfriend gift. Fun/public. Not NSFW. Not Aria.
 
+Cache **v44** (`BUILD = 44`, SW `dumpling-v44`). v44: forgiving link codes. See CHANGELOG.
+
 Cache **v43** (`BUILD = 43`, SW `dumpling-v43`). v43: Ideas tab goes to the PC when linked. See CHANGELOG.
 
 Cache **v42** (`BUILD = 42`, SW `dumpling-v42`). v42: she can see/wipe brain memory. See CHANGELOG.
