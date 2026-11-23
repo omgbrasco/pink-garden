@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const BUILD = 44;
+  const BUILD = 45;
   const PLAY_KEY = "dumpling-play-v1";
   const HIST_KEY = "dumpling-chat-v1";
   const HIST_MAX = 300;
@@ -793,13 +793,34 @@
       }).catch(function () { return "Can't reach the PC right now."; });
     }
     // "tell Braedon I'm home" / on his phone: "tell her I miss her"
-    m = t.match(/^(?:can you\s+|please\s+)?(?:tell|text|message|send)\s+(?:braedon|him|her|babe|my (?:bf|gf|boyfriend|girlfriend))\b[\s,:-]*(?:that\s+)?(.+)$/i);
+    m = noteToOther(t);
     if (m && brain()) {
       return brainFetch("/send", { text: m[1] }, 15000)
         .then(function () { return "Sent to " + otherName() + " 💌"; })
         .catch(function () { return "Couldn't send. Braedon's PC might be off."; });
     }
     if (m) return "I can pass notes once Braedon links me up 💌";
+    return null;
+  }
+  // Note to the other phone. Loose on purpose: "hey dumpling, can you tell her I miss you",
+  // "let Braedon know I'm home", "send him a note saying hi", "pass this to babe: love you".
+  function noteToOther(t) {
+    const WHO = "(?:braedon|him|her|babe|bae|baby|my\\s+(?:bf|gf|boyfriend|girlfriend|love|man|girl|babe))";
+    let x = t.trim()
+      .replace(/^(?:(?:hey|hi|ok|okay|yo)\s+)?(?:dumpling|dumpy|dump)?[\s,!:-]*/i, "")
+      .replace(/^(?:(?:can|could|would|will)\s+you\s+|(?:please|pls|plz)\s+|i\s+(?:want|need)\s+you\s+to\s+|go\s+(?:and\s+)?)+/i, "");
+    const pats = [
+      new RegExp("^(?:tell|text|message|msg|send)\\s+" + WHO + "\\b(?:\\s+(?:a\\s+)?(?:note|message|msg|text))?(?:\\s+(?:saying|that says|that))?[\\s,:-]*(.+)$", "i"),
+      new RegExp("^let\\s+" + WHO + "\\s+know\\b(?:\\s+that)?[\\s,:-]*(.+)$", "i"),
+      new RegExp("^(?:send|pass|give)\\s+(?:a\\s+|this\\s+)?(?:note|message|msg|text|this)?\\s*to\\s+" + WHO + "\\b(?:\\s+(?:saying|that says|that))?[\\s,:-]*(.+)$", "i"),
+      new RegExp("^(?:say|whisper)\\s+(?:to\\s+)?" + WHO + "\\b[\\s,:-]*(.+)$", "i")
+    ];
+    const ask = x.match(new RegExp("^ask\\s+" + WHO + "\\s+(?:if|whether|what|when|where|how|why|who)\\b.+$", "i"));
+    if (ask) return [ask[0], "wants to know: " + ask[0].replace(new RegExp("^ask\\s+" + WHO + "\\s+", "i"), "")];
+    for (let i = 0; i < pats.length; i++) {
+      const r = x.match(pats[i]);
+      if (r && r[1] && r[1].trim().length > 0) return [r[0], r[1].trim().replace(/^["“]|["”]$/g, "")];
+    }
     return null;
   }
   var inboxBusy = false;
